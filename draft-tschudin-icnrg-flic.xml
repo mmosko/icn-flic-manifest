@@ -552,7 +552,6 @@ RsaKemUnwrap(SK, c, WK, KeyLen = 256):
                         Manifest encryption and decryption proceed as with PresharedKey, but using the CEK.
                     </t>
                 </section>
-<!--
                 <section anchor="group" title="ECC Group Keys">
                     <t>NOTE: THIS IS INFORMALLY SPECIFIED AT THIS STAGE</t>
                     <t>
@@ -595,7 +594,6 @@ RsaKemUnwrap(SK, c, WK, KeyLen = 256):
                         decide if we want key fetching to be on-line or available from repos, and if so how to do current key fetching.
                     </t>
                 </section>
- -->
             </section>
             
             <section anchor="encodings" title="Protocol Encodings">
