@@ -230,7 +230,7 @@ An alternate method (rfc include) is described in the references. -->
             </section>
             
             <section anchor="namespaces" title="Namespaces">
-                <t>A FLIC manifest may define zero or more namespaces.  If none are defined, FLIC uses the default Hash Naming approach.  If using namespaces, typically there are two defined:                    one for the manifest namespace and one for the application data namespace.  If the                    two are the same, they can share a namepace.  There may be more than two namespaces.
+                <t>A FLIC manifest may define zero or more namespaces.  If none are defined, FLIC uses the default Hash Naming approach.  If using namespaces, typically there are two defined:                    one for the manifest namespace and one for the application data namespace.  If the two are the same, they can share a namepace.  There may be more than two namespaces.
                 </t>
                 
                 <t>A namespace follows a naming convention.  The naming convention governs how FLIC creates the ICN Name that goes in an Interest's Name and must match a Content Object / Data Name. The conventions are: (1) Hash Naming, (2) Single Prefix, and (3) Segmented Prefix. The default is to use Hash Naming.  Hash Naming does not include anything besides a hash name in the Interest's name and relies on the Locator to forward the Interest. Single Prefix uses the same name differntiated only by a Content Object's implicit hash. Segmented Prefix keeps a counter for the namespace, starting with 0, and increments it after each use of the namespace.
@@ -247,7 +247,7 @@ An alternate method (rfc include) is described in the references. -->
             </section>
             
             <section anchor="metadata" title="Manifest Metadata">
-            	<t>The FLIC Manifest may be extended by defining TLVs that apply to the Manifest as a whole, or alternatively, individually to every data object pointed to by the Manifest. This basic specification does not specify any, but metadata TLVs may be defined through additional RFCs or via Vendor TLVs.  FLIC uses a Vendor TLV structure similar to <xref target="RFC8609"/> for vendor-specific annotations that require no standardiation process.
+            	<t>The FLIC Manifest may be extended by defining TLVs that apply to the Manifest as a whole, or alternatively, individually to every data object pointed to by the Manifest. This basic specification does not specify any, but metadata TLVs may be defined through additional RFCs or via Vendor TLVs.  FLIC uses a Vendor TLV structure similar to <xref target="RFC8609"/> for vendor-specific annotations that require no standardization process.
             	</t>
             	
             	<t>For example, some applications may find it useful to allow specialized consumers such as <spanx>repositories</spanx> (for example <xref target="repository"/>) or enhanced forwarder caches to pre-place, or adaptively pre-fetch data in order to improve robustness of delay performance. We note in passing that FLICs use of separate namespaces for the Manifest and the underlying Data allows different encryption keys to be used, hence giving a element like a cache or repository access to the Manifest data does not as a side effect reveal the contents of the application data itself.
@@ -262,7 +262,7 @@ An alternate method (rfc include) is described in the references. -->
                 <t>An annotation may, for example, give hints about a preferred traversal order for fetching the data, or an importance/precedence indication to aid applications that do not require every content object pointed to in the manifest to be fetched. This can be very useful for real-time or streaming media applications that can perform error concealment when rendering the media.
                 </t>
                 
-                <t>Additional annotations may be defined through additional RFCs or via Vendor TLVs.  FLIC uses a Vendor TLV structure similar to <xref target="RFC8609"/> for vendor-specific annotations that require no standardiation process.
+                <t>Additional annotations may be defined through additional RFCs or via Vendor TLVs.  FLIC uses a Vendor TLV structure similar to <xref target="RFC8609"/> for vendor-specific annotations that require no standardization process.
                 </t>
             </section>
             
@@ -273,7 +273,8 @@ An alternate method (rfc include) is described in the references. -->
                 <t>The basic structure of a FLIC manifest is a security context, a node, and an authentication tag.  The security context and authentication tag are not needed if the node is unencrypted.  A node is made up of a set of metadata, the NodeData, that applies to the entire node, and one or more HashGroups that contain pointers.
                 </t>
                 
-                <t>The NodeData element defines the namespaces used by the manifest. There may be multiple namespaces, depending on how one names subsequent  manifests or data objects.  Each HashGroup may reference a single namespace to control how one forms Interests from the HashGroup.  If one is using separate namespaces for manifests and application data, one needs at least two HashGroups.  For a manifest structure of "MMMDDD," for example, one would have a first hash group for the child manifests with its namespace and a second HashGroup for the data pointers with the other namespace. If one used a structure like "MMMDDDMMM," then one would need three HashGroups.
+                <t>The NodeData element defines the namespaces used by the manifest. There may be multiple namespaces, depending on how one names subsequent  manifests or data objects.  Each HashGroup may reference a single namespace to control how one forms Interests from the HashGroup.  If one is using separate namespaces for manifests and application data, one needs at least two HashGroups.  For a manifest structure of "MMMDDD," (where M means manifest (indirect pointer) and D means data (direct pointer))
+                    for example, one would have a first hash group for the child manifests with its namespace and a second HashGroup for the data pointers with the other namespace. If one used a structure like "MMMDDDMMM," then one would need three HashGroups.
                 </t>
                 
                 <figure anchor="flicgrammar" title="FLIC Grammar">
@@ -552,7 +553,8 @@ RsaKemUnwrap(SK, c, WK, KeyLen = 256):
                         Manifest encryption and decryption proceed as with PresharedKey, but using the CEK.
                     </t>
                 </section>
-<!--
+                
+                <!--
                 <section anchor="group" title="ECC Group Keys">
                     <t>NOTE: THIS IS INFORMALLY SPECIFIED AT THIS STAGE</t>
                     <t>
@@ -600,7 +602,8 @@ RsaKemUnwrap(SK, c, WK, KeyLen = 256):
             
             <section anchor="encodings" title="Protocol Encodings">
                 <section anchor="CCNxEncoding" title="CCNx Encoding">
-                    <t>Hash Naming convention in CCNx uses nameless objects.  TODO: Spell out encoding.
+                    <t>In CCNx, all Manifest content objects use a PayloadType of T_PYLDTYPE_MANIFEST, while all
+                        application data content objects use a PayloadType of T_PYLDTYPE_DATA.
                     </t>
                     <figure anchor="CCNxGrammer" title="CCNx Embedding Grammar">
                         <artwork align="left">
@@ -612,26 +615,173 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
                         </artwork>
                     </figure>
                     
+                    <section anchor="CCNxHashNaming" title="CCNx Hash Naming">
+                        <t>The Hash Naming namespace uses CCNx nameless content objects.</t>
+                        <t>It proceeds as follows:
+                            <list style="symbols">
+                                <t>The Root Manifest content object has a name used to fetch the manifest. It is signed by the publisher.
+                                It has a set of Locators used to fetch the remainder of the manifest.  It has a single HashPointer that
+                                points to the Top Manifest.  It may also have cache control directives, such as ExpiryTime.</t>
+                                <t>The Root Manifest has an NsDef that specifies HashSchema.  It's GroupData uses that NsId.
+                                All internal and leaf manifests use the same GroupData NsId.  A Manifest Tree MAY omit the NsDef and
+                                NsId elements and rely on the default being HashSchema.</t>
+                                <t>The Top Manifest is a nameless CCNx content object.  It may have cache control directies.</t>
+                                <t>Internal and Leaf manifests are nameless CCNx content objects, possibly with cache control directives.</t>
+                                <t>The Data content objects are nameless CCNx content objects, possibly with cache control directives.</t>
+                                <t>To form an Interest for a direct or indirect pointer, use a Name from one of the Locators and put the
+                                    pointer HashValue into the ContentObjectHashRestriction.</t>
+                            </list>
+                        </t>
+                    </section>
+                    <section anchor="CCNxSinglePrefix" title="CCNx Single Prefix">
+                        <t>The Single Prefix schema uses the same name in all Content Objects and distinguishes them via
+                            their ContentObjectHash.  Note that in CCNx, using a SinglePrefix name means that we do not
+                            use Locators.</t>
+                        <t>It proceeds as follows:
+                            <list style="symbols">
+                                <t>The Root Manifest content object has a name used to fetch the manifest.  It is signed by the publisher.
+                                    It has a set of Locators used to fetch the remainder of the manifest.  It has a single HashPointer that
+                                    points to the Top Manifest.  It may also have cache control directives, such as ExpiryTime.</t>
+                                <t>The Root Manifest has an NsDef that specifies SinglePrefix and the SinglePrefixSchema element specifies
+                                    the SinglePrefixName.</t>
+                                <t>The Top Manifest has the name SinglePrefixName.  It may have cache control directies.  It's GroupData
+                                elements must have an NsId that references the NsDef.</t>
+                                <t>An Internal or Leaf manifest has the name SinglePrefixName, possibly with cache control directives.
+                                    It's GroupData elements must have an NsId that references the NsDef.</t>
+                                <t>The Data content objects have the name SinglePrefixName, possibly with cache control directives.</t>
+                                <t>To form an Interest for a direct or indirect pointer, use SinglePrefixName as the Name and put the
+                                    pointer HashValue into the ContentObjectHashRestriction.</t>
+                            </list>
+                        </t>
+                    </section>
+                    <section anchor="CCNxSegmentedPrefix" title="CCNx Segmented Prefix">
+                        <t>The Segmented Prefix schema uses a different name in all Content Objects and distinguishes them via
+                            their ContentObjectHash.  Note that in CCNx, using a SegmentedPrefixSchema means that we do not
+                            use Locators.
+                            OPTIONAL: Use AnnotatedPointers
+                            to indicate the segment number of each hash pointer to avoid needing to infer the segment numbers.
+                        </t>
+                        <t>It proceeds as follows:
+                            <list style="symbols">
+                                <t>The Root Manifest content object has a name used to fetch the manifest.  It is signed by the publisher.
+                                    It has a set of Locators used to fetch the remainder of the manifest.  It has a single HashPointer that
+                                    points to the Top Manifest.  It may also have cache control directives, such as ExpiryTime.</t>
+                                <t>The Root Manifest has an NsDef that specifies SegmentedPrefix and the SegmentedPrefixSchema element specifies
+                                    the SegmentedPrefixName.</t>
+                                <t>The publisher will track the chunk number of each content object within the NsId.
+                                    Objects will be numbered in their traversal order.  Within each manifest, the name will be
+                                    constructed from the SegmentedPrefixName plus a Chunk name component.</t>
+                                <t>The Top Manifest has the name SegmentedPrefixName plus chunk number.  It may have cache control directies.  It's GroupData
+                                    elements must have an NsId that references the NsDef.</t>
+                                <t>An Internal or Leaf manifest has the name SegmentedPrefixName plus chunk number, possibly with cache control directives.
+                                    It's GroupData elements must have an NsId that references the NsDef.</t>
+                                <t>The Data content objects have the name SegmentedPrefixName plus chunk number, possibly with cache control directives.</t>
+                                <t>To form an Interest for a direct or indirect pointer, use SegmentedPrefixName plus chunk number as the Name and put the
+                                    pointer HashValue into the ContentObjectHashRestriction.  A consumer must track the chunk number in
+                                    traversal order for each SegmentedPrefixSchema NsId.</t>
+                            </list>
+                        </t>
+                    </section>
+                    <section anchor="CCNxHybrid" title="CCNx Hybrid Schema">
+                        <t>A manifest may use multiple schemas.  For example, the application payload in data content objects might use
+                            SegmentedPrefix while the manifest content objects might use HashNaming.</t>
+                        <t>The Root Manifest should specify an NsDef with a first NsId (say 1) as the HashNaming schema and a second
+                            NsDef with a second NsId (say 2) as the SegmentedPrefix schema along with the SegmentedPrefixName.</t>
+                        <t>Each manifest (Top, Internal, Leaf) uses two or more HashGroups, where eash HashGroup has only Direct (with
+                            the second NsId) or Indirect (with the first NsId).  The number of hash groups will depend on how the
+                            publisher wishes to interleave direct and indirect pointers.</t>
+                        <t>Manifests and data objects are named as appropriate for their naming schema.</t>
+                    </section>
                 </section>
                 
                 <section anchor="NDNEncoding" title="NDN Encoding">
-                    <t>In Hash Naming, the Interest name is only the Implicit Digest name component and the
-                        ForwardingHints come from the Locators.  This means that the Manifest namespace and
-                        data namespace are the same and could use the same NSDef.  It also means that the Data
-                        name is empty (0-length).
+                    <t>In NDN, all Manifest Data objects use a ContentType of FLIC (1024), while all
+                        application data content objects use a PayloadType of Blob.
                     </t>
                     
-                    <t>In Single Prefix, the Data name is a common prefix used between all objects in that namespace,
-                        without a Segment or other counter.  They are distinguished via the Implicit Digest
-                        name component.  The FLIC Locators go in the ForwardingHints.
-                    </t>
-                    
-                    <t>In Segmented Prefix, the Data name is a common prefix plus a segment number, so each
-                        manifest or application data object has a unique full name before the implicit digest.
-                        This means the consumer must maintain a counter for each namespace.  It will also remove the
-                        possibility of doing some name-based data de-duplication.  OPTIONAL: Use AnnotatedPointers
-                        to indicate the segment number of each hash pointer to avoid needing to infer the segment numbers.
-                    </t>
+                    <section anchor="NDNHashNaming" title="NDN Hash Naming">
+                        <t>In NDN Hash Naming, a Data Object has a 0-length name.  This means that an Interest will only have
+                            an ImplicitDigest name component in it.  This method relies on using NDN ForwardingHints.
+                        </t>
+                        <t>It proceeds as follows:
+                            <list style="symbols">
+                                <t>The Root Manifest Data has a name used to fetch the manifest.  It is signed by the publisher.
+                                    It has a set of Locators used to fetch the remainder of the manifest.  It has a single HashPointer that
+                                    points to the Top Manifest.  It may also have cache control directives.</t>
+                                
+                                <t>The Root Manifest has an NsDef that specifies HashSchema.  It's GroupData uses that NsId.
+                                    All internal and leaf manifests use the same GroupData NsId.  A Manifest Tree MAY omit the NsDef and
+                                    NsId elements and rely on the default being HashSchema.</t>
+                                
+                                <t>The Top Manifest has a 0-length Name.  It may have cache control directies.</t>
+                                <t>Internal and Leaf manifests has a 0-length Name, possibly with cache control directives.</t>
+                                <t>The application Data use a 0-length name, possibly with cache control directives.</t>
+                                
+                                <t>To form an Interest for a direct or indirect pointer, the name is only the Implicit Digest name component
+                                    derived from a pointer's HashValue.  The ForwardingHints come from the Locators.  In NDN, one may use
+                                    one or more locators within a single Interest.</t>
+                            </list>
+                        </t>
+                    </section>
+                    <section anchor="NDNSinglePrefix" title="NDN Single Prefix">
+                        <t>In Single Prefix, the Data name is a common prefix used between all objects in that namespace,
+                            without a Segment or other counter.  They are distinguished via the Implicit Digest
+                            name component.  The FLIC Locators go in the ForwardingHints.</t>
+                        <t>It proceeds as follows:
+                            <list style="symbols">
+                                <t>The Root Manifest Data object has a name used to fetch the manifest.  It is signed by the publisher.
+                                    It has a set of Locators used to fetch the remainder of the manifest.  It has a single HashPointer that
+                                    points to the Top Manifest.  It may also have cache control directives.</t>
+                                <t>The Root Manifest has an NsDef that specifies SinglePrefix and the SinglePrefixSchema element specifies
+                                    the SinglePrefixName.</t>
+                                <t>The Top Manifest has the name SinglePrefixName.  It may have cache control directies.  It's GroupData
+                                    elements must have an NsId that references the NsDef.</t>
+                                <t>An Internal or Leaf manifest has the name SinglePrefixName, possibly with cache control directives.
+                                    It's GroupData elements must have an NsId that references the NsDef.</t>
+                                <t>The Data content objects have the name SinglePrefixName, possibly with cache control directives.</t>
+                                <t>To form an Interest for a direct or indirect pointer, use SinglePrefixName as the Name and append
+                                    the pointer's HashValue into an ImplicitDigest name component.  Set the ForwardingHints from
+                                    the FLIC locators.</t>
+                            </list>
+                        </t>
+                    </section>
+                    <section anchor="NDNSegmentedPrefix" title="NDN Segmented Prefix">
+                        <t>In Segmented Prefix, the Data name is a common prefix plus a segment number, so each
+                            manifest or application data object has a unique full name before the implicit digest.
+                            This means the consumer must maintain a counter for each SegmentedPrefix namespace.
+                            OPTIONAL: Use AnnotatedPointers
+                            to indicate the segment number of each hash pointer to avoid needing to infer the segment numbers.</t>
+                        <t>It proceeds as follows:
+                            <list style="symbols">
+                                <t>The Root Manifest Data object has a name used to fetch the manifest.  It is signed by the publisher.
+                                    It has a set of Locators used to fetch the remainder of the manifest.  It has a single HashPointer that
+                                    points to the Top Manifest.  It may also have cache control directives.</t>
+                                <t>The Root Manifest has an NsDef that specifies SegmentedPrefix and the SegmentedPrefixSchema element specifies
+                                    the SegmentedPrefixName.</t>
+                                <t>The publisher will track the segment number of each Data object within a SegmentedPrefix NsId.
+                                    Data will be numbered in their traversal order.  Within each manifest, the name will be
+                                    constructed from the SegmentedPrefixName plus a Segment name component.</t>
+                                <t>The Top Manifest has the name SegmentedPrefixName plus segment number.  It may have cache control directies.  It's GroupData
+                                    elements must have an NsId that references the NsDef.</t>
+                                <t>An Internal or Leaf manifest has the name SegmentedPrefixName plus segment number, possibly with cache control directives.
+                                    It's GroupData elements must have an NsId that references the NsDef.</t>
+                                <t>The Data content objects have the name SegmentedPrefixName plus chunk number, possibly with cache control directives.</t>
+                                <t>To form an Interest for a direct or indirect pointer, use SegmentedPrefixName plus segment number as the Name and put the
+                                    pointer HashValue into the ImplicitDigest name component.  A consumer must track the segment number in
+                                    traversal order for each SegmentedPrefixSchema NsId.</t>
+                            </list>
+                        </t>
+                    </section>
+                    <section anchor="NDNHybrid" title="NDN Hybrid Schema">
+                        <t>A manifest may use multiple schemas.  For example, the application payload in data content objects might use
+                            SegmentedPrefix while the manifest content objects might use HashNaming.</t>
+                        <t>The Root Manifest should specify an NsDef with a first NsId (say 1) as the HashNaming schema and a second
+                            NsDef with a second NsId (say 2) as the SegmentedPrefix schema along with the SegmentedPrefixName.</t>
+                        <t>Each manifest (Top, Internal, Leaf) uses two or more HashGroups, where eash HashGroup has only Direct (with
+                            the second NsId) or Indirect (with the first NsId).  The number of hash groups will depend on how the
+                            publisher wishes to interleave direct and indirect pointers.</t>
+                        <t>Manifests and data objects are named as appropriate for their naming schema.</t>
+                    </section>
                 </section>
             </section>
             

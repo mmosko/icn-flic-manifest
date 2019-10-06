@@ -5,10 +5,10 @@
 ICNRG                                                        C. Tschudin
 Internet-Draft                                       University of Basel
 Intended status: Experimental                                    C. Wood
-Expires: March 26, 2020                  University of California Irvine
+Expires: April 8, 2020                   University of California Irvine
                                                                 M. Mosko
                                                               PARC, Inc.
-                                                      September 23, 2019
+                                                         October 6, 2019
 
 
                     File-Like ICN Collections (FLIC)
@@ -32,14 +32,14 @@ Status of This Memo
    Internet-Drafts are working documents of the Internet Engineering
    Task Force (IETF).  Note that other groups may also distribute
    working documents as Internet-Drafts.  The list of current Internet-
-   Drafts is at http://datatracker.ietf.org/drafts/current/.
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
 
    Internet-Drafts are draft documents valid for a maximum of six months
    and may be updated, replaced, or obsoleted by other documents at any
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on March 26, 2020.
+   This Internet-Draft will expire on April 8, 2020.
 
 Copyright Notice
 
@@ -48,14 +48,14 @@ Copyright Notice
 
    This document is subject to BCP 78 and the IETF Trust's Legal
    Provisions Relating to IETF Documents
-   (http://trustee.ietf.org/license-info) in effect on the date of
+   (https://trustee.ietf.org/license-info) in effect on the date of
    publication of this document.  Please review these documents
 
 
 
-Tschudin, et al.         Expires March 26, 2020                 [Page 1]
+Tschudin, et al.          Expires April 8, 2020                 [Page 1]
 
-Internet-Draft                    FLIC                    September 2019
+Internet-Draft                    FLIC                      October 2019
 
 
    carefully, as they describe your rights and restrictions with respect
@@ -66,35 +66,53 @@ Internet-Draft                    FLIC                    September 2019
 
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
      1.1.  Requirements Language . . . . . . . . . . . . . . . . . .   3
-   2.  Design Goals  . . . . . . . . . . . . . . . . . . . . . . . .   3
-   3.  FLIC Structure  . . . . . . . . . . . . . . . . . . . . . . .   4
-     3.1.  Terminology . . . . . . . . . . . . . . . . . . . . . . .   4
-     3.2.  Locators  . . . . . . . . . . . . . . . . . . . . . . . .   5
+   2.  Design Goals  . . . . . . . . . . . . . . . . . . . . . . . .   4
+   3.  FLIC Structure  . . . . . . . . . . . . . . . . . . . . . . .   5
+     3.1.  Terminology . . . . . . . . . . . . . . . . . . . . . . .   5
+     3.2.  Locators  . . . . . . . . . . . . . . . . . . . . . . . .   6
      3.3.  Namespaces  . . . . . . . . . . . . . . . . . . . . . . .   6
      3.4.  Manifest Metadata . . . . . . . . . . . . . . . . . . . .   7
      3.5.  Pointer Annotations . . . . . . . . . . . . . . . . . . .   7
-     3.6.  Manifest Grammar (ABNF) . . . . . . . . . . . . . . . . .   7
+     3.6.  Manifest Grammar (ABNF) . . . . . . . . . . . . . . . . .   8
      3.7.  Manifest Trees  . . . . . . . . . . . . . . . . . . . . .  10
        3.7.1.  Traversal . . . . . . . . . . . . . . . . . . . . . .  10
      3.8.  Manifest Encryption . . . . . . . . . . . . . . . . . . .  11
        3.8.1.  Preshared Key Algorithm . . . . . . . . . . . . . . .  12
        3.8.2.  RSA Key Encapsulation . . . . . . . . . . . . . . . .  13
-       3.8.3.  ECC Group Keys  . . . . . . . . . . . . . . . . . . .  14
-     3.9.  Protocol Encodings  . . . . . . . . . . . . . . . . . . .  15
-       3.9.1.  CCNx Encoding . . . . . . . . . . . . . . . . . . . .  15
-       3.9.2.  NDN Encoding  . . . . . . . . . . . . . . . . . . . .  16
-     3.10. Example Structures  . . . . . . . . . . . . . . . . . . .  16
-       3.10.1.  Leaf-only data . . . . . . . . . . . . . . . . . . .  16
-       3.10.2.  Linear . . . . . . . . . . . . . . . . . . . . . . .  16
-   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  17
-   5.  Security Considerations . . . . . . . . . . . . . . . . . . .  17
-   6.  Appendix A: Building Trees  . . . . . . . . . . . . . . . . .  17
-   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  19
-     7.1.  Normative References  . . . . . . . . . . . . . . . . . .  19
-     7.2.  Informative References  . . . . . . . . . . . . . . . . .  19
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  20
+     3.9.  Protocol Encodings  . . . . . . . . . . . . . . . . . . .  14
+       3.9.1.  CCNx Encoding . . . . . . . . . . . . . . . . . . . .  14
+         3.9.1.1.  CCNx Hash Naming  . . . . . . . . . . . . . . . .  15
+         3.9.1.2.  CCNx Single Prefix  . . . . . . . . . . . . . . .  15
+         3.9.1.3.  CCNx Segmented Prefix . . . . . . . . . . . . . .  16
+         3.9.1.4.  CCNx Hybrid Schema  . . . . . . . . . . . . . . .  17
+       3.9.2.  NDN Encoding  . . . . . . . . . . . . . . . . . . . .  17
+         3.9.2.1.  NDN Hash Naming . . . . . . . . . . . . . . . . .  17
+         3.9.2.2.  NDN Single Prefix . . . . . . . . . . . . . . . .  18
+         3.9.2.3.  NDN Segmented Prefix  . . . . . . . . . . . . . .  19
+         3.9.2.4.  NDN Hybrid Schema . . . . . . . . . . . . . . . .  20
+     3.10. Example Structures  . . . . . . . . . . . . . . . . . . .  20
+       3.10.1.  Leaf-only data . . . . . . . . . . . . . . . . . . .  20
+       3.10.2.  Linear . . . . . . . . . . . . . . . . . . . . . . .  20
+   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  21
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .  21
+   6.  Appendix A: Building Trees  . . . . . . . . . . . . . . . . .  21
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  23
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .  23
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .  23
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  24
+
+
+
+
+
+
+
+Tschudin, et al.          Expires April 8, 2020                 [Page 2]
+
+Internet-Draft                    FLIC                      October 2019
+
 
 1.  Introduction
 
@@ -106,13 +124,6 @@ Table of Contents
    signature.  A Manifest entry gives one enough information to create
    an Interest for that entry, so it must specify the name, the hash
    digest, and if needed the locators (routing hints).
-
-
-
-Tschudin, et al.         Expires March 26, 2020                 [Page 2]
-
-Internet-Draft                    FLIC                    September 2019
-
 
    A key question is how one names the root manifest, the application
    data, and other subsequent manifests.  The question of namespaces is
@@ -148,6 +159,17 @@ Internet-Draft                    FLIC                    September 2019
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
    document are to be interpreted as described in RFC 2119 [RFC2119].
 
+
+
+
+
+
+
+Tschudin, et al.          Expires April 8, 2020                 [Page 3]
+
+Internet-Draft                    FLIC                      October 2019
+
+
 2.  Design Goals
 
    The preferred FLIC structure copies the proven UNIX inode concept of
@@ -162,14 +184,6 @@ Internet-Draft                    FLIC                    September 2019
    Links in FLIC use hash-based naming of Content Objects, rather than
    inode block numbers.  Both CCNx and NDN support hash-based naming,
    though the details vary.  See Section 3.9.1 and Section 3.9.2.
-
-
-
-Tschudin, et al.         Expires March 26, 2020                 [Page 3]
-
-Internet-Draft                    FLIC                    September 2019
-
-
    Another advantage of using hash-based naming is it permits block-
    level de-duplication of application data because two blocks with the
    same payload will have the same hash name.
@@ -202,6 +216,16 @@ Internet-Draft                    FLIC                    September 2019
    uses: manifest metadata, and pointer annotations.  These are
    described in Section 3.4 and Section 3.5 respectively.
 
+
+
+
+
+
+Tschudin, et al.          Expires April 8, 2020                 [Page 4]
+
+Internet-Draft                    FLIC                      October 2019
+
+
 3.  FLIC Structure
 
 3.1.  Terminology
@@ -217,14 +241,6 @@ Internet-Draft                    FLIC                    September 2019
    Indirect Pointer:  borrowed from inode terminology, it is a CCNx link
       using a content object hash restriction and a locator name to
       point to a manifest content object.
-
-
-
-
-Tschudin, et al.         Expires March 26, 2020                 [Page 4]
-
-Internet-Draft                    FLIC                    September 2019
-
 
    Manifest:  a CCNx ContentObject with PayloadType 'Manifest' and a
       Payload of the encoded manifest.  A leaf manifest only has direct
@@ -259,6 +275,13 @@ Internet-Draft                    FLIC                    September 2019
       Object.  It may include typed name components specifying a version
       and/or chunk/segment number.
 
+
+
+Tschudin, et al.          Expires April 8, 2020                 [Page 5]
+
+Internet-Draft                    FLIC                      October 2019
+
+
    Locator:  A routing hint in an Interest used by forwarding to get the
       Interest to where it can be matched based on its Namespace-derived
       name.
@@ -274,14 +297,6 @@ Internet-Draft                    FLIC                    September 2019
    used in the construction of Interests from the pointers in the
    manifest.  The Locators are inherited when walking a manifest tree,
    so they do not need to be defined everywhere.  It is RECOMMENDED that
-
-
-
-Tschudin, et al.         Expires March 26, 2020                 [Page 5]
-
-Internet-Draft                    FLIC                    September 2019
-
-
    only the Root manifest contain Locators so that a single operation
    can update the locators.  One usecase when storing application
    payloads at different replicas is to replace the Root manifest with a
@@ -315,6 +330,14 @@ Internet-Draft                    FLIC                    September 2019
    manifest or Top manifest and not elsewhere, as it may confuse the
    counters.
 
+
+
+
+Tschudin, et al.          Expires April 8, 2020                 [Page 6]
+
+Internet-Draft                    FLIC                      October 2019
+
+
    In the NodeData, there may be zero or more NSDef contains.  Each
    NSDef defines a namespace identifier (octet string) and its naming
    convention.  For the Hash Naming convention, no further information
@@ -326,18 +349,6 @@ Internet-Draft                    FLIC                    September 2019
    the corresponding prefix.  If there is no NSRef, the hash group uses
    Hash Naming convention.
 
-
-
-
-
-
-
-
-Tschudin, et al.         Expires March 26, 2020                 [Page 6]
-
-Internet-Draft                    FLIC                    September 2019
-
-
 3.4.  Manifest Metadata
 
    The FLIC Manifest may be extended by defining TLVs that apply to the
@@ -346,7 +357,7 @@ Internet-Draft                    FLIC                    September 2019
    specify any, but metadata TLVs may be defined through additional RFCs
    or via Vendor TLVs.  FLIC uses a Vendor TLV structure similar to
    [RFC8609] for vendor-specific annotations that require no
-   standardiation process.
+   standardization process.
 
    For example, some applications may find it useful to allow
    specialized consumers such as _repositories_ (for example
@@ -374,9 +385,18 @@ Internet-Draft                    FLIC                    September 2019
    useful for real-time or streaming media applications that can perform
    error concealment when rendering the media.
 
+
+
+
+
+Tschudin, et al.          Expires April 8, 2020                 [Page 7]
+
+Internet-Draft                    FLIC                      October 2019
+
+
    Additional annotations may be defined through additional RFCs or via
    Vendor TLVs.  FLIC uses a Vendor TLV structure similar to [RFC8609]
-   for vendor-specific annotations that require no standardiation
+   for vendor-specific annotations that require no standardization
    process.
 
 3.6.  Manifest Grammar (ABNF)
@@ -386,14 +406,6 @@ Internet-Draft                    FLIC                    September 2019
    protocol, so for CCNx FLIC uses 2 octet length, 2 octet type and for
    NDN uses the 1/3/5 octet types and lengths.  There are also some
    differences in how one structures and resolves links.  [RFC8569]
-
-
-
-Tschudin, et al.         Expires March 26, 2020                 [Page 7]
-
-Internet-Draft                    FLIC                    September 2019
-
-
    defines HashValue and Link for CCNx encodings.  The NDN
    ImplicitSha256DigestComponent defines HashValue and NDN Delegation
    (from Link Object) defines Link for NDN.  The Section 3.9 section
@@ -411,10 +423,12 @@ Internet-Draft                    FLIC                    September 2019
    single namespace to control how one forms Interests from the
    HashGroup.  If one is using separate namespaces for manifests and
    application data, one needs at least two HashGroups.  For a manifest
-   structure of "MMMDDD," for example, one would have a first hash group
-   for the child manifests with its namespace and a second HashGroup for
-   the data pointers with the other namespace.  If one used a structure
-   like "MMMDDDMMM," then one would need three HashGroups.
+   structure of "MMMDDD," (where M means manifest (indirect pointer) and
+   D means data (direct pointer)) for example, one would have a first
+   hash group for the child manifests with its namespace and a second
+   HashGroup for the data pointers with the other namespace.  If one
+   used a structure like "MMMDDDMMM," then one would need three
+   HashGroups.
 
 TYPE = 2OCTET / {1,3,5}OCTET ; As per CCNx or NDN TLV
 LENGTH = 2OCTET / {1,3,5}OCTET ; As per CCNx or NDN TLV
@@ -428,6 +442,14 @@ EncryptedNode = TYPE LENGTH *OCTET ; Encrypted Node
 
 Node = TYPE LENGTH [NodeData] 1*HashGroup
 NodeData = TYPE LENGTH [SubtreeSize] [SubtreeDigest] [Locators] 0*NSDef
+
+
+
+Tschudin, et al.          Expires April 8, 2020                 [Page 8]
+
+Internet-Draft                    FLIC                      October 2019
+
+
 SubtreeSize = TYPE LENGTH INTEGER
 SubtreeDigest = TYPE LENGTH HashValue
 NSDef = TYPE LENGTH NsId NsSchema
@@ -442,14 +464,6 @@ HashValue = TYPE LENGTH *OCTET ; As per ICN Protocol
 Link = TYPE LENGTH *OCTET ; As per ICN protocol
 
 HashGroup = TYPE LENGTH [GroupData] (Ptrs / AnnotatedPtrs)
-
-
-
-Tschudin, et al.         Expires March 26, 2020                 [Page 8]
-
-Internet-Draft                    FLIC                    September 2019
-
-
 Ptrs = TYPE LENGTH *HashValue
 AnnotatedPtrs = TYPE LENGTH *PointerBlock
 PointerBlock = TYPE LENGTH *Annotation Ptr
@@ -485,6 +499,13 @@ LocatorPrefix = TYPE LENGTH Link
 
    AlgorithmData:  The context for the encryption algorithm.
 
+
+
+Tschudin, et al.          Expires April 8, 2020                 [Page 9]
+
+Internet-Draft                    FLIC                      October 2019
+
+
    EncryptedNode:  An opaque octet string with an optional
       authentication tag (i.e. for AEAD authentication tag)
 
@@ -498,13 +519,6 @@ LocatorPrefix = TYPE LENGTH Link
 
    SubtreeDigest:  The cryptographic digest of all application data at
       and below the Node or Group
-
-
-
-Tschudin, et al.         Expires March 26, 2020                 [Page 9]
-
-Internet-Draft                    FLIC                    September 2019
-
 
    Locators:  An array of routing hints to find the manifest components
 
@@ -543,23 +557,9 @@ Internet-Draft                    FLIC                    September 2019
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Tschudin, et al.         Expires March 26, 2020                [Page 10]
+Tschudin, et al.          Expires April 8, 2020                [Page 10]
 
-Internet-Draft                    FLIC                    September 2019
+Internet-Draft                    FLIC                      October 2019
 
 
    preorder(node)
@@ -613,9 +613,9 @@ Internet-Draft                    FLIC                    September 2019
 
 
 
-Tschudin, et al.         Expires March 26, 2020                [Page 11]
+Tschudin, et al.          Expires April 8, 2020                [Page 11]
 
-Internet-Draft                    FLIC                    September 2019
+Internet-Draft                    FLIC                      October 2019
 
 
 3.8.1.  Preshared Key Algorithm
@@ -669,9 +669,9 @@ FailFlag: Indicates authenticated decryption failure (true or false)
 
 
 
-Tschudin, et al.         Expires March 26, 2020                [Page 12]
+Tschudin, et al.          Expires April 8, 2020                [Page 12]
 
-Internet-Draft                    FLIC                    September 2019
+Internet-Draft                    FLIC                      October 2019
 
 
 3.8.2.  RSA Key Encapsulation
@@ -725,9 +725,9 @@ Internet-Draft                    FLIC                    September 2019
 
 
 
-Tschudin, et al.         Expires March 26, 2020                [Page 13]
+Tschudin, et al.          Expires April 8, 2020                [Page 13]
 
-Internet-Draft                    FLIC                    September 2019
+Internet-Draft                    FLIC                      October 2019
 
 
    permissible.  The KM may require on-line fetching of the response via
@@ -761,68 +761,13 @@ Internet-Draft                    FLIC                    September 2019
    decrypt Z.  It then derives CEK as above.  Manifest encryption and
    decryption proceed as with PresharedKey, but using the CEK.
 
-3.8.3.  ECC Group Keys
-
-   NOTE: THIS IS INFORMALLY SPECIFIED AT THIS STAGE
-
-   We use an EC group key that is encrypted for each user under their
-   public key (also assumed EC) using a standard NIST wrapping C(1e, 2s,
-   ECC CDH)-ECDSA plus AES-KWP.  When a publisher wants to publish, it
-   creates an EC wrapping keypair and publishes the private key wrapped
-   under the group key (use C(1e, 1s, ECC CDH)-ECDSA plus AES-KWP).
-   Finally, the publisher starts creating master secrets by creating
-   ECDHE-ECDSA offers under the wapping key and using a KDF (e.g.  HMAC-
-   SHA256) for the data key.
-
-   Note that the offer, in this case, is just an ephemeral EC public key
-   plus the curve specification.  In compressed form that EC public key
-   is only 48 bytes (SECP384R1), so the whole offer is maybe 60 bytes
-
-
-
-
-Tschudin, et al.         Expires March 26, 2020                [Page 14]
-
-Internet-Draft                    FLIC                    September 2019
-
-
-   including TLV encoding.  Compare that to an RSA 4096-bit encryption
-   of a 32-byte AES key at 512 bytes.  That's over an 8x improvement.
-
-   The complete security context would be larger, as you still need the
-   keyid of the wrapping key (32 bytes) plus a link to the wrapping key
-   content object.  Once someone has the wrapping key, they can verify
-   the key id and avoid fetching anything, then calculate the shared
-   secret from the ECDHE offer, then derive the data key using a KDF.
-   For IoT use cases, it would be useful to be able to link to the whole
-   offer.
-
-   The KDF is tied to input from the manifest, so the publisher can
-   create many data keys so each FLIC manifest tree has a different key
-   all from the same master key derived from the wrapping key.  The
-   offers could be embedded in the root manifest or published
-   externally.  The preferred method is to embed the offer in the root
-   manifest.  When the group key changes, a publisher only needs to re-
-   encrypt the wrapping keys.  It can save a lot of work depending on
-   how many items it used the wrapping key under that group key.  For
-   example, if the publisher uses only one wrapping key per group key,
-   then they only need to re-encrypt one thing for the new group to have
-   access to the old data.
-
-   This works with RSA keys too, though the specific algorithms change
-   some.  We would use RSA-OAEP instead of the ECDHE method.
-
-   TODO: There are a variety of issues about how you name the keys and
-   publish them.  We would also need to decide if we want key fetching
-   to be on-line or available from repos, and if so how to do current
-   key fetching.
-
 3.9.  Protocol Encodings
 
 3.9.1.  CCNx Encoding
 
-   Hash Naming convention in CCNx uses nameless objects.  TODO: Spell
-   out encoding.
+   In CCNx, all Manifest content objects use a PayloadType of
+   T_PYLDTYPE_MANIFEST, while all application data content objects use a
+   PayloadType of T_PYLDTYPE_DATA.
 
 ManifestContentObject = TYPE LENGTH [Name] [ExpiryTime] PayloadType Payload
 Name = TYPE LENGTH *OCTET ; As per RFC8569
@@ -836,32 +781,309 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 
 
 
-
-Tschudin, et al.         Expires March 26, 2020                [Page 15]
+Tschudin, et al.          Expires April 8, 2020                [Page 14]
 
-Internet-Draft                    FLIC                    September 2019
+Internet-Draft                    FLIC                      October 2019
 
+
+3.9.1.1.  CCNx Hash Naming
+
+   The Hash Naming namespace uses CCNx nameless content objects.
+
+   It proceeds as follows:
+
+   o  The Root Manifest content object has a name used to fetch the
+      manifest.  It is signed by the publisher.  It has a set of
+      Locators used to fetch the remainder of the manifest.  It has a
+      single HashPointer that points to the Top Manifest.  It may also
+      have cache control directives, such as ExpiryTime.
+
+   o  The Root Manifest has an NsDef that specifies HashSchema.  It's
+      GroupData uses that NsId.  All internal and leaf manifests use the
+      same GroupData NsId.  A Manifest Tree MAY omit the NsDef and NsId
+      elements and rely on the default being HashSchema.
+
+   o  The Top Manifest is a nameless CCNx content object.  It may have
+      cache control directies.
+
+   o  Internal and Leaf manifests are nameless CCNx content objects,
+      possibly with cache control directives.
+
+   o  The Data content objects are nameless CCNx content objects,
+      possibly with cache control directives.
+
+   o  To form an Interest for a direct or indirect pointer, use a Name
+      from one of the Locators and put the pointer HashValue into the
+      ContentObjectHashRestriction.
+
+3.9.1.2.  CCNx Single Prefix
+
+   The Single Prefix schema uses the same name in all Content Objects
+   and distinguishes them via their ContentObjectHash.  Note that in
+   CCNx, using a SinglePrefix name means that we do not use Locators.
+
+   It proceeds as follows:
+
+   o  The Root Manifest content object has a name used to fetch the
+      manifest.  It is signed by the publisher.  It has a set of
+      Locators used to fetch the remainder of the manifest.  It has a
+      single HashPointer that points to the Top Manifest.  It may also
+      have cache control directives, such as ExpiryTime.
+
+   o  The Root Manifest has an NsDef that specifies SinglePrefix and the
+      SinglePrefixSchema element specifies the SinglePrefixName.
+
+
+
+
+
+Tschudin, et al.          Expires April 8, 2020                [Page 15]
+
+Internet-Draft                    FLIC                      October 2019
+
+
+   o  The Top Manifest has the name SinglePrefixName.  It may have cache
+      control directies.  It's GroupData elements must have an NsId that
+      references the NsDef.
+
+   o  An Internal or Leaf manifest has the name SinglePrefixName,
+      possibly with cache control directives.  It's GroupData elements
+      must have an NsId that references the NsDef.
+
+   o  The Data content objects have the name SinglePrefixName, possibly
+      with cache control directives.
+
+   o  To form an Interest for a direct or indirect pointer, use
+      SinglePrefixName as the Name and put the pointer HashValue into
+      the ContentObjectHashRestriction.
+
+3.9.1.3.  CCNx Segmented Prefix
+
+   The Segmented Prefix schema uses a different name in all Content
+   Objects and distinguishes them via their ContentObjectHash.  Note
+   that in CCNx, using a SegmentedPrefixSchema means that we do not use
+   Locators.  OPTIONAL: Use AnnotatedPointers to indicate the segment
+   number of each hash pointer to avoid needing to infer the segment
+   numbers.
+
+   It proceeds as follows:
+
+   o  The Root Manifest content object has a name used to fetch the
+      manifest.  It is signed by the publisher.  It has a set of
+      Locators used to fetch the remainder of the manifest.  It has a
+      single HashPointer that points to the Top Manifest.  It may also
+      have cache control directives, such as ExpiryTime.
+
+   o  The Root Manifest has an NsDef that specifies SegmentedPrefix and
+      the SegmentedPrefixSchema element specifies the
+      SegmentedPrefixName.
+
+   o  The publisher will track the chunk number of each content object
+      within the NsId.  Objects will be numbered in their traversal
+      order.  Within each manifest, the name will be constructed from
+      the SegmentedPrefixName plus a Chunk name component.
+
+   o  The Top Manifest has the name SegmentedPrefixName plus chunk
+      number.  It may have cache control directies.  It's GroupData
+      elements must have an NsId that references the NsDef.
+
+   o  An Internal or Leaf manifest has the name SegmentedPrefixName plus
+      chunk number, possibly with cache control directives.  It's
+      GroupData elements must have an NsId that references the NsDef.
+
+
+
+Tschudin, et al.          Expires April 8, 2020                [Page 16]
+
+Internet-Draft                    FLIC                      October 2019
+
+
+   o  The Data content objects have the name SegmentedPrefixName plus
+      chunk number, possibly with cache control directives.
+
+   o  To form an Interest for a direct or indirect pointer, use
+      SegmentedPrefixName plus chunk number as the Name and put the
+      pointer HashValue into the ContentObjectHashRestriction.  A
+      consumer must track the chunk number in traversal order for each
+      SegmentedPrefixSchema NsId.
+
+3.9.1.4.  CCNx Hybrid Schema
+
+   A manifest may use multiple schemas.  For example, the application
+   payload in data content objects might use SegmentedPrefix while the
+   manifest content objects might use HashNaming.
+
+   The Root Manifest should specify an NsDef with a first NsId (say 1)
+   as the HashNaming schema and a second NsDef with a second NsId (say
+   2) as the SegmentedPrefix schema along with the SegmentedPrefixName.
+
+   Each manifest (Top, Internal, Leaf) uses two or more HashGroups,
+   where eash HashGroup has only Direct (with the second NsId) or
+   Indirect (with the first NsId).  The number of hash groups will
+   depend on how the publisher wishes to interleave direct and indirect
+   pointers.
+
+   Manifests and data objects are named as appropriate for their naming
+   schema.
 
 3.9.2.  NDN Encoding
 
-   In Hash Naming, the Interest name is only the Implicit Digest name
-   component and the ForwardingHints come from the Locators.  This means
-   that the Manifest namespace and data namespace are the same and could
-   use the same NSDef.  It also means that the Data name is empty
-   (0-length).
+   In NDN, all Manifest Data objects use a ContentType of FLIC (1024),
+   while all application data content objects use a PayloadType of Blob.
+
+3.9.2.1.  NDN Hash Naming
+
+   In NDN Hash Naming, a Data Object has a 0-length name.  This means
+   that an Interest will only have an ImplicitDigest name component in
+   it.  This method relies on using NDN ForwardingHints.
+
+   It proceeds as follows:
+
+   o  The Root Manifest Data has a name used to fetch the manifest.  It
+      is signed by the publisher.  It has a set of Locators used to
+      fetch the remainder of the manifest.  It has a single HashPointer
+      that points to the Top Manifest.  It may also have cache control
+      directives.
+
+
+
+
+
+Tschudin, et al.          Expires April 8, 2020                [Page 17]
+
+Internet-Draft                    FLIC                      October 2019
+
+
+   o  The Root Manifest has an NsDef that specifies HashSchema.  It's
+      GroupData uses that NsId.  All internal and leaf manifests use the
+      same GroupData NsId.  A Manifest Tree MAY omit the NsDef and NsId
+      elements and rely on the default being HashSchema.
+
+   o  The Top Manifest has a 0-length Name.  It may have cache control
+      directies.
+
+   o  Internal and Leaf manifests has a 0-length Name, possibly with
+      cache control directives.
+
+   o  The application Data use a 0-length name, possibly with cache
+      control directives.
+
+   o  To form an Interest for a direct or indirect pointer, the name is
+      only the Implicit Digest name component derived from a pointer's
+      HashValue.  The ForwardingHints come from the Locators.  In NDN,
+      one may use one or more locators within a single Interest.
+
+3.9.2.2.  NDN Single Prefix
 
    In Single Prefix, the Data name is a common prefix used between all
    objects in that namespace, without a Segment or other counter.  They
    are distinguished via the Implicit Digest name component.  The FLIC
    Locators go in the ForwardingHints.
 
+   It proceeds as follows:
+
+   o  The Root Manifest Data object has a name used to fetch the
+      manifest.  It is signed by the publisher.  It has a set of
+      Locators used to fetch the remainder of the manifest.  It has a
+      single HashPointer that points to the Top Manifest.  It may also
+      have cache control directives.
+
+   o  The Root Manifest has an NsDef that specifies SinglePrefix and the
+      SinglePrefixSchema element specifies the SinglePrefixName.
+
+   o  The Top Manifest has the name SinglePrefixName.  It may have cache
+      control directies.  It's GroupData elements must have an NsId that
+      references the NsDef.
+
+   o  An Internal or Leaf manifest has the name SinglePrefixName,
+      possibly with cache control directives.  It's GroupData elements
+      must have an NsId that references the NsDef.
+
+   o  The Data content objects have the name SinglePrefixName, possibly
+      with cache control directives.
+
+
+
+
+Tschudin, et al.          Expires April 8, 2020                [Page 18]
+
+Internet-Draft                    FLIC                      October 2019
+
+
+   o  To form an Interest for a direct or indirect pointer, use
+      SinglePrefixName as the Name and append the pointer's HashValue
+      into an ImplicitDigest name component.  Set the ForwardingHints
+      from the FLIC locators.
+
+3.9.2.3.  NDN Segmented Prefix
+
    In Segmented Prefix, the Data name is a common prefix plus a segment
    number, so each manifest or application data object has a unique full
    name before the implicit digest.  This means the consumer must
-   maintain a counter for each namespace.  It will also remove the
-   possibility of doing some name-based data de-duplication.  OPTIONAL:
-   Use AnnotatedPointers to indicate the segment number of each hash
-   pointer to avoid needing to infer the segment numbers.
+   maintain a counter for each SegmentedPrefix namespace.  OPTIONAL: Use
+   AnnotatedPointers to indicate the segment number of each hash pointer
+   to avoid needing to infer the segment numbers.
+
+   It proceeds as follows:
+
+   o  The Root Manifest Data object has a name used to fetch the
+      manifest.  It is signed by the publisher.  It has a set of
+      Locators used to fetch the remainder of the manifest.  It has a
+      single HashPointer that points to the Top Manifest.  It may also
+      have cache control directives.
+
+   o  The Root Manifest has an NsDef that specifies SegmentedPrefix and
+      the SegmentedPrefixSchema element specifies the
+      SegmentedPrefixName.
+
+   o  The publisher will track the segment number of each Data object
+      within a SegmentedPrefix NsId.  Data will be numbered in their
+      traversal order.  Within each manifest, the name will be
+      constructed from the SegmentedPrefixName plus a Segment name
+      component.
+
+   o  The Top Manifest has the name SegmentedPrefixName plus segment
+      number.  It may have cache control directies.  It's GroupData
+      elements must have an NsId that references the NsDef.
+
+   o  An Internal or Leaf manifest has the name SegmentedPrefixName plus
+      segment number, possibly with cache control directives.  It's
+      GroupData elements must have an NsId that references the NsDef.
+
+   o  The Data content objects have the name SegmentedPrefixName plus
+      chunk number, possibly with cache control directives.
+
+   o  To form an Interest for a direct or indirect pointer, use
+      SegmentedPrefixName plus segment number as the Name and put the
+      pointer HashValue into the ImplicitDigest name component.  A
+      consumer must track the segment number in traversal order for each
+      SegmentedPrefixSchema NsId.
+
+
+
+Tschudin, et al.          Expires April 8, 2020                [Page 19]
+
+Internet-Draft                    FLIC                      October 2019
+
+
+3.9.2.4.  NDN Hybrid Schema
+
+   A manifest may use multiple schemas.  For example, the application
+   payload in data content objects might use SegmentedPrefix while the
+   manifest content objects might use HashNaming.
+
+   The Root Manifest should specify an NsDef with a first NsId (say 1)
+   as the HashNaming schema and a second NsDef with a second NsId (say
+   2) as the SegmentedPrefix schema along with the SegmentedPrefixName.
+
+   Each manifest (Top, Internal, Leaf) uses two or more HashGroups,
+   where eash HashGroup has only Direct (with the second NsId) or
+   Indirect (with the first NsId).  The number of hash groups will
+   depend on how the publisher wishes to interleave direct and indirect
+   pointers.
+
+   Manifests and data objects are named as appropriate for their naming
+   schema.
 
 3.10.  Example Structures
 
@@ -893,9 +1115,11 @@ Internet-Draft                    FLIC                    September 2019
 
 
 
-Tschudin, et al.         Expires March 26, 2020                [Page 16]
+
+
+Tschudin, et al.          Expires April 8, 2020                [Page 20]
 
-Internet-Draft                    FLIC                    September 2019
+Internet-Draft                    FLIC                      October 2019
 
 
 4.  IANA Considerations
@@ -949,9 +1173,9 @@ Internet-Draft                    FLIC                    September 2019
 
 
 
-Tschudin, et al.         Expires March 26, 2020                [Page 17]
+Tschudin, et al.          Expires April 8, 2020                [Page 21]
 
-Internet-Draft                    FLIC                    September 2019
+Internet-Draft                    FLIC                      October 2019
 
 
 build_tree(data[0..n-1], n, k, m)
@@ -1005,9 +1229,9 @@ bottom_up_preorder(data, segment, level, k, m, right_most_child=None)
 
 
 
-Tschudin, et al.         Expires March 26, 2020                [Page 18]
+Tschudin, et al.          Expires April 8, 2020                [Page 22]
 
-Internet-Draft                    FLIC                    September 2019
+Internet-Draft                    FLIC                      October 2019
 
 
    interior_manifest(data, segment, level, k, m, right_most_child)
@@ -1047,8 +1271,8 @@ interior_indirect(data, segment, level, k, m, children)
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
-              DOI 10.17487/RFC2119, March 1997, <https://www.rfc-
-              editor.org/info/rfc2119>.
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
 
 7.2.  Informative References
 
@@ -1056,43 +1280,43 @@ interior_indirect(data, segment, level, k, m, children)
               Mosko, M., "FLIC Implementation in Python", various,
               <https://github.com/mmosko/ccnpy>.
 
-   [NDN]      NDN team, , "Named Data Networking", various,
+   [NDN]      "Named Data Networking", various,
               <https://named-data.net/project/execsummary/>.
 
 
 
-Tschudin, et al.         Expires March 26, 2020                [Page 19]
+Tschudin, et al.          Expires April 8, 2020                [Page 23]
 
-Internet-Draft                    FLIC                    September 2019
+Internet-Draft                    FLIC                      October 2019
 
 
-   [NDNTLV]   NDN Project Team, , "NDN Packet Format Specification.",
-              2016, <http://named-data.net/doc/ndn-tlv/>.
+   [NDNTLV]   "NDN Packet Format Specification.", 2016,
+              <http://named-data.net/doc/ndn-tlv/>.
 
    [repository]
-              NDN Project Team, , "Repo Protocol Specification",
-              Various, <https://redmine.named-data.net/projects/repo-
-              ng/wiki/Repo_Protocol_Specification>.
+              "Repo Protocol Specification", Various,
+              <https://redmine.named-data.net/projects/repo-ng/wiki/
+              Repo_Protocol_Specification>.
 
    [RFC3552]  Rescorla, E. and B. Korver, "Guidelines for Writing RFC
               Text on Security Considerations", BCP 72, RFC 3552,
-              DOI 10.17487/RFC3552, July 2003, <https://www.rfc-
-              editor.org/info/rfc3552>.
+              DOI 10.17487/RFC3552, July 2003,
+              <https://www.rfc-editor.org/info/rfc3552>.
 
    [RFC5226]  Narten, T. and H. Alvestrand, "Guidelines for Writing an
               IANA Considerations Section in RFCs", RFC 5226,
-              DOI 10.17487/RFC5226, May 2008, <https://www.rfc-
-              editor.org/info/rfc5226>.
+              DOI 10.17487/RFC5226, May 2008,
+              <https://www.rfc-editor.org/info/rfc5226>.
 
    [RFC8569]  Mosko, M., Solis, I., and C. Wood, "Content-Centric
               Networking (CCNx) Semantics", RFC 8569,
-              DOI 10.17487/RFC8569, July 2019, <https://www.rfc-
-              editor.org/info/rfc8569>.
+              DOI 10.17487/RFC8569, July 2019,
+              <https://www.rfc-editor.org/info/rfc8569>.
 
    [RFC8609]  Mosko, M., Solis, I., and C. Wood, "Content-Centric
               Networking (CCNx) Messages in TLV Format", RFC 8609,
-              DOI 10.17487/RFC8609, July 2019, <https://www.rfc-
-              editor.org/info/rfc8609>.
+              DOI 10.17487/RFC8609, July 2019,
+              <https://www.rfc-editor.org/info/rfc8609>.
 
 Authors' Addresses
 
@@ -1117,4 +1341,4 @@ Authors' Addresses
 
 
 
-Tschudin, et al.         Expires March 26, 2020                [Page 20]
+Tschudin, et al.          Expires April 8, 2020                [Page 24]
