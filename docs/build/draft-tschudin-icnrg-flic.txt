@@ -642,6 +642,9 @@ Internet-Draft                    FLIC                      October 2019
    too.  They group key mechanisms simply facilitate distribution of the
    shared key without an on-line key agreement protocol like CCNxKE.
 
+   A fourth encryption mechanism based on elliptic curve key
+   distribution is forthcoming.
+
 3.8.1.  Preshared Key Algorithm
 
    The KeyNum identifies a key on the receiver.  The key must be of the
@@ -661,9 +664,6 @@ Internet-Draft                    FLIC                      October 2019
    manifest tree points to the same subtree repeatedly, such as for
    deduplication, the decryptions are all idempotent.
 
-   The functions for authenticated encryption and authenticated
-   decryption are as given in Sections 7.1 and 7.2 of NIST 800-38D: GCM-
-   AE_K(IV, P, A) and GCM-AD_K(IV, C, A, T).
 
 
 
@@ -673,6 +673,10 @@ Tschudin, et al.          Expires April 8, 2020                [Page 12]
 
 Internet-Draft                    FLIC                      October 2019
 
+
+   The functions for authenticated encryption and authenticated
+   decryption are as given in Sections 7.1 and 7.2 of NIST 800-38D: GCM-
+   AE_K(IV, P, A) and GCM-AD_K(IV, C, A, T).
 
 EncryptNode(SecurityCtx, Node, K, IV) -> GCM-AE_K(IV, P, A) -> (C, T)
     Node: The wire format of the Node (P)
@@ -718,10 +722,6 @@ FailFlag: Indicates authenticated decryption failure (true or false)
    where each element is: the content encryption key, the CEK precursor,
    Z, encrypted with the KEK (an RSA operation), and the KeyId of the
    corresponding KDK, and the Locator is the CCNx name prefix to fetch
-   the KDK (see below).  The precursor Z is chosen randomly z < n-1,
-   where n is KEK's public modulus.  Note that CEK = KDF(Z).  Note that
-   the publisher does not see KEK or Z.
-
 
 
 
@@ -729,6 +729,10 @@ Tschudin, et al.          Expires April 8, 2020                [Page 13]
 
 Internet-Draft                    FLIC                      October 2019
 
+
+   the KDK (see below).  The precursor Z is chosen randomly z < n-1,
+   where n is KEK's public modulus.  Note that CEK = KDF(Z).  Note that
+   the publisher does not see KEK or Z.
 
    We use HKDF (RFC 5869) for the KDF.  CEK = HKDF-Expand(HKDF-
    Extract(0, Z), "CEK", KeyLen), where KenLen is usually 32 bytes (256
@@ -777,10 +781,6 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-
-
-
-
 Tschudin, et al.          Expires April 8, 2020                [Page 14]
 
 Internet-Draft                    FLIC                      October 2019
@@ -812,15 +812,20 @@ Internet-Draft                    FLIC                      October 2019
    The KM communicates the KEK to the publisher through an unspecified
    means particular to the KM.
 
-   The KM creates the KEK/KDK.  It uses a name /{km-prefix}/{publisher-
-   prefix}/{KDK KeyId}/{member KeyId} to publish the encrypted KDK under
-   a member's publish key.  It uses RSA-OAEP for the encryption.
+   The KM distributes the KDK to each group member.  It uses a name
+   /{km-prefix}/{publisher-prefix}/{KDK KeyId}/{member KeyId} to publish
+   the encrypted KDK under a member's public key.  It uses RSA-OAEP for
+   the encryption.
 
    The publisher creates a random symmetric CEK of an appropriate bit
    length.  It uses the KEK to wrap the CEK using RSA-OAEP.  It places
-   the wrapped key in RsaKemDemData along with the KeyLocator prefix
-   /{km-prefix}/{publisher-prefix}/{KDK KeyId}.  Each member appends
-   their public key to attemt to fetch the KDK.
+   the wrapped key in the manifest's RsaKemDemData along with the KeyId
+   set to the KDK's KeyId and the KeyLocator prefix /{km-
+   prefix}/{publisher-prefix}/.  Each member appends the KDK KeyId and
+   their public key KeyId to the name to attemt to fetch the KDK.  When
+   forming the Interest to fetch the key, a consumer should also use a
+   KeyIdRestriction of the KM's KeyId, which it can retrieve from the
+   KeyLocator.
 
 3.9.  Protocol Encodings
 
@@ -829,11 +834,6 @@ Internet-Draft                    FLIC                      October 2019
    In CCNx, all Manifest content objects use a PayloadType of
    T_PYLDTYPE_MANIFEST, while all application data content objects use a
    PayloadType of T_PYLDTYPE_DATA.
-
-
-
-
-
 
 
 
