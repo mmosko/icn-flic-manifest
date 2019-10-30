@@ -81,9 +81,17 @@ An alternate method (rfc include) is described in the references. -->
             </address>
         </author>
         
+      <author fullname="David Oran" initials="D." surname="Oran">
+      <organization>Network Systems Research &amp; Design</organization>
+      <address>
+        <email>daveoran@orandom.net</email>
+      </address>
+    </author>
+
+        
         <date/>
         
-        <area>General</area>
+        <area>IRTF</area>
         <workgroup>ICNRG</workgroup>
         <keyword>Information Centric Networking</keyword>
         
