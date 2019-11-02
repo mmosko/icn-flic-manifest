@@ -116,17 +116,35 @@ An alternate method (rfc include) is described in the references. -->
             
             <t>The purpose of a manifest is to concisely name the constiuent pieces of a larger object. A FLIC manifest does this by using a first manifest to name and cryptographically sign the data structure and then use more concise lists of hash-based names to indicate the constituent pieces.  This maintains strong security from a single signature. A Manifest entry gives one enough information to create an Interest for that entry, so it must specify the name, the hash digest, and if needed the locators (routing hints).</t>
             
+            <t>FLIC is a distributed data structure best illustrated by the   following picture.</t>
+            
+            <figure title="Figure 1: A FLIC manifest and its directed acyclic graph">
+            	<artwork><![CDATA[
+            	                          root manifest
+  .------------------------------------.
+  | optional name:                     |
+  |   /icn/name/of/this/flic           |
+  |                                    |
+  | HashGroup (HG):                    |
+  |   optional metadata:               |
+  |     overall digest, locator, etc.  |    .------.
+  |   hash-valued data pointer -----------> | data |
+  |     ...                            |    `------'  sub manifest
+  |   hash-valued manifest pointer ------.     .------------------.
+  |                                    |  `--> |                ----->
+  | optional additional HashGroups ..  |       |                ----->
+  |                                    |       `------------------'
+  | optional signature                 |
+  `------------------------------------'
+            	
+            	]]></artwork>
+            </figure>
+            
             <t>A key question is how one names the root manifest, the application data, and other subsequent manifests.  The question of namespaces is specific to the names of each Content Object (CCNx) or Data (NDN), and is separate from the question of Locators. FLIC allows one to use a first namespace for the manifests and a second namespace for the application data.  A given namespace may use one of three schemas: hash-based naming, single-prefix naming, or segmented naming. We describe the allowed methods in  <xref target="namespaces"/>. There are also particulars of how to encode the name schema in a given ICN protocol, which we describe in <xref target="encodings"/>.</t>
             
-            <t>Locators are routing hints to find a Content Object / Data.  They exist in both
-                CCNx and NDN, though the specifics differ.  A FLIC manifest encodes locators the same
-                for both ICN protocols, though they are encoded differently in the underlying protocol.  See <xref target="encodings"/> for encoding differences.
-            </t>
+            <t>Locators are routing hints to find a Content Object / Data.  They exist in both CCNx and NDN, though the specifics differ.  A FLIC manifest encodes locators the same for both ICN protocols, though they are encoded differently in the underlying protocol.  See <xref target="encodings"/> for encoding differences.</t>
 
-            <t>We follow the <xref target="RFC8569">CCNx</xref> terminology where a
-                Content Object is the data structure that holds application payload.
-                It is made up of an optional Name, a PayloadType, a Payload, and
-                an optional Signature.</t>
+            <t>We follow the <xref target="RFC8569">CCNx</xref> terminology where a Content Object is the data structure that holds application payload. It is made up of an optional Name, a PayloadType, a Payload, and an optional Signature.</t>
             <t>FLIC has encodings for <xref target="CCNxEncoding">CCNx encoding</xref>
                 as per <xref target="RFC8609">RFC 8609</xref> and for <xref target="NDNEncoding">NDN</xref>.
             </t>
@@ -143,46 +161,21 @@ An alternate method (rfc include) is described in the references. -->
         
         <section anchor="goals" title="Design Goals">
             <t>The preferred FLIC structure copies the proven UNIX inode concept
-                of direct and indirect pointers, but without the specific structural forms of
-                direct versus indirect.
-            </t>
-            <t>In FLIC terms, a direct pointer links to application-level data, which is
-                a Content Object with application data in the Payload.
-                An indirect pointer links to a Content Object with a FLIC Manifest in the
-                Payload.
-            </t>
+                of direct and indirect pointers, but without the specific structural forms of direct versus indirect.</t>
+                
+            <t>In FLIC terms, a direct pointer links to application-level data, which is a Content Object with application data in the Payload.                An indirect pointer links to a Content Object with a FLIC Manifest in the Payload.</t>
             
-            <t>Links in FLIC use hash-based naming of Content Objects, rather than inode
-                block numbers.  Both CCNx and NDN support hash-based naming, though the
-                details vary.  See <xref target="CCNxEncoding"/> and <xref target="NDNEncoding"/>.
-                Another advantage of using hash-based naming is it permits block-level de-duplication of application data because two blocks with the
-                same payload will have the same hash name.
-            </t>
+            <t>Links in FLIC use hash-based naming of Content Objects, rather than inode block numbers.  Both CCNx and NDN support hash-based naming, though the details vary.  See <xref target="CCNxEncoding"/> and <xref target="NDNEncoding"/>. Another advantage of using hash-based naming is it permits block-level de-duplication of application data because two blocks with the same payload will have the same hash name.</t>
             
             <t>Because FLIC uses hash-based naming, FLIC graphs are inherently acyclic.</t>
             
-            <t>The preferred FLIC structure includes a root manifest with a strong
-                cryptographic signature and then strong hash names to other manifests
-                (e.g. SHA256).  The advantage of this structure is the single signature
-                in the root manifest covers the entire data structure no matter how many
-                additional manifests are in the data structure.  Another advantage of
-                this structure is it removes the need to use chunk (CCNx) or
-                segment (NDN) name components for the subordinate manifests.
-            </t>
+            <t>The preferred FLIC structure includes a root manifest with a strong cryptographic signature and then strong hash names to other manifests (e.g. SHA256).  The advantage of this structure is the single signature in the root manifest covers the entire data structure no matter how many additional manifests are in the data structure.  Another advantage of this structure is it removes the need to use chunk (CCNx) or segment (NDN) name components for the subordinate manifests.</t>
             
-            <t>FLIC supports manifest encryption separate from application payload encryption.  It has
-                a flexible encryption envelope to support various encryption algorithms and
-                key discovery mechanisms.  The byte layout allows for in-place encryption
-                and decryption.</t>
+            <t>FLIC supports manifest encryption separate from application payload encryption.  It has a flexible encryption envelope to support various encryption algorithms and key discovery mechanisms.  The byte layout allows for in-place encryption and decryption.</t>
             
-            <t>A limitation of this approach is that one cannot construct a hash-based name
-                for a child until one knows the payload of that child.  In practical terms,
-                this means that one must have the complete application payload available
-                at the time of manifest creation.
-            </t>
+            <t>A limitation of this approach is that one cannot construct a hash-based name for a child until one knows the payload of that child. In practical terms, this means that one must have the complete application payload available at the time of manifest creation.</t>
             
-            <t>FLIC's design allows straightforward applications that just need to traverse a linear set of related objects to do so simply, but FLIC has two extensibility mechanisms that allow for more sophisticated uses: manifest metadata, and pointer annotations. These are described in <xref target="metadata"/> and <xref target="annotations"/> respectively.
-            </t>
+            <t>FLIC's design allows straightforward applications that just need to traverse a linear set of related objects to do so simply, but FLIC has two extensibility mechanisms that allow for more sophisticated uses: manifest metadata, and pointer annotations. These are described in <xref target="metadata"/> and <xref target="annotations"/> respectively.</t>
             
         </section>
         
@@ -384,11 +377,7 @@ reverse_preorder(node)
                             </artwork>
                         </figure>
                     </t>
-                    <t>In terms of the FLIC grammar, one expands a node into its hash groups, visiting each
-                        hash group in order.  In each hash group, one follows each pointer in order.
-                        Figure <xref target="expansion"/> shows how hash groups inside a manifest expand like
-                        virtual children in the tree.  The in-order traversal is M0, HG1, M1, HG3, D0, D1, D2,
-                        HG2, D3, D4.
+                    <t>In terms of the FLIC grammar, one expands a node into its hash groups, visiting each hash group in order.  In each hash group, one follows each pointer in order. Figure <xref target="expansion"/> shows how hash groups inside a manifest expand like virtual children in the tree.  The in-order traversal is M0, HG1, M1, HG3, D0, D1, D2, HG2, D3, D4.
                         </t>
                     <figure anchor="expansion" title="Node Expansion">
                         <artwork align="left"><![CDATA[
@@ -404,8 +393,7 @@ D0 D1
                         ]]></artwork>
                     </figure>
 
-                <t>Using the example manifest tree shown in Figure <xref target="leafonly"/>, the in-order
-                    traversal would be: Root, M0, M1, D0, D1, D2, M2, D3, D4, D5, M3, D6, D7, D8.
+                <t>Using the example manifest tree shown in Figure <xref target="leafonly"/>, the in-order traversal would be: Root, M0, M1, D0, D1, D2, M2, D3, D4, D5, M3, D6, D7, D8.
                 </t>
                 
                 </section>
