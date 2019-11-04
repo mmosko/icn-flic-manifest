@@ -833,7 +833,221 @@ Root -> M0 ----> M1 ----> ...
                 
             </section>
         </section>
-        
+
+        <section anchor="Usage" title="Usage Examples">
+            <section anchor="Locating" title="Locating FLIC leaf and manifest nodes">
+            <t>
+            The names of manifest and data objects are often missing or not unique, unless using specific naming conventions.
+            In this example, we show how using manifest locators is used to generate Interests.  Take for example the figure below where the root manifest is named
+            by hash h0.  It has nameless children with hashes with hashes h1 ... hN.
+            </t>
+            <figure anchor="Locating1" title="Data Organization">
+                <artwork align="left"><![CDATA[
+Objects:
+manifest(name=/a/b/c, ptr=h1, ptr=hN)  - has hash h0
+nameless(data1)                        - has hash h1
+...
+nameless(dataN)                        - has hash hN
+
+Query for the manifest:
+interest(name=/a/b/c, implicitDigest=h0)
+                ]]></artwork>
+            </figure>
+            <t>
+                After obtaining the manifest, the client fetches the contents.  In this first instance, the manifest does not
+                provide any Locators data structure, so the client must continue using the name it used for the manifest.
+            </t>
+            <figure anchor="Locating2" title="Data Interests">
+                <artwork align="left"><![CDATA[
+interest(name=/a/b/c, implicitDigest=h1)
+...
+interest(name=/a/b/c, implicitDigest=hN)
+                ]]></artwork>
+            </figure>
+            <t>
+            Using the locator metadata entry, this behavior can be changed:
+            </t>
+            <figure anchor="Locating3" title="Using Locators">
+                <artwork align="left"><![CDATA[
+Objects:
+manifest(name=/a/b/c,
+hashgroup(loc=/x/y/z, ptr=h1)
+hashgroup(ptr=h2)             - has hash h0
+nameless(data1)               - has hash h1
+nameless(data2)               - has hash h2
+
+Queries:
+interest(name=/a/b/c, implicitDigest=h0)
+interest(name=/x/y/z, implicitDigest=h1)
+interest(name=/a/b/c, implicitDigest=h2)
+                ]]></artwork>
+            </figure>
+            </section>
+            
+            <section anchor="Seeking" title="Seeking">
+                <t>
+                    Fast seeking (without having to sequentially fetch all content) works
+                    by skipping over entries for which we know their size.  The following
+                    expression shows how to compute the byte offset of the data pointed
+                    at by pointer P_i, offset_i.  In this formula, let P_i represent the
+                    Size value of the i-th pointer.
+                </t>
+                
+                <figure>
+                    <artwork align="left"><![CDATA[offset_i = \sum_{i = 1}^{i - 1} P_i.size]]></artwork>
+                </figure>
+
+                <t>
+                    With this offset, seeking is done as follows:
+                </t>
+                
+                <figure anchor="Seeking1" title="Seeking Algorithm">
+                    <artwork align="left"><![CDATA[
+Input: seek_pos P, a FLIC manifest with a hash group having N entries
+Output: pointer index i and byte offset o, or out-of-range error
+Algo:
+    offset = 0
+    for i in 1..N do
+    if (P < P_i.size)
+        return (i, P - offset)
+    offset += P_i.size
+    return out-of-range
+                    ]]></artwork>
+                </figure>
+
+                <t>
+                Seeking in a BlockHashGroup is different since offsets can be quickly
+                computed.  This is because the size of each pointer P_i except the
+                last is equal to the SizePerPtr value.  For a BlockHashGroup with N
+                pointers, OverallByteCount D, and SizePerPointer L, the size of P_i
+                is equal to the following:
+                </t>
+                
+                <figure>
+                    <artwork align="left"><![CDATA[D - ((i - 1) * L)]]></artwork>
+                </figure>
+                
+                <t>
+                In a BlockHashGroup with k pointers, the size of P_k is equal to:
+                </t>
+                <figure>
+                    <artwork align="left"><![CDATA[D - L * (k - 1)]]></artwork>
+                </figure>
+
+                <t>
+                Using these, the seeking algorithm can be thus simplified to the
+                following:
+                </t>
+                <figure anchor="Seeking2" title="Seeking Algorithm">
+                    <artwork align="left"><![CDATA[
+Input: seek_pos P, a FLIC manifest with a hash group having
+OverallByteCount S and SizePerPointer L.
+Output: pointer index i and byte offset o, or out-of-range error
+Algo:
+    if (P > S)
+        return out-of-range
+    i = floor(P / L)
+    if (i > N)
+        return out-of-range # bad FLIC encoding
+    o = P mod L
+    return (i, o)
+                    ]]></artwork>
+                </figure>
+                <t>
+                Note: In both cases, if the pointer at position i is a manifest
+                pointer, this algorithm has to be called once more, seeking to
+                seek_pos o inside that manifest.
+                </t>
+            </section>
+            
+            <section anchor="dedup" title="Block-level de-duplication">
+                <t>
+                Consider a huge file, e.g. an ISO image of a DVD or program in binary
+                form, that had previously been FLIC-ed but now needs to be patched.
+                In this case, all existing encoded ICN chunks can remain in the
+                repository while only the chunks for the patch itself is added to a
+                new manifest data structure, as is shown in the picture below.  For
+                example, the venti [1] archival file system of Plan9 uses this
+                technique.
+                </t>
+                <figure anchor="dedup1" title="De-duplication">
+                    <artwork align="left"><![CDATA[
+old_mfst -  - > h1 --> oldData1  <-- h1 < -  -  new_mfst
+         \  - > h2 --> oldData2  <-- h2 < -  - /
+          \            replace3  <-- h5 < -  -/
+           \- > h3 --> oldData3              /
+            \ > h4 --> oldData4  <-- h4 < - /
+                    ]]></artwork>
+                </figure>
+            </section>
+
+            <section anchor="GrowingCollections" title="Growing ICN collections">
+                <t>
+                    A log file, for example, grows over time.  Instead of having to re-
+                    FLIC the grown file it suffices to construct a new manifest with a
+                    manifest pointer to the old root manifest plus the sequence of data
+                    hash pointers for the new data (or additional sub-manifests if
+                    necessary).  Note that this tree will not be skewed (anymore).
+                </t>
+                <figure anchor="Growing" title="Growing A Collection">
+                    <artwork align="left"><![CDATA[
+old data < -  -  -  mfst_old <-- h_old -  - mfst_new
+                                            /
+new data1 <-- h_1 -  -  -  -  -  -  -  -  -/
+new data2                                 /
+...                                      /
+new dataN <-- h_N -  -  -  -  -  -  -  -/
+                    ]]></artwork>
+                </figure>
+            </section>
+            <section anchor="Republishing" title="Re-publishing a FLIC under a new name">
+                <t>
+                    There are several usecases for republishing a collection under a new namespace, or having
+                    one collection exist under several namespaces:
+                    <list style="symbols">
+                        <t>It can happen that a publisher's namespace is part of a service
+                            provider's prefix.  When switching provider, the publisher may want
+                            to republish the old data under a new name.
+                        </t>
+                        <t>A publishes wishes to distribute its content to several caches and would like
+                            a local result to appear.  For example, the publisher /alpha wishes to place content
+                            at /beta and /gamma, but routing to /alpha would not send a request to either of those
+                            sites.  Each of /beta and /gamma could create a locally named and signed version of the
+                            root manifest with appropriate keys (or delegate that to /alpha) so the results are always
+                            local without having to change the bulk of the maniest tree.
+                        </t>
+                    </list>
+                    
+                    This can easily be
+                    achieved with a single nameless root manifest for the large FLIC plus
+                    arbitrarily many per-name manifests (which are signed by whomever
+                    wants to publish this data):
+                </t>
+                <figure anchor="Relocating" title="Relocating A Collection">
+                    <artwork align="left"><![CDATA[
+
+data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
+                                < - mfst(/com/example/west/old/the/flic)
+                                < - mfst(/internet/archive/flic234)
+                    ]]></artwork>
+                </figure>
+                <t>
+                    Note that the hash computation (of h) only requires reading the
+                    nameless root manifest, not the entire FLIC.
+                </t>
+                <t>
+                    This example points out the problem of HashGroups having locator
+                    metadata elements: A retriever would be urged to follow these hints
+                    which are "hardcoded" deep inside the FLIC but might have become
+                    outdated.  We therefore recommend to name FLIC manifests only at the
+                    highest level (where these names have no locator function).  Child
+                    nodes in a FLIC manifest should not be named as these names serve no
+                    purpose except retrieving a sub-tree's manifest by name, if would be
+                    required.
+                 </t>
+            </section>
+        </section>
+
         <section anchor="IANA" title="IANA Considerations">
             <t>TODO Need IANA actions: 
             <list style="symbols">
@@ -846,6 +1060,14 @@ Root -> M0 ----> M1 ----> ...
         </section>
         
         <section anchor="Security" title="Security Considerations">
+            <t>TODO Need a discussion on:
+                <list style="symbols">
+                    <t>signing and hash chaining security.</t>
+                    <t>republishing under a new namespace.</t>
+                    <t>encryption mechanisms.</t>
+                    <t>encryption key distribution mechanisms.</t>
+                </list>
+            </t>
         </section>
         
         <section anchor="AppendixA" title="Appendix A: Building Trees">

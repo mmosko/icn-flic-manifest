@@ -312,12 +312,18 @@ ul.toc li {
 <link href="#rfc.section.3.10" rel="Chapter" title="3.10 Example Structures">
 <link href="#rfc.section.3.10.1" rel="Chapter" title="3.10.1 Leaf-only data">
 <link href="#rfc.section.3.10.2" rel="Chapter" title="3.10.2 Linear">
-<link href="#rfc.section.4" rel="Chapter" title="4 IANA Considerations">
-<link href="#rfc.section.5" rel="Chapter" title="5 Security Considerations">
-<link href="#rfc.section.6" rel="Chapter" title="6 Appendix A: Building Trees">
-<link href="#rfc.references" rel="Chapter" title="7 References">
-<link href="#rfc.references.1" rel="Chapter" title="7.1 Normative References">
-<link href="#rfc.references.2" rel="Chapter" title="7.2 Informative References">
+<link href="#rfc.section.4" rel="Chapter" title="4 Usage Examples">
+<link href="#rfc.section.4.1" rel="Chapter" title="4.1 Locating FLIC leaf and manifest nodes">
+<link href="#rfc.section.4.2" rel="Chapter" title="4.2 Seeking">
+<link href="#rfc.section.4.3" rel="Chapter" title="4.3 Block-level de-duplication">
+<link href="#rfc.section.4.4" rel="Chapter" title="4.4 Growing ICN collections">
+<link href="#rfc.section.4.5" rel="Chapter" title="4.5 Re-publishing a FLIC under a new name">
+<link href="#rfc.section.5" rel="Chapter" title="5 IANA Considerations">
+<link href="#rfc.section.6" rel="Chapter" title="6 Security Considerations">
+<link href="#rfc.section.7" rel="Chapter" title="7 Appendix A: Building Trees">
+<link href="#rfc.references" rel="Chapter" title="8 References">
+<link href="#rfc.references.1" rel="Chapter" title="8.1 Normative References">
+<link href="#rfc.references.2" rel="Chapter" title="8.2 Informative References">
 <link href="#rfc.authors" rel="Chapter">
 
 
@@ -457,17 +463,29 @@ ul.toc li {
 </li>
 <li>3.10.2.   <a href="#rfc.section.3.10.2">Linear</a>
 </li>
-</ul></ul><li>4.   <a href="#rfc.section.4">IANA Considerations</a>
+</ul></ul><li>4.   <a href="#rfc.section.4">Usage Examples</a>
 </li>
-<li>5.   <a href="#rfc.section.5">Security Considerations</a>
+<ul><li>4.1.   <a href="#rfc.section.4.1">Locating FLIC leaf and manifest nodes</a>
 </li>
-<li>6.   <a href="#rfc.section.6">Appendix A: Building Trees</a>
+<li>4.2.   <a href="#rfc.section.4.2">Seeking</a>
 </li>
-<li>7.   <a href="#rfc.references">References</a>
+<li>4.3.   <a href="#rfc.section.4.3">Block-level de-duplication</a>
 </li>
-<ul><li>7.1.   <a href="#rfc.references.1">Normative References</a>
+<li>4.4.   <a href="#rfc.section.4.4">Growing ICN collections</a>
 </li>
-<li>7.2.   <a href="#rfc.references.2">Informative References</a>
+<li>4.5.   <a href="#rfc.section.4.5">Re-publishing a FLIC under a new name</a>
+</li>
+</ul><li>5.   <a href="#rfc.section.5">IANA Considerations</a>
+</li>
+<li>6.   <a href="#rfc.section.6">Security Considerations</a>
+</li>
+<li>7.   <a href="#rfc.section.7">Appendix A: Building Trees</a>
+</li>
+<li>8.   <a href="#rfc.references">References</a>
+</li>
+<ul><li>8.1.   <a href="#rfc.references.1">Normative References</a>
+</li>
+<li>8.2.   <a href="#rfc.references.2">Informative References</a>
 </li>
 </ul><li><a href="#rfc.authors">Authors' Addresses</a>
 </li>
@@ -960,9 +978,148 @@ Root -&gt; M0 ----&gt; M1 ----&gt; ...
 |-&gt;DDDD  |-&gt;DDDD
                         </pre>
 <h1 id="rfc.section.4">
-<a href="#rfc.section.4">4.</a> <a href="#IANA" id="IANA">IANA Considerations</a>
+<a href="#rfc.section.4">4.</a> <a href="#Usage" id="Usage">Usage Examples</a>
 </h1>
-<p id="rfc.section.4.p.1">TODO Need IANA actions: <a href="#RFC8609" class="xref">[RFC8609]</a> </p>
+<h1 id="rfc.section.4.1">
+<a href="#rfc.section.4.1">4.1.</a> <a href="#Locating" id="Locating">Locating FLIC leaf and manifest nodes</a>
+</h1>
+<p id="rfc.section.4.1.p.1">The names of manifest and data objects are often missing or not unique, unless using specific naming conventions.  In this example, we show how using manifest locators is used to generate Interests.  Take for example the figure below where the root manifest is named by hash h0.  It has nameless children with hashes with hashes h1 ... hN.  </p>
+<div id="rfc.figure.10"></div>
+<div id="Locating1"></div>
+<pre>
+Objects:
+manifest(name=/a/b/c, ptr=h1, ptr=hN)  - has hash h0
+nameless(data1)                        - has hash h1
+...
+nameless(dataN)                        - has hash hN
+
+Query for the manifest:
+interest(name=/a/b/c, implicitDigest=h0)
+                </pre>
+<p class="figure">Figure 10: Data Organization</p>
+<p id="rfc.section.4.1.p.2">After obtaining the manifest, the client fetches the contents.  In this first instance, the manifest does not provide any Locators data structure, so the client must continue using the name it used for the manifest.  </p>
+<div id="rfc.figure.11"></div>
+<div id="Locating2"></div>
+<pre>
+interest(name=/a/b/c, implicitDigest=h1)
+...
+interest(name=/a/b/c, implicitDigest=hN)
+                </pre>
+<p class="figure">Figure 11: Data Interests</p>
+<p id="rfc.section.4.1.p.3">Using the locator metadata entry, this behavior can be changed: </p>
+<div id="rfc.figure.12"></div>
+<div id="Locating3"></div>
+<pre>
+Objects:
+manifest(name=/a/b/c,
+hashgroup(loc=/x/y/z, ptr=h1)
+hashgroup(ptr=h2)             - has hash h0
+nameless(data1)               - has hash h1
+nameless(data2)               - has hash h2
+
+Queries:
+interest(name=/a/b/c, implicitDigest=h0)
+interest(name=/x/y/z, implicitDigest=h1)
+interest(name=/a/b/c, implicitDigest=h2)
+                </pre>
+<p class="figure">Figure 12: Using Locators</p>
+<h1 id="rfc.section.4.2">
+<a href="#rfc.section.4.2">4.2.</a> <a href="#Seeking" id="Seeking">Seeking</a>
+</h1>
+<p id="rfc.section.4.2.p.1">Fast seeking (without having to sequentially fetch all content) works by skipping over entries for which we know their size.  The following expression shows how to compute the byte offset of the data pointed at by pointer P_i, offset_i.  In this formula, let P_i represent the Size value of the i-th pointer.  </p>
+<pre>offset_i = \sum_{i = 1}^{i - 1} P_i.size</pre>
+<p id="rfc.section.4.2.p.2">With this offset, seeking is done as follows: </p>
+<div id="rfc.figure.13"></div>
+<div id="Seeking1"></div>
+<pre>
+Input: seek_pos P, a FLIC manifest with a hash group having N entries
+Output: pointer index i and byte offset o, or out-of-range error
+Algo:
+    offset = 0
+    for i in 1..N do
+    if (P &lt; P_i.size)
+        return (i, P - offset)
+    offset += P_i.size
+    return out-of-range
+                    </pre>
+<p class="figure">Figure 13: Seeking Algorithm</p>
+<p id="rfc.section.4.2.p.3">Seeking in a BlockHashGroup is different since offsets can be quickly computed.  This is because the size of each pointer P_i except the last is equal to the SizePerPtr value.  For a BlockHashGroup with N pointers, OverallByteCount D, and SizePerPointer L, the size of P_i is equal to the following: </p>
+<pre>D - ((i - 1) * L)</pre>
+<p id="rfc.section.4.2.p.4">In a BlockHashGroup with k pointers, the size of P_k is equal to: </p>
+<pre>D - L * (k - 1)</pre>
+<p id="rfc.section.4.2.p.5">Using these, the seeking algorithm can be thus simplified to the following: </p>
+<div id="rfc.figure.14"></div>
+<div id="Seeking2"></div>
+<pre>
+Input: seek_pos P, a FLIC manifest with a hash group having
+OverallByteCount S and SizePerPointer L.
+Output: pointer index i and byte offset o, or out-of-range error
+Algo:
+    if (P &gt; S)
+        return out-of-range
+    i = floor(P / L)
+    if (i &gt; N)
+        return out-of-range # bad FLIC encoding
+    o = P mod L
+    return (i, o)
+                    </pre>
+<p class="figure">Figure 14: Seeking Algorithm</p>
+<p id="rfc.section.4.2.p.6">Note: In both cases, if the pointer at position i is a manifest pointer, this algorithm has to be called once more, seeking to seek_pos o inside that manifest.  </p>
+<h1 id="rfc.section.4.3">
+<a href="#rfc.section.4.3">4.3.</a> <a href="#dedup" id="dedup">Block-level de-duplication</a>
+</h1>
+<p id="rfc.section.4.3.p.1">Consider a huge file, e.g. an ISO image of a DVD or program in binary form, that had previously been FLIC-ed but now needs to be patched.  In this case, all existing encoded ICN chunks can remain in the repository while only the chunks for the patch itself is added to a new manifest data structure, as is shown in the picture below.  For example, the venti [1] archival file system of Plan9 uses this technique.  </p>
+<div id="rfc.figure.15"></div>
+<div id="dedup1"></div>
+<pre>
+old_mfst -  - &gt; h1 --&gt; oldData1  &lt;-- h1 &lt; -  -  new_mfst
+         \  - &gt; h2 --&gt; oldData2  &lt;-- h2 &lt; -  - /
+          \            replace3  &lt;-- h5 &lt; -  -/
+           \- &gt; h3 --&gt; oldData3              /
+            \ &gt; h4 --&gt; oldData4  &lt;-- h4 &lt; - /
+                    </pre>
+<p class="figure">Figure 15: De-duplication</p>
+<h1 id="rfc.section.4.4">
+<a href="#rfc.section.4.4">4.4.</a> <a href="#GrowingCollections" id="GrowingCollections">Growing ICN collections</a>
+</h1>
+<p id="rfc.section.4.4.p.1">A log file, for example, grows over time.  Instead of having to re- FLIC the grown file it suffices to construct a new manifest with a manifest pointer to the old root manifest plus the sequence of data hash pointers for the new data (or additional sub-manifests if necessary).  Note that this tree will not be skewed (anymore).  </p>
+<div id="rfc.figure.16"></div>
+<div id="Growing"></div>
+<pre>
+old data &lt; -  -  -  mfst_old &lt;-- h_old -  - mfst_new
+                                            /
+new data1 &lt;-- h_1 -  -  -  -  -  -  -  -  -/
+new data2                                 /
+...                                      /
+new dataN &lt;-- h_N -  -  -  -  -  -  -  -/
+                    </pre>
+<p class="figure">Figure 16: Growing A Collection</p>
+<h1 id="rfc.section.4.5">
+<a href="#rfc.section.4.5">4.5.</a> <a href="#Republishing" id="Republishing">Re-publishing a FLIC under a new name</a>
+</h1>
+<p id="rfc.section.4.5.p.1">There are several usecases for republishing a collection under a new namespace, or having one collection exist under several namespaces: </p>
+
+<ul>
+<li>It can happen that a publisher's namespace is part of a service provider's prefix.  When switching provider, the publisher may want to republish the old data under a new name.  </li>
+<li>A publishes wishes to distribute its content to several caches and would like a local result to appear.  For example, the publisher /alpha wishes to place content at /beta and /gamma, but routing to /alpha would not send a request to either of those sites.  Each of /beta and /gamma could create a locally named and signed version of the root manifest with appropriate keys (or delegate that to /alpha) so the results are always local without having to change the bulk of the maniest tree.  </li>
+</ul>
+
+<p> This can easily be achieved with a single nameless root manifest for the large FLIC plus arbitrarily many per-name manifests (which are signed by whomever wants to publish this data): </p>
+<div id="rfc.figure.17"></div>
+<div id="Relocating"></div>
+<pre>
+
+data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
+                                &lt; - mfst(/com/example/west/old/the/flic)
+                                &lt; - mfst(/internet/archive/flic234)
+                    </pre>
+<p class="figure">Figure 17: Relocating A Collection</p>
+<p id="rfc.section.4.5.p.2">Note that the hash computation (of h) only requires reading the nameless root manifest, not the entire FLIC.  </p>
+<p id="rfc.section.4.5.p.3">This example points out the problem of HashGroups having locator metadata elements: A retriever would be urged to follow these hints which are "hardcoded" deep inside the FLIC but might have become outdated.  We therefore recommend to name FLIC manifests only at the highest level (where these names have no locator function).  Child nodes in a FLIC manifest should not be named as these names serve no purpose except retrieving a sub-tree's manifest by name, if would be required.  </p>
+<h1 id="rfc.section.5">
+<a href="#rfc.section.5">5.</a> <a href="#IANA" id="IANA">IANA Considerations</a>
+</h1>
+<p id="rfc.section.5.p.1">TODO Need IANA actions: <a href="#RFC8609" class="xref">[RFC8609]</a> </p>
 
 <ul>
 <li>Create a registry for Manifest Data and Annotation TLVs</li>
@@ -970,14 +1127,24 @@ Root -&gt; M0 ----&gt; M1 ----&gt; ...
 </ul>
 
 <p> Also TODO: If this document is submitted as an official RG draft, this section must be updated to reflect the IANA registries described in </p>
-<h1 id="rfc.section.5">
-<a href="#rfc.section.5">5.</a> <a href="#Security" id="Security">Security Considerations</a>
-</h1>
 <h1 id="rfc.section.6">
-<a href="#rfc.section.6">6.</a> <a href="#AppendixA" id="AppendixA">Appendix A: Building Trees</a>
+<a href="#rfc.section.6">6.</a> <a href="#Security" id="Security">Security Considerations</a>
 </h1>
-<p id="rfc.section.6.p.1">This section describes one method to build trees.  It constructs a pre-order tree in a single pass of the application data, going from the tail to the beginning.  This allows us to work up the right side of the tree in a single pass, then work down each left branch until we exhaust the data.  Using the reverse-order traversal, we create the right-most-child manifest, then its parent, then the indirect pointers of that parent, then the parent's direct pointers, then the parent of the parent (repeating). This process uses recursion, as it is the clearest way to show the code. A more optimized approach could do it in a true single pass.  </p>
-<p id="rfc.section.6.p.2">Because we're building from the bottom up, we use the term 'level' to be the distance from the right-most child up. Level 0 is the bottom-most level of the tree, such as where node 7 is: </p>
+<p id="rfc.section.6.p.1">TODO Need a discussion on: </p>
+
+<ul>
+<li>signing and hash chaining security.</li>
+<li>republishing under a new namespace.</li>
+<li>encryption mechanisms.</li>
+<li>encryption key distribution mechanisms.</li>
+</ul>
+
+<p> </p>
+<h1 id="rfc.section.7">
+<a href="#rfc.section.7">7.</a> <a href="#AppendixA" id="AppendixA">Appendix A: Building Trees</a>
+</h1>
+<p id="rfc.section.7.p.1">This section describes one method to build trees.  It constructs a pre-order tree in a single pass of the application data, going from the tail to the beginning.  This allows us to work up the right side of the tree in a single pass, then work down each left branch until we exhaust the data.  Using the reverse-order traversal, we create the right-most-child manifest, then its parent, then the indirect pointers of that parent, then the parent's direct pointers, then the parent of the parent (repeating). This process uses recursion, as it is the clearest way to show the code. A more optimized approach could do it in a true single pass.  </p>
+<p id="rfc.section.7.p.2">Because we're building from the bottom up, we use the term 'level' to be the distance from the right-most child up. Level 0 is the bottom-most level of the tree, such as where node 7 is: </p>
 <pre>
       1
   2      3
@@ -985,7 +1152,7 @@ Root -&gt; M0 ----&gt; M1 ----&gt; ...
 preorder: 1 2 4 5 3 6 7
 reverse:  7 6 3 5 4 2 1
                 </pre>
-<p id="rfc.section.6.p.3">The Python-like pseudocode build_tree(data, n, k, m) algorithm creates a tree of n data objects.  The data[] array is an array of Content Objects that hold application payload; the application data has already been packetized into n Content Object packets.  An interior manifest node has k direct pointers and m indirect pointers.  </p>
+<p id="rfc.section.7.p.3">The Python-like pseudocode build_tree(data, n, k, m) algorithm creates a tree of n data objects.  The data[] array is an array of Content Objects that hold application payload; the application data has already been packetized into n Content Object packets.  An interior manifest node has k direct pointers and m indirect pointers.  </p>
 <pre>
 build_tree(data[0..n-1], n, k, m)
     # data is an array of Content Objects (Data in NDN) with application payload.
@@ -1066,16 +1233,16 @@ interior_direct(data, segment, level, k, m, children)
         segment.tail -= 1
                 </pre>
 <h1 id="rfc.references">
-<a href="#rfc.references">7.</a> References</h1>
+<a href="#rfc.references">8.</a> References</h1>
 <h1 id="rfc.references.1">
-<a href="#rfc.references.1">7.1.</a> Normative References</h1>
+<a href="#rfc.references.1">8.1.</a> Normative References</h1>
 <table><tbody><tr>
 <td class="reference"><b id="RFC2119">[RFC2119]</b></td>
 <td class="top">
 <a>Bradner, S.</a>, "<a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>", BCP 14, RFC 2119, DOI 10.17487/RFC2119, March 1997.</td>
 </tr></tbody></table>
 <h1 id="rfc.references.2">
-<a href="#rfc.references.2">7.2.</a> Informative References</h1>
+<a href="#rfc.references.2">8.2.</a> Informative References</h1>
 <table><tbody>
 <tr>
 <td class="reference"><b id="FLICImplementation">[FLICImplementation]</b></td>

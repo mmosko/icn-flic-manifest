@@ -5,12 +5,12 @@
 ICNRG                                                        C. Tschudin
 Internet-Draft                                       University of Basel
 Intended status: Experimental                                    C. Wood
-Expires: May 2, 2020                     University of California Irvine
+Expires: May 7, 2020                     University of California Irvine
                                                                 M. Mosko
                                                               PARC, Inc.
                                                                  D. Oran
                                        Network Systems Research & Design
-                                                        October 30, 2019
+                                                        November 4, 2019
 
 
                     File-Like ICN Collections (FLIC)
@@ -34,14 +34,14 @@ Status of This Memo
    Internet-Drafts are working documents of the Internet Engineering
    Task Force (IETF).  Note that other groups may also distribute
    working documents as Internet-Drafts.  The list of current Internet-
-   Drafts is at http://datatracker.ietf.org/drafts/current/.
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
 
    Internet-Drafts are draft documents valid for a maximum of six months
    and may be updated, replaced, or obsoleted by other documents at any
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on May 2, 2020.
+   This Internet-Draft will expire on May 7, 2020.
 
 Copyright Notice
 
@@ -53,12 +53,12 @@ Copyright Notice
 
 
 
-Tschudin, et al.           Expires May 2, 2020                  [Page 1]
+Tschudin, et al.           Expires May 7, 2020                  [Page 1]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
-   (http://trustee.ietf.org/license-info) in effect on the date of
+   (https://trustee.ietf.org/license-info) in effect on the date of
    publication of this document.  Please review these documents
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Tschudin, et al.           Expires May 2, 2020                  [Page 2]
+Tschudin, et al.           Expires May 7, 2020                  [Page 2]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
 1.  Introduction
@@ -165,9 +165,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                  [Page 3]
+Tschudin, et al.           Expires May 7, 2020                  [Page 3]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
 2.  Design Goals
@@ -221,9 +221,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                  [Page 4]
+Tschudin, et al.           Expires May 7, 2020                  [Page 4]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
 3.  FLIC Structure
@@ -277,9 +277,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                  [Page 5]
+Tschudin, et al.           Expires May 7, 2020                  [Page 5]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
    Locator:  A routing hint in an Interest used by forwarding to get the
@@ -333,9 +333,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                  [Page 6]
+Tschudin, et al.           Expires May 7, 2020                  [Page 6]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
    In the NodeData, there may be zero or more NSDef contains.  Each
@@ -389,9 +389,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                  [Page 7]
+Tschudin, et al.           Expires May 7, 2020                  [Page 7]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
    Additional annotations may be defined through additional RFCs or via
@@ -445,9 +445,9 @@ NodeData = TYPE LENGTH [SubtreeSize] [SubtreeDigest] [Locators] 0*NSDef
 
 
 
-Tschudin, et al.           Expires May 2, 2020                  [Page 8]
+Tschudin, et al.           Expires May 7, 2020                  [Page 8]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
 SubtreeSize = TYPE LENGTH INTEGER
@@ -501,9 +501,9 @@ RsaKemDemData = KeyId IV Mode WrappedKey LocatorPrefix
 
 
 
-Tschudin, et al.           Expires May 2, 2020                  [Page 9]
+Tschudin, et al.           Expires May 7, 2020                  [Page 9]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
    AlgorithmId:  The ID of the encryption method (e.g. preshared key, a
@@ -557,9 +557,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 10]
+Tschudin, et al.           Expires May 7, 2020                 [Page 10]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
    mandate how to build trees.  Appendix A provides a detailed example
@@ -613,9 +613,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 11]
+Tschudin, et al.           Expires May 7, 2020                 [Page 11]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
 3.8.  Manifest Encryption
@@ -669,9 +669,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 12]
+Tschudin, et al.           Expires May 7, 2020                 [Page 12]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
    The functions for authenticated encryption and authenticated
@@ -725,9 +725,9 @@ FailFlag: Indicates authenticated decryption failure (true or false)
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 13]
+Tschudin, et al.           Expires May 7, 2020                 [Page 13]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
    the KDK (see below).  The precursor Z is chosen randomly z < n-1,
@@ -781,9 +781,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 14]
+Tschudin, et al.           Expires May 7, 2020                 [Page 14]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
    RsaKemUnwrap(SK, c, WK, KeyLen = 256):
@@ -837,9 +837,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 15]
+Tschudin, et al.           Expires May 7, 2020                 [Page 15]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
 ManifestContentObject = TYPE LENGTH [Name] [ExpiryTime] PayloadType Payload
@@ -893,9 +893,9 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 16]
+Tschudin, et al.           Expires May 7, 2020                 [Page 16]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
       Locators used to fetch the remainder of the manifest.  It has a
@@ -949,9 +949,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 17]
+Tschudin, et al.           Expires May 7, 2020                 [Page 17]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
    o  The Top Manifest has the name SegmentedPrefixName plus chunk
@@ -1005,9 +1005,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 18]
+Tschudin, et al.           Expires May 7, 2020                 [Page 18]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
    o  The Root Manifest Data has a name used to fetch the manifest.  It
@@ -1061,9 +1061,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 19]
+Tschudin, et al.           Expires May 7, 2020                 [Page 19]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
    o  An Internal or Leaf manifest has the name SinglePrefixName,
@@ -1117,9 +1117,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 20]
+Tschudin, et al.           Expires May 7, 2020                 [Page 20]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
    o  The Data content objects have the name SegmentedPrefixName plus
@@ -1173,9 +1173,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 21]
+Tschudin, et al.           Expires May 7, 2020                 [Page 21]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
    structure in form of packet content where D stands for a data pointer
@@ -1229,9 +1229,9 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 22]
+Tschudin, et al.           Expires May 7, 2020                 [Page 22]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
 build_tree(data[0..n-1], n, k, m)
@@ -1285,9 +1285,9 @@ bottom_up_preorder(data, segment, level, k, m, right_most_child=None)
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 23]
+Tschudin, et al.           Expires May 7, 2020                 [Page 23]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
    interior_manifest(data, segment, level, k, m, right_most_child)
@@ -1327,8 +1327,8 @@ interior_indirect(data, segment, level, k, m, children)
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
-              DOI 10.17487/RFC2119, March 1997, <https://www.rfc-
-              editor.org/info/rfc2119>.
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
 
 7.2.  Informative References
 
@@ -1336,43 +1336,43 @@ interior_indirect(data, segment, level, k, m, children)
               Mosko, M., "FLIC Implementation in Python", various,
               <https://github.com/mmosko/ccnpy>.
 
-   [NDN]      NDN team, , "Named Data Networking", various,
+   [NDN]      "Named Data Networking", various,
               <https://named-data.net/project/execsummary/>.
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 24]
+Tschudin, et al.           Expires May 7, 2020                 [Page 24]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
-   [NDNTLV]   NDN Project Team, , "NDN Packet Format Specification.",
-              2016, <http://named-data.net/doc/ndn-tlv/>.
+   [NDNTLV]   "NDN Packet Format Specification.", 2016,
+              <http://named-data.net/doc/ndn-tlv/>.
 
    [repository]
-              NDN Project Team, , "Repo Protocol Specification",
-              Various, <https://redmine.named-data.net/projects/repo-
-              ng/wiki/Repo_Protocol_Specification>.
+              "Repo Protocol Specification", Various,
+              <https://redmine.named-data.net/projects/repo-ng/wiki/
+              Repo_Protocol_Specification>.
 
    [RFC3552]  Rescorla, E. and B. Korver, "Guidelines for Writing RFC
               Text on Security Considerations", BCP 72, RFC 3552,
-              DOI 10.17487/RFC3552, July 2003, <https://www.rfc-
-              editor.org/info/rfc3552>.
+              DOI 10.17487/RFC3552, July 2003,
+              <https://www.rfc-editor.org/info/rfc3552>.
 
    [RFC5226]  Narten, T. and H. Alvestrand, "Guidelines for Writing an
               IANA Considerations Section in RFCs", RFC 5226,
-              DOI 10.17487/RFC5226, May 2008, <https://www.rfc-
-              editor.org/info/rfc5226>.
+              DOI 10.17487/RFC5226, May 2008,
+              <https://www.rfc-editor.org/info/rfc5226>.
 
    [RFC8569]  Mosko, M., Solis, I., and C. Wood, "Content-Centric
               Networking (CCNx) Semantics", RFC 8569,
-              DOI 10.17487/RFC8569, July 2019, <https://www.rfc-
-              editor.org/info/rfc8569>.
+              DOI 10.17487/RFC8569, July 2019,
+              <https://www.rfc-editor.org/info/rfc8569>.
 
    [RFC8609]  Mosko, M., Solis, I., and C. Wood, "Content-Centric
               Networking (CCNx) Messages in TLV Format", RFC 8609,
-              DOI 10.17487/RFC8609, July 2019, <https://www.rfc-
-              editor.org/info/rfc8609>.
+              DOI 10.17487/RFC8609, July 2019,
+              <https://www.rfc-editor.org/info/rfc8609>.
 
 Authors' Addresses
 
@@ -1397,9 +1397,9 @@ Authors' Addresses
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 25]
+Tschudin, et al.           Expires May 7, 2020                 [Page 25]
 
-Internet-Draft                    FLIC                      October 2019
+Internet-Draft                    FLIC                     November 2019
 
 
    David Oran
@@ -1453,4 +1453,4 @@ Internet-Draft                    FLIC                      October 2019
 
 
 
-Tschudin, et al.           Expires May 2, 2020                 [Page 26]
+Tschudin, et al.           Expires May 7, 2020                 [Page 26]

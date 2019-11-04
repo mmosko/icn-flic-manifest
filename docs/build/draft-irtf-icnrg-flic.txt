@@ -98,14 +98,14 @@ Table of Contents
      3.10. Example Structures  . . . . . . . . . . . . . . . . . . .  22
        3.10.1.  Leaf-only data . . . . . . . . . . . . . . . . . . .  22
        3.10.2.  Linear . . . . . . . . . . . . . . . . . . . . . . .  22
-   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  23
-   5.  Security Considerations . . . . . . . . . . . . . . . . . . .  23
-   6.  Appendix A: Building Trees  . . . . . . . . . . . . . . . . .  23
-   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  25
-     7.1.  Normative References  . . . . . . . . . . . . . . . . . .  25
-     7.2.  Informative References  . . . . . . . . . . . . . . . . .  25
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  26
-
+   4.  Usage Examples  . . . . . . . . . . . . . . . . . . . . . . .  23
+     4.1.  Locating FLIC leaf and manifest nodes . . . . . . . . . .  23
+     4.2.  Seeking . . . . . . . . . . . . . . . . . . . . . . . . .  24
+     4.3.  Block-level de-duplication  . . . . . . . . . . . . . . .  25
+     4.4.  Growing ICN collections . . . . . . . . . . . . . . . . .  25
+     4.5.  Re-publishing a FLIC under a new name . . . . . . . . . .  26
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  27
+   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  27
 
 
 
@@ -113,6 +113,12 @@ Tschudin, et al.           Expires May 7, 2020                  [Page 2]
 
 Internet-Draft                    FLIC                     November 2019
 
+
+   7.  Appendix A: Building Trees  . . . . . . . . . . . . . . . . .  27
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  29
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  29
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .  30
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  30
 
 1.  Introduction
 
@@ -156,12 +162,6 @@ Internet-Draft                    FLIC                     November 2019
 
    FLIC is a distributed data structure best illustrated by the
    following picture.
-
-
-
-
-
-
 
 
 
@@ -1240,7 +1240,228 @@ Internet-Draft                    FLIC                     November 2019
    Root -> M0 ----> M1 ----> ...
    |->DDDD  |->DDDD
 
-4.  IANA Considerations
+4.  Usage Examples
+
+4.1.  Locating FLIC leaf and manifest nodes
+
+   The names of manifest and data objects are often missing or not
+   unique, unless using specific naming conventions.  In this example,
+   we show how using manifest locators is used to generate Interests.
+   Take for example the figure below where the root manifest is named by
+   hash h0.  It has nameless children with hashes with hashes h1 ... hN.
+
+   Objects:
+   manifest(name=/a/b/c, ptr=h1, ptr=hN)  - has hash h0
+   nameless(data1)                        - has hash h1
+   ...
+   nameless(dataN)                        - has hash hN
+
+   Query for the manifest:
+   interest(name=/a/b/c, implicitDigest=h0)
+
+                       Figure 10: Data Organization
+
+   After obtaining the manifest, the client fetches the contents.  In
+   this first instance, the manifest does not provide any Locators data
+   structure, so the client must continue using the name it used for the
+   manifest.
+
+   interest(name=/a/b/c, implicitDigest=h1)
+   ...
+   interest(name=/a/b/c, implicitDigest=hN)
+
+                         Figure 11: Data Interests
+
+   Using the locator metadata entry, this behavior can be changed:
+
+
+
+
+
+
+
+
+
+
+
+
+Tschudin, et al.           Expires May 7, 2020                 [Page 23]
+
+Internet-Draft                    FLIC                     November 2019
+
+
+   Objects:
+   manifest(name=/a/b/c,
+   hashgroup(loc=/x/y/z, ptr=h1)
+   hashgroup(ptr=h2)             - has hash h0
+   nameless(data1)               - has hash h1
+   nameless(data2)               - has hash h2
+
+   Queries:
+   interest(name=/a/b/c, implicitDigest=h0)
+   interest(name=/x/y/z, implicitDigest=h1)
+   interest(name=/a/b/c, implicitDigest=h2)
+
+                         Figure 12: Using Locators
+
+4.2.  Seeking
+
+   Fast seeking (without having to sequentially fetch all content) works
+   by skipping over entries for which we know their size.  The following
+   expression shows how to compute the byte offset of the data pointed
+   at by pointer P_i, offset_i.  In this formula, let P_i represent the
+   Size value of the i-th pointer.
+
+   offset_i = \sum_{i = 1}^{i - 1} P_i.size
+
+   With this offset, seeking is done as follows:
+
+   Input: seek_pos P, a FLIC manifest with a hash group having N entries
+   Output: pointer index i and byte offset o, or out-of-range error
+   Algo:
+       offset = 0
+       for i in 1..N do
+       if (P < P_i.size)
+           return (i, P - offset)
+       offset += P_i.size
+       return out-of-range
+
+                       Figure 13: Seeking Algorithm
+
+   Seeking in a BlockHashGroup is different since offsets can be quickly
+   computed.  This is because the size of each pointer P_i except the
+   last is equal to the SizePerPtr value.  For a BlockHashGroup with N
+   pointers, OverallByteCount D, and SizePerPointer L, the size of P_i
+   is equal to the following:
+
+   D - ((i - 1) * L)
+
+   In a BlockHashGroup with k pointers, the size of P_k is equal to:
+
+
+
+
+Tschudin, et al.           Expires May 7, 2020                 [Page 24]
+
+Internet-Draft                    FLIC                     November 2019
+
+
+   D - L * (k - 1)
+
+   Using these, the seeking algorithm can be thus simplified to the
+   following:
+
+   Input: seek_pos P, a FLIC manifest with a hash group having
+   OverallByteCount S and SizePerPointer L.
+   Output: pointer index i and byte offset o, or out-of-range error
+   Algo:
+       if (P > S)
+           return out-of-range
+       i = floor(P / L)
+       if (i > N)
+           return out-of-range # bad FLIC encoding
+       o = P mod L
+       return (i, o)
+
+                       Figure 14: Seeking Algorithm
+
+   Note: In both cases, if the pointer at position i is a manifest
+   pointer, this algorithm has to be called once more, seeking to
+   seek_pos o inside that manifest.
+
+4.3.  Block-level de-duplication
+
+   Consider a huge file, e.g. an ISO image of a DVD or program in binary
+   form, that had previously been FLIC-ed but now needs to be patched.
+   In this case, all existing encoded ICN chunks can remain in the
+   repository while only the chunks for the patch itself is added to a
+   new manifest data structure, as is shown in the picture below.  For
+   example, the venti [1] archival file system of Plan9 uses this
+   technique.
+
+   old_mfst -  - > h1 --> oldData1  <-- h1 < -  -  new_mfst
+            \  - > h2 --> oldData2  <-- h2 < -  - /
+             \            replace3  <-- h5 < -  -/
+              \- > h3 --> oldData3              /
+               \ > h4 --> oldData4  <-- h4 < - /
+
+                         Figure 15: De-duplication
+
+4.4.  Growing ICN collections
+
+   A log file, for example, grows over time.  Instead of having to re-
+   FLIC the grown file it suffices to construct a new manifest with a
+   manifest pointer to the old root manifest plus the sequence of data
+   hash pointers for the new data (or additional sub-manifests if
+   necessary).  Note that this tree will not be skewed (anymore).
+
+
+
+Tschudin, et al.           Expires May 7, 2020                 [Page 25]
+
+Internet-Draft                    FLIC                     November 2019
+
+
+   old data < -  -  -  mfst_old <-- h_old -  - mfst_new
+                                               /
+   new data1 <-- h_1 -  -  -  -  -  -  -  -  -/
+   new data2                                 /
+   ...                                      /
+   new dataN <-- h_N -  -  -  -  -  -  -  -/
+
+                      Figure 16: Growing A Collection
+
+4.5.  Re-publishing a FLIC under a new name
+
+   There are several usecases for republishing a collection under a new
+   namespace, or having one collection exist under several namespaces:
+
+   o  It can happen that a publisher's namespace is part of a service
+      provider's prefix.  When switching provider, the publisher may
+      want to republish the old data under a new name.
+
+   o  A publishes wishes to distribute its content to several caches and
+      would like a local result to appear.  For example, the publisher
+      /alpha wishes to place content at /beta and /gamma, but routing to
+      /alpha would not send a request to either of those sites.  Each of
+      /beta and /gamma could create a locally named and signed version
+      of the root manifest with appropriate keys (or delegate that to
+      /alpha) so the results are always local without having to change
+      the bulk of the maniest tree.
+
+   This can easily be achieved with a single nameless root manifest for
+   the large FLIC plus arbitrarily many per-name manifests (which are
+   signed by whomever wants to publish this data):
+
+
+data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
+                                < - mfst(/com/example/west/old/the/flic)
+                                < - mfst(/internet/archive/flic234)
+
+                    Figure 17: Relocating A Collection
+
+   Note that the hash computation (of h) only requires reading the
+   nameless root manifest, not the entire FLIC.
+
+   This example points out the problem of HashGroups having locator
+   metadata elements: A retriever would be urged to follow these hints
+   which are "hardcoded" deep inside the FLIC but might have become
+   outdated.  We therefore recommend to name FLIC manifests only at the
+   highest level (where these names have no locator function).  Child
+   nodes in a FLIC manifest should not be named as these names serve no
+
+
+
+
+Tschudin, et al.           Expires May 7, 2020                 [Page 26]
+
+Internet-Draft                    FLIC                     November 2019
+
+
+   purpose except retrieving a sub-tree's manifest by name, if would be
+   required.
+
+5.  IANA Considerations
 
    TODO Need IANA actions:
 
@@ -1252,9 +1473,19 @@ Internet-Draft                    FLIC                     November 2019
    this section must be updated to reflect the IANA registries described
    in [RFC8609]
 
-5.  Security Considerations
+6.  Security Considerations
 
-6.  Appendix A: Building Trees
+   TODO Need a discussion on:
+
+   o  signing and hash chaining security.
+
+   o  republishing under a new namespace.
+
+   o  encryption mechanisms.
+
+   o  encryption key distribution mechanisms.
+
+7.  Appendix A: Building Trees
 
    This section describes one method to build trees.  It constructs a
    pre-order tree in a single pass of the application data, going from
@@ -1271,6 +1502,18 @@ Internet-Draft                    FLIC                     November 2019
    be the distance from the right-most child up.  Level 0 is the bottom-
    most level of the tree, such as where node 7 is:
 
+
+
+
+
+
+
+
+Tschudin, et al.           Expires May 7, 2020                 [Page 27]
+
+Internet-Draft                    FLIC                     November 2019
+
+
          1
      2      3
    4  5    6  7
@@ -1282,13 +1525,6 @@ Internet-Draft                    FLIC                     November 2019
    Content Objects that hold application payload; the application data
    has already been packetized into n Content Object packets.  An
    interior manifest node has k direct pointers and m indirect pointers.
-
-
-
-Tschudin, et al.           Expires May 7, 2020                 [Page 23]
-
-Internet-Draft                    FLIC                     November 2019
-
 
 build_tree(data[0..n-1], n, k, m)
     # data is an array of Content Objects (Data in NDN) with application payload.
@@ -1325,26 +1561,21 @@ bottom_up_preorder(data, segment, level, k, m, right_most_child=None)
             manifest = interior_manifest(data, segment, level, k, m, right_most_child)
     return manifest
 
+
+
+
+
+Tschudin, et al.           Expires May 7, 2020                 [Page 28]
+
+Internet-Draft                    FLIC                     November 2019
+
+
    leaf_manifest(data, segment, count)
        # At most count items, but never go before the head
        start = max(segment.head(), segment.tail() - count)
        manifest = Manifest(data[start:segment.tail])
        segment.tail -= segment.tail() - start
        return manifest
-
-
-
-
-
-
-
-
-
-
-Tschudin, et al.           Expires May 7, 2020                 [Page 24]
-
-Internet-Draft                    FLIC                     November 2019
-
 
    interior_manifest(data, segment, level, k, m, right_most_child)
        children = []
@@ -1377,30 +1608,29 @@ interior_indirect(data, segment, level, k, m, children)
            children.insert(0, pointer)
            segment.tail -= 1
 
-7.  References
+8.  References
 
-7.1.  Normative References
+8.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
 
-7.2.  Informative References
+
+
+
+
+Tschudin, et al.           Expires May 7, 2020                 [Page 29]
+
+Internet-Draft                    FLIC                     November 2019
+
+
+8.2.  Informative References
 
    [FLICImplementation]
               Mosko, M., "FLIC Implementation in Python", various,
               <https://github.com/mmosko/ccnpy>.
-
-
-
-
-
-
-Tschudin, et al.           Expires May 7, 2020                 [Page 25]
-
-Internet-Draft                    FLIC                     November 2019
-
 
    [I-D.irtf-icnrg-terminology]
               Wissingh, B., Wood, C., Afanasyev, A., Zhang, L., Oran,
@@ -1441,21 +1671,21 @@ Internet-Draft                    FLIC                     November 2019
 
 Authors' Addresses
 
+
+
+
+
+
+
+Tschudin, et al.           Expires May 7, 2020                 [Page 30]
+
+Internet-Draft                    FLIC                     November 2019
+
+
    Christian Tschudin
    University of Basel
 
    Email: christian.tschudin@unibas.ch
-
-
-
-
-
-
-
-
-Tschudin, et al.           Expires May 7, 2020                 [Page 26]
-
-Internet-Draft                    FLIC                     November 2019
 
 
    Christopher A. Wood
@@ -1503,10 +1733,4 @@ Internet-Draft                    FLIC                     November 2019
 
 
 
-
-
-
-
-
-
-Tschudin, et al.           Expires May 7, 2020                 [Page 27]
+Tschudin, et al.           Expires May 7, 2020                 [Page 31]
