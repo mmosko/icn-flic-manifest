@@ -22,6 +22,9 @@
 
 include lib/main.mk
 
+*.xml::
+	$(MAKE) -C bibxml
+
 lib/main.mk:
 ifneq (,$(shell git submodule status lib 2>/dev/null))
 	git submodule sync
