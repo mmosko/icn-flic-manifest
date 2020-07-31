@@ -12,7 +12,7 @@ An alternate method (rfc include) is described in the references. -->
 <!ENTITY RFC5226 SYSTEM "bibxml/reference.RFC.5226.xml">
 <!ENTITY RFC8569 SYSTEM "bibxml/reference.RFC.8569.xml">
 <!ENTITY RFC8609 SYSTEM "bibxml/reference.RFC.8609.xml">
-<!ENTITY I-D.irtf-icnrg-terminology SYSTEM "bibxml/reference.I-D.irtf-icnrg-terminology.xml">
+<!ENTITY I-D.irtf-icnrg-terminology SYSTEM "http://xml2rfc.tools.ietf.org/public/rfc/bibxml-ids/reference.I-D.irtf-icnrg-terminology.xml">
 ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <!-- used by XSLT processors -->
@@ -42,7 +42,7 @@ An alternate method (rfc include) is described in the references. -->
 
 <?rfc private="" ?>
 
-<rfc category="exp" docName="draft-irtf-icnrg-flic-latest" ipr="trust200902">
+<rfc category="exp" docName="draft-irtf-icnrg-flic-02" ipr="trust200902">
     <!-- category values: std, bcp, info, exp, and historic
      ipr values: trust200902, noModificationTrust200902, noDerivativesTrust200902,
      or pre5378Trust200902
