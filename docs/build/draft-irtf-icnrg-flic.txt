@@ -83,14 +83,14 @@ Table of Contents
        3.7.1.  Traversal . . . . . . . . . . . . . . . . . . . . . .  12
      3.8.  Manifest Encryption Modes . . . . . . . . . . . . . . . .  13
        3.8.1.  AEAD Mode . . . . . . . . . . . . . . . . . . . . . .  14
-       3.8.2.  RSA Key Encapsulation Mode  . . . . . . . . . . . . .  16
-     3.9.  Protocol Encodings  . . . . . . . . . . . . . . . . . . .  18
-       3.9.1.  CCNx Encoding . . . . . . . . . . . . . . . . . . . .  18
+       3.8.2.  RSA-OAEP Key Transport Mode . . . . . . . . . . . . .  16
+     3.9.  Protocol Encodings  . . . . . . . . . . . . . . . . . . .  17
+       3.9.1.  CCNx Encoding . . . . . . . . . . . . . . . . . . . .  17
          3.9.1.1.  CCNx Hash Naming  . . . . . . . . . . . . . . . .  18
-         3.9.1.2.  CCNx Single Prefix  . . . . . . . . . . . . . . .  19
+         3.9.1.2.  CCNx Single Prefix  . . . . . . . . . . . . . . .  18
          3.9.1.3.  CCNx Segmented Prefix . . . . . . . . . . . . . .  19
          3.9.1.4.  CCNx Hybrid Schema  . . . . . . . . . . . . . . .  20
-       3.9.2.  NDN Encoding  . . . . . . . . . . . . . . . . . . . .  21
+       3.9.2.  NDN Encoding  . . . . . . . . . . . . . . . . . . . .  20
          3.9.2.1.  NDN Hash Naming . . . . . . . . . . . . . . . . .  21
          3.9.2.2.  NDN Single Prefix . . . . . . . . . . . . . . . .  21
          3.9.2.3.  NDN Segmented Prefix  . . . . . . . . . . . . . .  22
@@ -102,7 +102,7 @@ Table of Contents
      4.1.  Locating FLIC leaf and manifest nodes . . . . . . . . . .  24
      4.2.  Seeking . . . . . . . . . . . . . . . . . . . . . . . . .  25
      4.3.  Block-level de-duplication  . . . . . . . . . . . . . . .  26
-     4.4.  Growing ICN collections . . . . . . . . . . . . . . . . .  27
+     4.4.  Growing ICN collections . . . . . . . . . . . . . . . . .  26
      4.5.  Re-publishing a FLIC under a new name . . . . . . . . . .  27
    5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  28
    6.  Security Considerations . . . . . . . . . . . . . . . . . . .  28
@@ -115,10 +115,10 @@ Internet-Draft                    FLIC                        April 2021
 
 
    7.  Appendix A: Building Trees  . . . . . . . . . . . . . . . . .  28
-   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  31
-     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  31
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  30
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  30
      8.2.  Informative References  . . . . . . . . . . . . . . . . .  31
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  33
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  32
 
 1.  Introduction
 
@@ -708,7 +708,7 @@ Internet-Draft                    FLIC                        April 2021
 
                           Figure 4: Node Expansion
 
-   Using the example manifest tree shown in Figure Figure 8, the in-
+   Using the example manifest tree shown in Figure Figure 6, the in-
    order traversal would be: Root, M0, M1, D0, D1, D2, M2, D3, D4, D5,
    M3, D6, D7, D8.
 
@@ -850,46 +850,46 @@ Internet-Draft                    FLIC                        April 2021
    7.  If the decryption fails, the consumer SHOULD notify the user and
        stop further processing of the manifest.
 
-3.8.2.  RSA Key Encapsulation Mode
+3.8.2.  RSA-OAEP Key Transport Mode
 
-   NIST NO LONGER RECOMMENDS THIS METHOD.  NEED TO RE-WRITE.
+   The RSA-OAEP mode uses RSA-OAEP (see RFC8017 Sec 7.1 [RFC8017] and
+   [RSAKEM] to encrypt a symmetric key that is used to encrypt the
+   Manifest.  We call this RSA key the Key Encryption Key (KEK) and each
+   group member has this private key.  A separate key distribuiton
+   system is responsible for distributing the KEK.  For our purposes, we
+   assume that the KEK private key is available at a Locator and that
+   group members can decrypt this private key.
 
-   This mode uses RSA-KEM [RSAKEM] to wrap a shared Content Encryption
-   Key (CEK) via AES Key Wrap [RFC3394].  The ICN system may then
-   distribute access to the wrapped key via the ICN protocol.  This
-   specification does not mandate a specific key distribution protocol,
-   it only specifies how the CEK is wrapped and how the key locator is
-   encoded.
+   The symmetric key MUST be one that is compatible with the AEAD Mode,
+   i.e. a 128-bit or 256-bit random number.  Further, the symmetric key
+   MUST fit in the OAEP envelope (which will be true for normal-sized
+   keys).
 
-   Terminology:
+   A group key protocol and system are outside the scope of this
+   document.  We assume there is a Key Manager (KM) and a Publisher (P)
+   and a set of group members.  Through some means, the Publisher has:
 
-   CEK:  Content Encryption Key.  This is an AES key chosen by the Key
-      Manager to encrypt the manifest.
+   1.  A Content Encryption Key (CEK), i.e. the symmetric key.
 
-   KM:  Key Manager.  The Key Manager knows the RSA identity of each
-      participant.  It generates CEKs, wraps them .
+   2.  The RSA-OAEP wrapped CEK.
 
-   In this system, a key manager (KM) (which could be the publisher)
-   creates a symmetric Content Encryption Key (CEK) and a key wrapping
-   pair with a Key Encryption Key (KEK) and Key Decryption Key (KDK).
-   Each publisher and consumer has its own public/private key pair, and
-   the KM knows each publisher's and consumer's identity and its public
-   key (PK_x).
+   3.  The KeyId of the KEK used to wrap the CEK.
 
-   We do not describe the publisher-key manager protocol to request a
-   CEK.  The publisher will obtain the (CEK, E_KEK(Z), KeyId, Locator),
-   where each element is: the content encryption key, the CEK precursor,
-   Z, encrypted with the KEK (an RSA operation), and the KeyId of the
-   corresponding KDK, and the Locator is the ICN name prefix to fetch
-   the KDK (see below).  The precursor Z is chosen randomly as per
-   [RFC5990].  Note that CEK = KDF(Z).  Note that the publisher does not
-   see KEK or Z.
+   4.  The Locator of the KEK, which is shared under some group key
+       protocol.
 
-   We use HKDF (RFC 5869) for the KDF.  CEK = HKDF-Expand(HKDF-
-   Extract(0, Z), "CEK", KeyLen), where KenLen is usually 32 bytes (256
-   bits).
+   The Manifest specification requires that if a group member fetches
+   the KEK key at Locator it can decrypt the WrappedKey and retrieve the
+   CEK.
 
-
+   In one example, a publisher could request a key for a group and the
+   Key Manager could securely communicate (CEK, Wapped_CEK, KeyId,
+   Locator) back to the publisher.  The Key Manager is responsible for
+   publishing the Locator.  In another example, the publisher could be a
+   group member and have a group private key in which case the publisher
+   can create their own key encryption key, publish it under the Locator
+   and proceed.  The publisher generates CEK, Wrapped_CEK, KeyId, and a
+   Locator on its own.
 
 
 
@@ -898,65 +898,46 @@ Tschudin, et al.         Expires 14 October 2021               [Page 16]
 Internet-Draft                    FLIC                        April 2021
 
 
-   In the ABNF grammar, the RsaKemData includes a KeyId, IV, Mode,
-   WrappedKey, and LocatorPrefix.  The KeyId is the ID (sha256) of the
-   KEK.  The IV and Mode are as per preshared key, and describe how the
-   manifest is encrypted with AES-GCM.  The WrappedKey is the AES key to
-   decrypt the manifest.  The LocatorPrefix is used to construct an
-   Interest to fetch the KDK.
+   To create the wrapped key using a Key Encryption Key:
 
-   To fetch the KDK, a consumer with public key PK_c constructs an
-   Interest with name /LocatorPrefix/{KeyId}/{PK_c keyid} and a
-   KeyIdRestriction of the KM's KeyId (from the LocatorPrefix Link).  It
-   should receive back a signed Content Object with the KDK wrapped for
-   the consumer, or a NAK from the KM.  The payload of the ContentObject
-   will be RsaKemWrap(PK, KDK).  The signed ContentObject must have a
-   KeyLocator to the KM's public key.  The consumer will trust the KM's
-   public key because the publisher, whom the consumer trusts, relayed
-   that KeyId inside its own signed Manifest.
+   1.  The CEK is in binary format (e.g. 32 bytes for 256 bits)
 
-   The signed Content Object should have an ExpiryTime, which may be
-   shorter than the Manifest's, but should not be substantially longer
-   than the Manifest's ExpiryTime.  The KM may decide how to handle the
-   Recommended Cache Time, or if caching of the response is even
-   permissible.  The KM may require on-line fetching of the response via
-   a CCNxKE encrypted transport tunnel.
+   2.  RSA encrypt the CEK using the KEK public key with OAEP padding,
+       following RFC8017 Sec 7.1 [RFC8017].  The encryption is not
+       signed because the root Manifest must be signed by the publisher
+       already.
 
-   RsaKemWrap(PK, K, KeyLen = 256):
-       choose z < n-1, where n is PK's public modulus
-       encrypt c = z^e mod n
-       prk = HKDF-Extract(0, Z)
-       kek = HKDF-Expand(prk, "RsaKemWrap", KeyLen)
-       WK = E_KEK(K) # [AES-WRAP, RFC 3394]
-       output (c, WK)
+   To decrypt the wrapped key using a Key Encryption Key:
 
-                           Figure 5: RSA KEM Wrap
+   1.  RSA decrypt the WrappedKey using the KEK private key with OAEP
+       padding, following RFC8017 Sec 7.1 [RFC8017].
 
-   A consumer must verify the signed content object's signature against
-   the Key Manager's public key.  The consumer then unwraps the KDK from
-   the Content Object's payload using RsaKemUnwrap().  The KeyLen is
-   taken from the WrapMode parameter.
+   2.  Verify the unwrapped key is a valid length for the AEADMode.
 
-   RsaKemUnwrap(SK, c, WK, KeyLen = 256):
-       Using the consumers private key SK, decrypt Z from c.
-       prk = HKDF-Extract(0, Z)
-       kek = HKDF-Expand(prk, "RsaKemWrap", KeyLen)
-       K = D_KEK(WK) # [AES-UNWRAP, RFC 3394]
-       output K
+   To encrypt a Manifest, the publisher will:
 
-                          Figure 6: RSA KEM Unwrap
+   1.  Acquire (CEK, Wrapped_CEK, KeyId, Locator).
 
+   2.  Create a SecurityCtx and add it to the Manifest.  The SecurityCtx
+       includes an AEADNonce and AEADMode, as per AEAD mode.
 
+   3.  Encrypt the Manifest as per AEAD Mode using the RSA-OAEP
+       SecurityCtx and CEK.
 
+   To decrypt a Manifest, the consumer will:
 
-Tschudin, et al.         Expires 14 October 2021               [Page 17]
-
-Internet-Draft                    FLIC                        April 2021
+   1.  Acquire the KEK from the Key Locator.  If the consumer already
+       has the KeyId in cache, it may use that cached key.
 
+   2.  The Consumer should verify that it trusts the Manifest publisher
+       to use the provided key Locator.
 
-   The consumer then unwraps the CEK precursor by using the KDK to
-   decrypt Z.  It then derives CEK as above.  Manifest encryption and
-   decryption proceed as with PresharedKey, but using the CEK.
+   3.  Decrypt the WrappedKey to get the CEK.  If the consumer has
+       already decrypted the same exact WrappedKey TLV block, it may use
+       that cached CEK.
+
+   4.  Using the CEK, AEADNonce, and AEADMode, decrypt the Manifest as
+       per AEAD Mode, ignoring the KeyNum steps.
 
 3.9.  Protocol Encodings
 
@@ -966,13 +947,20 @@ Internet-Draft                    FLIC                        April 2021
    T_PYLDTYPE_MANIFEST, while all application data content objects use a
    PayloadType of T_PYLDTYPE_DATA.
 
+
+
+Tschudin, et al.         Expires 14 October 2021               [Page 17]
+
+Internet-Draft                    FLIC                        April 2021
+
+
 ManifestContentObject = TYPE LENGTH [Name] [ExpiryTime] PayloadType Payload
 Name = TYPE LENGTH *OCTET ; As per RFC8569
 ExpiryTime = TYPE LENGTH *OCTET ; As per RFC8569
 PayloadType = TYPE LENGTH T_PYLDTYPE_MANIFEST ; Value TBD
 Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 
-                   Figure 7: CCNx Embedding Grammar
+                   Figure 5: CCNx Embedding Grammar
 
 3.9.1.1.  CCNx Hash Naming
 
@@ -1000,16 +988,6 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
    *  The Data content objects are nameless CCNx content objects,
       possibly with cache control directives.
 
-
-
-
-
-
-Tschudin, et al.         Expires 14 October 2021               [Page 18]
-
-Internet-Draft                    FLIC                        April 2021
-
-
    *  To form an Interest for a direct or indirect pointer, use a Name
       from one of the Locators and put the pointer HashValue into the
       ContentObjectHashRestriction.
@@ -1021,6 +999,16 @@ Internet-Draft                    FLIC                        April 2021
    CCNx, using a SinglePrefix name means that we do not use Locators.
 
    It proceeds as follows:
+
+
+
+
+
+
+Tschudin, et al.         Expires 14 October 2021               [Page 18]
+
+Internet-Draft                    FLIC                        April 2021
+
 
    *  The Root Manifest content object has a name used to fetch the
       manifest.  It is signed by the publisher.  It has a set of
@@ -1057,15 +1045,6 @@ Internet-Draft                    FLIC                        April 2021
 
    It proceeds as follows:
 
-
-
-
-
-Tschudin, et al.         Expires 14 October 2021               [Page 19]
-
-Internet-Draft                    FLIC                        April 2021
-
-
    *  The Root Manifest content object has a name used to fetch the
       manifest.  It is signed by the publisher.  It has a set of
       Locators used to fetch the remainder of the manifest.  It has a
@@ -1075,6 +1054,17 @@ Internet-Draft                    FLIC                        April 2021
    *  The Root Manifest has an NsDef that specifies SegmentedPrefix and
       the SegmentedPrefixSchema element specifies the
       SegmentedPrefixName.
+
+
+
+
+
+
+
+Tschudin, et al.         Expires 14 October 2021               [Page 19]
+
+Internet-Draft                    FLIC                        April 2021
+
 
    *  The publisher will track the chunk number of each content object
       within the NsId.  Objects will be numbered in their traversal
@@ -1114,14 +1104,6 @@ Internet-Draft                    FLIC                        April 2021
    depend on how the publisher wishes to interleave direct and indirect
    pointers.
 
-
-
-
-Tschudin, et al.         Expires 14 October 2021               [Page 20]
-
-Internet-Draft                    FLIC                        April 2021
-
-
    Manifests and data objects are named as appropriate for their naming
    schema.
 
@@ -1129,6 +1111,16 @@ Internet-Draft                    FLIC                        April 2021
 
    In NDN, all Manifest Data objects use a ContentType of FLIC (1024),
    while all application data content objects use a PayloadType of Blob.
+
+
+
+
+
+
+Tschudin, et al.         Expires 14 October 2021               [Page 20]
+
+Internet-Draft                    FLIC                        April 2021
+
 
 3.9.2.1.  NDN Hash Naming
 
@@ -1170,14 +1162,6 @@ Internet-Draft                    FLIC                        April 2021
    are distinguished via the Implicit Digest name component.  The FLIC
    Locators go in the ForwardingHints.
 
-
-
-
-Tschudin, et al.         Expires 14 October 2021               [Page 21]
-
-Internet-Draft                    FLIC                        April 2021
-
-
    It proceeds as follows:
 
    *  The Root Manifest Data object has a name used to fetch the
@@ -1185,6 +1169,14 @@ Internet-Draft                    FLIC                        April 2021
       Locators used to fetch the remainder of the manifest.  It has a
       single HashPointer that points to the Top Manifest.  It may also
       have cache control directives.
+
+
+
+
+Tschudin, et al.         Expires 14 October 2021               [Page 21]
+
+Internet-Draft                    FLIC                        April 2021
+
 
    *  The Root Manifest has an NsDef that specifies SinglePrefix and the
       SinglePrefixSchema element specifies the SinglePrefixName.
@@ -1226,6 +1218,14 @@ Internet-Draft                    FLIC                        April 2021
       the SegmentedPrefixSchema element specifies the
       SegmentedPrefixName.
 
+   *  The publisher will track the segment number of each Data object
+      within a SegmentedPrefix NsId.  Data will be numbered in their
+      traversal order.  Within each manifest, the name will be
+      constructed from the SegmentedPrefixName plus a Segment name
+      component.
+
+
+
 
 
 
@@ -1233,12 +1233,6 @@ Tschudin, et al.         Expires 14 October 2021               [Page 22]
 
 Internet-Draft                    FLIC                        April 2021
 
-
-   *  The publisher will track the segment number of each Data object
-      within a SegmentedPrefix NsId.  Data will be numbered in their
-      traversal order.  Within each manifest, the name will be
-      constructed from the SegmentedPrefixName plus a Segment name
-      component.
 
    *  The Top Manifest has the name SegmentedPrefixName plus segment
       number.  It may have cache control directies.  It's GroupData
@@ -1280,7 +1274,13 @@ Internet-Draft                    FLIC                        April 2021
 
 3.10.1.  Leaf-only data
 
-
+              Root
+               |
+        ______ M0 _____
+       /       |       \
+      M1       M2       M3
+    / | \    / | \    / | \
+   D0 D1 D2 D3 D4 D5 D6 D7 D8
 
 
 
@@ -1290,15 +1290,7 @@ Tschudin, et al.         Expires 14 October 2021               [Page 23]
 Internet-Draft                    FLIC                        April 2021
 
 
-              Root
-               |
-        ______ M0 _____
-       /       |       \
-      M1       M2       M3
-    / | \    / | \    / | \
-   D0 D1 D2 D3 D4 D5 D6 D7 D8
-
-                     Figure 8: Leaf-only manifest tree
+                     Figure 6: Leaf-only manifest tree
 
 3.10.2.  Linear
 
@@ -1331,12 +1323,20 @@ Internet-Draft                    FLIC                        April 2021
    Query for the manifest:
    interest(name=/a/b/c, implicitDigest=h0)
 
-                        Figure 9: Data Organization
+                        Figure 7: Data Organization
 
    After obtaining the manifest, the client fetches the contents.  In
    this first instance, the manifest does not provide any Locators data
    structure, so the client must continue using the name it used for the
    manifest.
+
+   interest(name=/a/b/c, implicitDigest=h1)
+   ...
+   interest(name=/a/b/c, implicitDigest=hN)
+
+                          Figure 8: Data Interests
+
+   Using the locator metadata entry, this behavior can be changed:
 
 
 
@@ -1345,14 +1345,6 @@ Tschudin, et al.         Expires 14 October 2021               [Page 24]
 
 Internet-Draft                    FLIC                        April 2021
 
-
-   interest(name=/a/b/c, implicitDigest=h1)
-   ...
-   interest(name=/a/b/c, implicitDigest=hN)
-
-                         Figure 10: Data Interests
-
-   Using the locator metadata entry, this behavior can be changed:
 
    Objects:
    manifest(name=/a/b/c,
@@ -1366,7 +1358,7 @@ Internet-Draft                    FLIC                        April 2021
    interest(name=/x/y/z, implicitDigest=h1)
    interest(name=/a/b/c, implicitDigest=h2)
 
-                         Figure 11: Using Locators
+                          Figure 9: Using Locators
 
 4.2.  Seeking
 
@@ -1390,17 +1382,7 @@ Internet-Draft                    FLIC                        April 2021
        offset += P_i.size
        return out-of-range
 
-                        Figure 12: Seeking Algorithm
-
-
-
-
-
-
-Tschudin, et al.         Expires 14 October 2021               [Page 25]
-
-Internet-Draft                    FLIC                        April 2021
-
+                        Figure 10: Seeking Algorithm
 
    Seeking in a BlockHashGroup is different since offsets can be quickly
    computed.  This is because the size of each pointer P_i except the
@@ -1411,6 +1393,14 @@ Internet-Draft                    FLIC                        April 2021
    D - ((i - 1) * L)
 
    In a BlockHashGroup with k pointers, the size of P_k is equal to:
+
+
+
+
+Tschudin, et al.         Expires 14 October 2021               [Page 25]
+
+Internet-Draft                    FLIC                        April 2021
+
 
    D - L * (k - 1)
 
@@ -1429,7 +1419,7 @@ Internet-Draft                    FLIC                        April 2021
        o = P mod L
        return (i, o)
 
-                        Figure 13: Seeking Algorithm
+                        Figure 11: Seeking Algorithm
 
    Note: In both cases, if the pointer at position i is a manifest
    pointer, this algorithm has to be called once more, seeking to
@@ -1451,14 +1441,7 @@ Internet-Draft                    FLIC                        April 2021
               \- > h3 --> oldData3              /
                \ > h4 --> oldData4  <-- h4 < - /
 
-
-
-Tschudin, et al.         Expires 14 October 2021               [Page 26]
-
-Internet-Draft                    FLIC                        April 2021
-
-
-                         Figure 14: De-duplication
+                         Figure 12: De-duplication
 
 4.4.  Growing ICN collections
 
@@ -1468,6 +1451,13 @@ Internet-Draft                    FLIC                        April 2021
    hash pointers for the new data (or additional sub-manifests if
    necessary).  Note that this tree will not be skewed (anymore).
 
+
+
+Tschudin, et al.         Expires 14 October 2021               [Page 26]
+
+Internet-Draft                    FLIC                        April 2021
+
+
    old data < -  -  -  mfst_old <-- h_old -  - mfst_new
                                                /
    new data1 <-- h_1 -  -  -  -  -  -  -  -  -/
@@ -1475,7 +1465,7 @@ Internet-Draft                    FLIC                        April 2021
    ...                                      /
    new dataN <-- h_N -  -  -  -  -  -  -  -/
 
-                      Figure 15: Growing A Collection
+                      Figure 13: Growing A Collection
 
 4.5.  Re-publishing a FLIC under a new name
 
@@ -1503,16 +1493,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
                                 < - mfst(/com/example/west/old/the/flic)
                                 < - mfst(/internet/archive/flic234)
 
-                  Figure 16: Relocating A Collection
-
-
-
-
-
-Tschudin, et al.         Expires 14 October 2021               [Page 27]
-
-Internet-Draft                    FLIC                        April 2021
-
+                  Figure 14: Relocating A Collection
 
    Note that the hash computation (of h) only requires reading the
    nameless root manifest, not the entire FLIC.
@@ -1525,6 +1506,13 @@ Internet-Draft                    FLIC                        April 2021
    nodes in a FLIC manifest should not be named as these names serve no
    purpose except retrieving a sub-tree's manifest by name, if would be
    required.
+
+
+
+Tschudin, et al.         Expires 14 October 2021               [Page 27]
+
+Internet-Draft                    FLIC                        April 2021
+
 
 5.  IANA Considerations
 
@@ -1562,14 +1550,6 @@ Internet-Draft                    FLIC                        April 2021
    we exhaust the data.  Using the reverse-order traversal, we create
    the right-most-child manifest, then its parent, then the indirect
    pointers of that parent, then the parent's direct pointers, then the
-
-
-
-Tschudin, et al.         Expires 14 October 2021               [Page 28]
-
-Internet-Draft                    FLIC                        April 2021
-
-
    parent of the parent (repeating).  This process uses recursion, as it
    is the clearest way to show the code.  A more optimized approach
    could do it in a true single pass.
@@ -1577,6 +1557,18 @@ Internet-Draft                    FLIC                        April 2021
    Because we're building from the bottom up, we use the term 'level' to
    be the distance from the right-most child up.  Level 0 is the bottom-
    most level of the tree, such as where node 7 is:
+
+
+
+
+
+
+
+
+Tschudin, et al.         Expires 14 October 2021               [Page 28]
+
+Internet-Draft                    FLIC                        April 2021
+
 
          1
      2      3
@@ -1610,22 +1602,6 @@ build_tree(data[0..n-1], n, k, m)
 
     return root
 
-
-
-
-
-
-
-
-
-
-
-
-Tschudin, et al.         Expires 14 October 2021               [Page 29]
-
-Internet-Draft                    FLIC                        April 2021
-
-
 bottom_up_preorder(data, segment, level, k, m, right_most_child=None)
     manifest = None
     if level == 0:
@@ -1640,6 +1616,15 @@ bottom_up_preorder(data, segment, level, k, m, right_most_child=None)
         else:
             manifest = interior_manifest(data, segment, level, k, m, right_most_child)
     return manifest
+
+
+
+
+
+Tschudin, et al.         Expires 14 October 2021               [Page 29]
+
+Internet-Draft                    FLIC                        April 2021
+
 
    leaf_manifest(data, segment, count)
        # At most count items, but never go before the head
@@ -1673,15 +1658,6 @@ interior_indirect(data, segment, level, k, m, children)
     # Pull back our reservation and put those pointers in our direct children
     segment.head -= reserve_count
 
-
-
-
-
-Tschudin, et al.         Expires 14 October 2021               [Page 30]
-
-Internet-Draft                    FLIC                        April 2021
-
-
    interior_direct(data, segment, level, k, m, children)
        while len(children) < k+m and not segment.head == segment.tail:
            pointer = data[segment.tail() - 1]
@@ -1696,6 +1672,15 @@ Internet-Draft                    FLIC                        April 2021
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
+
+
+
+
+
+Tschudin, et al.         Expires 14 October 2021               [Page 30]
+
+Internet-Draft                    FLIC                        April 2021
+
 
    [RFC3310]  Niemi, A., Arkko, J., and V. Torvinen, "Hypertext Transfer
               Protocol (HTTP) Digest Authentication Using Authentication
@@ -1726,17 +1711,12 @@ Internet-Draft                    FLIC                        April 2021
               DOI 10.17487/RFC6655, July 2012,
               <https://www.rfc-editor.org/info/rfc6655>.
 
+   [RFC8017]  Moriarty, K., Ed., Kaliski, B., Jonsson, J., and A. Rusch,
+              "PKCS #1: RSA Cryptography Specifications Version 2.2",
+              RFC 8017, DOI 10.17487/RFC8017, November 2016,
+              <https://www.rfc-editor.org/info/rfc8017>.
+
 8.2.  Informative References
-
-
-
-
-
-
-Tschudin, et al.         Expires 14 October 2021               [Page 31]
-
-Internet-Draft                    FLIC                        April 2021
-
 
    [AESGCM]   Dworkin, M., "Recommendation for Block Cipher Modes of
               Operation: Galois/Counter Mode (GCM) and GMAC", National
@@ -1750,6 +1730,14 @@ Internet-Draft                    FLIC                        April 2021
    [I-D.irtf-icnrg-terminology]
               Wissingh, B., Wood, C., Afanasyev, A., Zhang, L., Oran,
               D., and C. Tschudin, "Information-Centric Networking
+
+
+
+Tschudin, et al.         Expires 14 October 2021               [Page 31]
+
+Internet-Draft                    FLIC                        April 2021
+
+
               (ICN): CCNx and NDN Terminology", Work in Progress,
               Internet-Draft, draft-irtf-icnrg-terminology-08, 17
               January 2020, <http://www.ietf.org/internet-drafts/draft-
@@ -1786,14 +1774,6 @@ Internet-Draft                    FLIC                        April 2021
               DOI 10.17487/RFC8609, July 2019,
               <https://www.rfc-editor.org/info/rfc8609>.
 
-
-
-
-Tschudin, et al.         Expires 14 October 2021               [Page 32]
-
-Internet-Draft                    FLIC                        April 2021
-
-
    [RSAKEM]   Barker, E., Chen, L., Roginsky, A., Vassilev, A., Davis,
               R., and S. Simon, "Recommendation for Pair-Wise Key-
               Establishment Using Integer Factorization Cryptography",
@@ -1806,6 +1786,12 @@ Authors' Addresses
    University of Basel
 
    Email: christian.tschudin@unibas.ch
+
+
+
+Tschudin, et al.         Expires 14 October 2021               [Page 32]
+
+Internet-Draft                    FLIC                        April 2021
 
 
    Christopher A. Wood
@@ -1824,6 +1810,20 @@ Authors' Addresses
    Network Systems Research & Design
 
    Email: daveoran@orandom.net
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

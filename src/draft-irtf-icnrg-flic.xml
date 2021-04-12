@@ -20,6 +20,7 @@ An alternate method (rfc include) is described in the references. -->
 <!ENTITY RFC6655 SYSTEM "bibxml/reference.RFC.6655.xml">
 <!ENTITY RFC5288 SYSTEM "bibxml/reference.RFC.5288.xml">
 <!ENTITY RFC5990 SYSTEM "bibxml/reference.RFC.5990.xml">
+<!ENTITY RFC8017 SYSTEM "bibxml/reference.RFC.8017.xml">
 
 
 <!ENTITY I-D.irtf-icnrg-terminology SYSTEM "http://xml2rfc.tools.ietf.org/public/rfc/bibxml-ids/reference.I-D.irtf-icnrg-terminology.xml">
@@ -626,121 +627,67 @@ D0 D1
                         </list></t>
                 </section>
                 
-                <section anchor="rsakem" title="RSA Key Encapsulation Mode">
-                    <t>NIST NO LONGER RECOMMENDS THIS METHOD.  NEED TO RE-WRITE.</t>
-                    <t>This mode uses <xref target="RSAKEM">RSA-KEM</xref> to wrap a shared Content Encryption Key (CEK)
-                        via <xref target="RFC3394">AES Key Wrap</xref>.  The ICN system may then distribute access to the
-                        wrapped key via the ICN protocol.  This specification does not mandate a specific key distribution
-                        protocol, it only specifies how the CEK is wrapped and how the key locator is encoded.</t>
+                <section anchor="rsaoaep" title="RSA-OAEP Key Transport Mode">
+                    <t>The RSA-OAEP mode uses RSA-OAEP (see <xref target="RFC8017">RFC8017 Sec 7.1</xref> and <xref target="RSAKEM"/>
+                    to encrypt a symmetric key that is used to encrypt the Manifest.  We call this RSA key the Key Encryption Key (KEK) and
+                    each group member has this private key.  A separate key distribuiton system is responsible for distributing the KEK.
+                    For our purposes, we assume that the KEK private key is available at a Locator and that group members can decrypt
+                    this private key.
+                    </t>
                     
-                    <t>Terminology:
-                    <list style="hanging">
-                        <t hangText="CEK:">Content Encryption Key.  This is an AES key chosen by the Key Manager
-                            to encrypt the manifest.</t>
-                        
-                        <t hangText="KM:">Key Manager.  The Key Manager knows the RSA identity of each participant.
-                            It generates CEKs, wraps them .</t>
-                        
+                    <t>The symmetric key MUST be one that is compatible with the AEAD Mode, i.e. a 128-bit or 256-bit random number.
+                    Further, the symmetric key MUST fit in the OAEP envelope (which will be true for normal-sized keys).</t>
+                    
+                    <t>A group key protocol and system are outside the scope of this document.  We assume there is a Key Manager (KM)
+                    and a Publisher (P) and a set of group members.  Through some means, the Publisher has:
+                    <list style="numbers">
+                        <t>A Content Encryption Key (CEK), i.e. the symmetric key.</t>
+                        <t>The RSA-OAEP wrapped CEK.</t>
+                        <t>The KeyId of the KEK used to wrap the CEK.</t>
+                        <t>The Locator of the KEK, which is shared under some group key protocol.</t>
                     </list></t>
-
-                    <t>In this system, a key manager (KM) (which could be the publisher) creates a
-                        symmetric Content Encryption Key (CEK) and a key
-                        wrapping pair with a Key Encryption Key (KEK) and Key Decryption Key (KDK).
-                        Each publisher and consumer has its own public/private key pair, and the KM
-                        knows each publisher's and consumer's identity and
-                        its public key (PK_x).</t>
                     
-                    <t>  We do not describe the publisher-key manager
-                        protocol to request a CEK. The publisher will obtain
-                        the (CEK, E_KEK(Z), KeyId, Locator), where each element is: the content
-                        encryption key, the CEK precursor, Z, encrypted with
-                        the KEK (an RSA operation), and the KeyId of the corresponding KDK,
-                        and the Locator is the ICN name prefix to fetch the KDK (see below). The
-                        precursor Z is chosen  randomly as per <xref target="RFC5990"/>.
-                        Note that CEK = KDF(Z). Note that the publisher
-                        does not see KEK or Z.                     </t>
-                    <t>                         We use HKDF (RFC 5869) for the KDF. CEK =
-                        HKDF-Expand(HKDF-Extract(0, Z), "CEK", KeyLen),
-                        where KenLen is usually 32 bytes (256 bits).                     </t>
-                    <t>In the ABNF grammar, the RsaKemData includes a KeyId, IV, Mode, WrappedKey,
-                        and LocatorPrefix.                         The KeyId is the ID (sha256) of
-                        the KEK.  The IV and Mode are as per preshared key, and describe
-                        how the manifest is encrypted with AES-GCM.  The WrappedKey is the AES key
-                        to decrypt the manifest.                         The LocatorPrefix is used
-                        to construct an Interest to fetch the KDK.                     </t>
-                    <t>                         To fetch the KDK, a consumer with public key PK_c
-                        constructs an Interest with name
-                        /LocatorPrefix/{KeyId}/{PK_c keyid} and a KeyIdRestriction of the KM's KeyId
-                        (from the LocatorPrefix Link).                         It should receive
-                        back a signed Content Object with the KDK wrapped for the consumer, or a NAK
-                        from the KM.                         The payload of the ContentObject will
-                        be RsaKemWrap(PK, KDK). The signed ContentObject must have a
-                        KeyLocator to the KM's public key. The consumer will trust the KM's public
-                        key because the publisher,                         whom the consumer trusts,
-                        relayed that KeyId inside its own signed Manifest.                     </t>
-                    <t>                         The signed Content Object should have an ExpiryTime,
-                        which may be shorter than the Manifest's, but                         should
-                        not be substantially longer than the Manifest's ExpiryTime. The KM may
-                        decide how to handle the                         Recommended Cache Time, or
-                        if caching of the response is even permissible. The KM may require on-line
-                        fetching of the response via a CCNxKE encrypted transport tunnel.                     </t>
-                    <figure anchor="rsakemwrap" title="RSA KEM Wrap">
-                        <artwork align="left"><![CDATA[
-RsaKemWrap(PK, K, KeyLen = 256):
-    choose z < n-1, where n is PK's public modulus
-    encrypt c = z^e mod n
-    prk = HKDF-Extract(0, Z)
-    kek = HKDF-Expand(prk, "RsaKemWrap", KeyLen)
-    WK = E_KEK(K) # [AES-WRAP, RFC 3394]
-    output (c, WK)
-                        ]]></artwork>
-                    </figure>
-                    <t>                         A consumer must verify the signed content object's
-                        signature against the Key Manager's public key.                         The
-                        consumer then unwraps the KDK from the Content Object's payload using
-                        RsaKemUnwrap().                         The KeyLen is taken from the
-                        WrapMode parameter.                     </t>
-                    <figure anchor="rsakemunwrap" title="RSA KEM Unwrap">
-                        <artwork align="left"><![CDATA[
-RsaKemUnwrap(SK, c, WK, KeyLen = 256):
-    Using the consumers private key SK, decrypt Z from c.
-    prk = HKDF-Extract(0, Z)
-    kek = HKDF-Expand(prk, "RsaKemWrap", KeyLen)
-    K = D_KEK(WK) # [AES-UNWRAP, RFC 3394]
-    output K
-                        ]]></artwork>
-                    </figure>
-                    <t>                         The consumer then unwraps the CEK precursor by using
-                        the KDK to decrypt Z. It then derives CEK as above.
-                        Manifest encryption and decryption proceed as with PresharedKey, but using
-                        the CEK.                     </t>
+                    <t>The Manifest specification requires that if a group member fetches the KEK
+                    key at Locator it can decrypt the WrappedKey and retrieve the CEK.</t>
+                    
+                    <t>In one example, a publisher could request a key for a group and the
+                        Key Manager could securely communicate (CEK, Wapped_CEK, KeyId, Locator) back to the publisher.
+                        The Key Manager is responsible for publishing the Locator.
+                    In another example, the publisher could be a group member and have a group private key in which case
+                    the publisher can create their own key encryption key, publish it under the Locator and proceed.
+                    The publisher generates CEK, Wrapped_CEK, KeyId, and a Locator on its own.</t>
+                    
+                    <t>To create the wrapped key using a Key Encryption Key:
+                    <list style="numbers">
+                        <t>The CEK is in binary format (e.g. 32 bytes for 256 bits)</t>
+                        <t>RSA encrypt the CEK using the KEK public key with OAEP padding, following <xref target="RFC8017">RFC8017 Sec 7.1</xref>.
+                        The encryption is not signed because the root Manifest must be signed by the publisher already.</t>
+                    </list></t>
+                    
+                    <t>To decrypt the wrapped key using a Key Encryption Key:
+                        <list style="numbers">
+                            <t>RSA decrypt the WrappedKey using the KEK private key with OAEP padding, following <xref target="RFC8017">RFC8017 Sec 7.1</xref>.</t>
+                            <t>Verify the unwrapped key is a valid length for the AEADMode.</t>
+                        </list></t>
+                  
+                    <t>To encrypt a Manifest, the publisher will:
+                        <list style="numbers">
+                            <t>Acquire (CEK, Wrapped_CEK, KeyId, Locator).</t>
+                            <t>Create a SecurityCtx and add it to the Manifest.  The SecurityCtx includes an AEADNonce and AEADMode, as
+                            per AEAD mode.</t>
+                            <t>Encrypt the Manifest as per AEAD Mode using the RSA-OAEP SecurityCtx and CEK.</t>
+                        </list></t>
+   
+                    <t>To decrypt a Manifest, the consumer will:
+                        <list style="numbers">
+                            <t>Acquire the KEK from the Key Locator.  If the consumer already has the KeyId in cache, it may use that cached key.</t>
+                            <t>The Consumer should verify that it trusts the Manifest publisher to use the provided key Locator.</t>
+                            <t>Decrypt the WrappedKey to get the CEK.  If the consumer has already decrypted the same exact WrappedKey TLV block,
+                            it may use that cached CEK.</t>
+                            <t>Using the CEK, AEADNonce, and AEADMode, decrypt the Manifest as per AEAD Mode, ignoring the KeyNum steps.</t>
+                        </list></t> 
                 </section>
-                <!--
-                <section anchor="rsakemdem" title="RSA KEM-DEM">
-                    <t>In this scheme a Key Manager (KM), who could be the publisher, creates a Key
-                        Encryption Key (KEK)                         and Key Decryption Key (KDK)
-                        key pair.  The publisher obtains the KEK.  The KM distributes the
-                        KDK to each group member by encrypting it under each member's public key.
-                        To encrypt data, the publisher generates a symmetric Content Encryption Key
-                        (CEK), wraps it with                         the KEK, then encrypts the
-                        manifest with the CEK.  It places the wrapped CEK in the manifest.                     </t>
-                    <t>The KM communicates the KEK to the publisher through an unspecified means
-                        particular to the KM.</t>
-                    <t>The KM distributes the KDK to each group member.  It uses a name
-                        /{km-prefix}/{publisher-prefix}/{KDK KeyId}/{member KeyId}
-                        to publish the encrypted KDK under a member's public key.  It uses RSA-OAEP
-                        for the encryption.                     </t>
-                    <t>The publisher creates a random symmetric CEK of an appropriate bit length.
-                        It uses the KEK to                         wrap the CEK using RSA-OAEP.  It
-                        places the wrapped key in the manifest's RsaKemDemData along with the KeyId
-                        set to                         the KDK's KeyId and the KeyLocator prefix
-                        /{km-prefix}/{publisher-prefix}/.                         Each member
-                        appends the KDK KeyId and their public key KeyId to the name to attemt to
-                        fetch the KDK.                         When forming the Interest to fetch
-                        the key, a consumer should also use a KeyIdRestriction of the KM's KeyId,
-                        which it can retrieve from the KeyLocator.                     </t>
-                </section>
-                -->
+                
                 <!--
                 <section anchor="group" title="ECC Group Keys">
                     <t>NOTE: THIS IS INFORMALLY SPECIFIED AT THIS STAGE</t>
@@ -1405,6 +1352,7 @@ interior_direct(data, segment, level, k, m, children)
             &RFC5288;
             &RFC5990;
             &RFC6655;
+            &RFC8017;
         </references>
         <references title="Informative References">
             <!-- Here we use entities that we defined at the beginning. --> &RFC3552; &RFC5226;
