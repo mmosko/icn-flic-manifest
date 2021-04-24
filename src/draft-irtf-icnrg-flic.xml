@@ -20,10 +20,9 @@ An alternate method (rfc include) is described in the references. -->
 <!ENTITY RFC6655 SYSTEM "bibxml/reference.RFC.6655.xml">
 <!ENTITY RFC5288 SYSTEM "bibxml/reference.RFC.5288.xml">
 <!ENTITY RFC5990 SYSTEM "bibxml/reference.RFC.5990.xml">
+<!ENTITY RFC7927 SYSTEM "bibxml/reference.RFC.7927.xml">
 <!ENTITY RFC8017 SYSTEM "bibxml/reference.RFC.8017.xml">
 
-
-<!ENTITY I-D.irtf-icnrg-terminology SYSTEM "http://xml2rfc.tools.ietf.org/public/rfc/bibxml-ids/reference.I-D.irtf-icnrg-terminology.xml">
 ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <!-- used by XSLT processors -->
@@ -54,7 +53,7 @@ An alternate method (rfc include) is described in the references. -->
 <?rfc private="" ?>
 <?xml-stylesheet type="text/css" href="rfc2629.xslt"?>
 
-<rfc category="exp" docName="draft-irtf-icnrg-flic-02" ipr="trust200902">
+<rfc category="exp" docName="draft-irtf-icnrg-flic-03" ipr="trust200902">
     <!-- category values: std, bcp, info, exp, and historic
      ipr values: trust200902, noModificationTrust200902, noDerivativesTrust200902,
      or pre5378Trust200902
@@ -74,9 +73,9 @@ An alternate method (rfc include) is described in the references. -->
             </address>
         </author>
         <author fullname="Christopher A. Wood" initials="C.A." surname="Wood">
-            <organization>University of California Irvine</organization>
+            <organization>Cloudflare</organization>
             <address>
-                <email>woodc1@uci.edu</email>
+                <email>caw@heapingbits.net</email>
             </address>
         </author>
         <author fullname="Marc Mosko" initials="M.E." surname="Mosko">
@@ -97,8 +96,8 @@ An alternate method (rfc include) is described in the references. -->
         <keyword>Information Centric Networking</keyword>
         <abstract>
             <t>This document describes a bare bones "index table"-approach for
-                organizing a set of ICN data objects into a large, File-Like                 ICN
-                Collection (FLIC).                                  At the core of this collection
+                organizing a set of ICN data objects into a large, File-Like ICN
+                Collection (FLIC). At the core of this collection
                 is a so called manifest which acts as the collection's root node. The manifest
                 contains an index table with pointers, each pointer being a hash value pointing to
                 either a final data block or another index table node.</t>
@@ -106,29 +105,27 @@ An alternate method (rfc include) is described in the references. -->
     </front>
     <middle>
         <section title="Introduction">
-            <t>ICN architectures such as Content-Centric Networking (CCN)<xref target="RFC8569"/>
+            <t>ICN architectures such as Content-Centric Networking (CCNx)<xref target="RFC8569"/>
                 and Named Data Networking <xref target="NDN"/> are well suited for static content
                 distribution.  Each piece of  possibly immutable) static content is assigned a name
                 by its  producer.  Consumers fetch this content using said name. Optionally,
-                consumers may specify the full name of   content, which includes its name and a
+                consumers may specify the full name of content, which includes its name and a
                 unique (with overwhelming probability) cryptographic digest of said content.  (See
-                    <xref target="I-D.irtf-icnrg-terminology"/> for a formal definition of "full
-                name".)</t>
+                <xref target="RFC7927"/> for a formal definition of "full name".)</t>
             <t>To enable requests with full names, consumers need a priori knowledge of content
-                digests.  Manifests, or catalogs, are data structures commonly proposed to transport
+                digests.  Manifests, or catalogs, are data structures commonly employed to store and transport
                 this information.  Typically, manifests are signed content objects (data) which
-                carry a collection of hash digests.  However, as content objects, manifests
-                themselves may be fetched by full name.  Thus, manifests may contain hash digests
+                carry a collection of hash digests.  Therefore, as content objects, manifests
+                themselves may be fetched by full name. Thus, manifests may contain hash digests
                 of, or pointers to, other manifests or content objects.  A collection of manifests
                 and content objects represents a large piece of application data, e.g., one that
                 cannot otherwise fit in a single content object.</t>
             <t>Structurally, this relationship between manifests and content objects is reminiscent
                 of the UNIX inode concept with index tables and memory pointers.  In this document,
-                we specify a simple, yet extensible, manifest data structure called FLIC - File-Like
-                ICN Collection.  FLIC is suitable for ICNs such as CCN and NDN.  We describe the
-                FLIC design, grammar, and various use cases, e.g., seeking, de-duplication,
+                we specify a simple, yet extensible, manifest data structure called FLIC - <em>File-Like
+                ICN Collection</em>.  FLIC is suitable for ICN protocol suites such as CCNx and NDN.  We describe the FLIC design, grammar, and various use cases, e.g., seeking, de-duplication,
                 extension, and variable-sized encoding. We also include FLIC encoding examples for
-                CCN and NDN.</t>
+                CCNx and NDN.</t>
             <t>The purpose of a manifest is to concisely name the constiuent pieces of a larger
                 object. A FLIC manifest does this by using a first manifest to name and
                 cryptographically sign the data structure and then use more concise lists of
@@ -158,52 +155,54 @@ An alternate method (rfc include) is described in the references. -->
             	
             	]]></artwork>
             </figure>
-            <t>A key question is how one names the root manifest, the application data, and other
-                subsequent manifests.  FLIC uses the concept of a Name Constructor.  The root
+            <t>A key design decision is how one names the root manifest, the application data, and other
+                subsequent manifests. For this, FLIC uses the concept of a Name Constructor.  The root
                 manifest (in fact, any FLIC manifest) may include a Name Constructor that instructs
-                a manifest reader to properly create Interests for the application data and
-                subsequent manifests using a well-known set of rules.  Some name constructors are
+                a manifest reader how to properly create Interests for the associated application data and
+                subsequent manifests. The Name Constructors allow interest construction via using a well-known, application-independent set of rules.  Some name constructor forms are
                 tailored towards specific ICN protocols, such as CCNx or NDN; some are generalists
                 and could work with many protocols.  We describe the allowed methods in  <xref
-                    target="nameconstructors"/>. There are also particulars of how to encode the
+                target="nameconstructors"/>. There are also particulars of how to encode the
                 name schema in a given ICN protocol, which we describe in <xref target="encodings"
                 />.</t>
             <t>Locators are routing hints to find a Content Object / Data.  They exist in both CCNx
-                and NDN, though the specifics differ.  A FLIC manifest encodes locators the same for
-                both ICN protocols, though they are encoded differently in the underlying protocol.
+                and NDN, though the specific protocol mechanisms differ. A FLIC manifest encodes locators the same for both ICN protocols, though they are encoded differently in the underlying protocol.
                 See <xref target="encodings"/> for encoding differences.</t>
             <t>We follow the <xref target="RFC8569">CCNx</xref> terminology where a Content Object
                 is the data structure that holds application payload. It is made up of an optional
                 Name, a PayloadType, a Payload, and an optional Signature.</t>
             <t>FLIC has encodings for <xref target="CCNxEncoding">CCNx encoding</xref>
                 as per <xref target="RFC8609">RFC 8609</xref> and for <xref target="NDNEncoding"
-                    >NDN</xref>.             </t>
-            <t>An example implementation in Python may be found at               <xref
-                    target="FLICImplementation"/>.</t>
+                    >NDN</xref>.</t>
+            <t>An example implementation in Python may be found at <xref target="FLICImplementation"/>.</t>
+            
+            <section title="FLIC as an ICN experimental tool">
+            <t>FLIC enables experimentation with how to structure and retrieve large data objects and collections in ICN. By having a common data structure application scan rely on, with a common library of code that can be used to create and parse manifest data structures, applications using ICN protocols can both avoid unnecessary reinvention and also have enhanced interoperbility. since the design attempts to balance simplicity, universality, and extensibility, there are a number of important experimental goals to achieve that may wind up in conflict with one another. We provide a partial list of these experimental issues in section <xref target="experiments"/>. It is also important for users of FLIC to understand that some flexibility and extensions might be removed if use cases do not materialize to justify their inclusion in an eventual standard.</t>
+            </section>
+            
             <section title="Requirements Language">
                 <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
-                    "SHOULD                     NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-                    document are to be interpreted as                     described in <xref
-                        target="RFC2119">RFC 2119</xref>.</t>
+                    "SHOULD  NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+                    document are to be interpreted as described in <xref                        target="RFC2119"/>.</t>
             </section>
         </section>
+        
         <section anchor="goals" title="Design Goals">
             <t>The preferred FLIC structure copies the proven UNIX inode concept                 of
                 direct and indirect pointers, but without the specific structural forms of direct
                 versus indirect.</t>
             <t>In FLIC terms, a direct pointer links to application-level data, which is a Content
-                Object with application data in the Payload.                An indirect pointer
+                Object with application data in the Payload.  An indirect pointer
                 links to a Content Object with a FLIC Manifest in the Payload.</t>
-            <t>Links in FLIC use hash-based naming of Content Objects, rather than inode block
-                numbers.  Both CCNx and NDN support hash-based naming, though the details vary.  See
-                    <xref target="CCNxEncoding"/> and <xref target="NDNEncoding"/>. Another
-                advantage of using hash-based naming is it permits block-level de-duplication of
+            <t>Links in FLIC use hash-based naming of Content Objects, for the function block
+                numbers play in UNIX inodes. Both CCNx and NDN support hash-based naming, though the details differ.  See <xref target="CCNxEncoding"/> and <xref target="NDNEncoding"/>. A substantial
+                advantage of using hash-based naming is that it permits block-level de-duplication of
                 application data because two blocks with the same payload will have the same hash
                 name.</t>
             <t>Because FLIC uses hash-based naming, FLIC graphs are inherently acyclic.</t>
             <t>The preferred FLIC structure includes a root manifest with a strong cryptographic
                 signature and then strong hash names to other manifests (e.g. SHA256).  The
-                advantage of this structure is the single signature in the root manifest covers the
+                advantage of this structure is that the single signature in the root manifest covers the
                 entire data structure no matter how many additional manifests are in the data
                 structure.  Another advantage of this structure is it removes the need to use chunk
                 (CCNx) or segment (NDN) name components for the subordinate manifests.</t>
@@ -220,7 +219,9 @@ An alternate method (rfc include) is described in the references. -->
                 that allow for more sophisticated uses: manifest metadata, and pointer annotations.
                 These are described in <xref target="metadata"/> and <xref target="annotations"/>
                 respectively.</t>
+            <t>FLIC goes to considerable lengths to allow creation and parsing by application-independent library code. Therefore, any options used by applications in the data structure or encryption capabilities MUST NOT require applications to have application-specific Manifest traversal algorithms. This ensures that such application agnostic libraries can always successfully parse and traverse any FLIC Manifest by ignoring the optional capabilities.</t>
         </section>
+        
         <section anchor="structure" title="FLIC Structure">
             <section anchor="Terminology" title="Terminology">
                 <t>
@@ -1018,6 +1019,18 @@ Root -> M0 ----> M1 ----> ...
                 </section>
             </section>
         </section>
+        
+		<section anchor="experiments" title="Experimenting with FLIC">
+        	<t>FLIC is expected to raise a number of salient experiments in the use of ICN protools by applications. These experiments will help not only to inform the desirable structure of ICN applications but reflect back to the features included in FLIC in expectation of their value to those applications. While many interesting design aspects of FLIC will remain to be discovered through experience, a number of important questions to be answered through experimentation include:</t>
+			<ul>
+				<li>use for just files or other collections like directories</li>
+				<li>use for particular applications, like streaming media manifests</li>
+				<li>utility of pointer annotations to optimize retrieval</li>
+				<li>utility of the encryption options for use by repositories and forwarders</li>
+				<li>need for application metadata in manifests</li>
+			</ul>
+		</section>
+		
         <section anchor="Usage" title="Usage Examples">
             <section anchor="Locating" title="Locating FLIC leaf and manifest nodes">
                 <t>             The names of manifest and data objects are often missing or not
@@ -1189,12 +1202,12 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
                 </figure>
                 <t>                     Note that the hash computation (of h) only requires reading
                     the                     nameless root manifest, not the entire FLIC.                 </t>
-                <t>                     This example points out the problem of HashGroups having
-                    locator                     metadata elements: A retriever would be urged to
-                    follow these hints                     which are "hardcoded" deep inside the
-                    FLIC but might have become                     outdated.  We therefore recommend
-                    to name FLIC manifests only at the                     highest level (where
-                    these names have no locator function).  Child                     nodes in a
+                <t>This example points out the problem of HashGroups having
+                    locator metadata elements: A retriever would be urged to
+                    follow these hints which are "hardcoded" deep inside the
+                    FLIC but might have become  outdated.  We therefore recommend
+                    to name FLIC manifests only at the highest level (where
+                    these names have no locator function).  Child nodes in a
                     FLIC manifest should not be named as these names serve no
                     purpose except retrieving a sub-tree's manifest by name, if would be
                     required.                  </t>
@@ -1204,8 +1217,8 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
             <t>TODO Need IANA actions:              <list style="symbols">
                     <t>Create a registry for Manifest Data and Annotation TLVs</t>
                     <t>Register the SizeAnnotation TLV</t>
-                </list>             Also TODO: If this document is submitted as an official RG
-                draft, this section must be updated to reflect the IANA registries described in
+                </list>
+                Also TODO: This section must be updated to reflect the IANA registries described in
                 <xref target="RFC8609"/>
             </t>
             <t>We use the definitions of AEAD_AES_128_GCM, AEAD_AES_128_CCM, AEAD_AES_256_GCM, AEAD_AES_256_CCM
@@ -1340,11 +1353,9 @@ interior_direct(data, segment, level, k, m, children)
             </figure>
         </section>
     </middle>
-    <!--  *****BACK MATTER ***** -->
+
     <back>
         <references title="Normative References">
-                        
-            <!--?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml"?-->
             &RFC2119; 
             &RFC3310;
             &RFC3394;
@@ -1354,10 +1365,12 @@ interior_direct(data, segment, level, k, m, children)
             &RFC6655;
             &RFC8017;
         </references>
+
         <references title="Informative References">
-            <!-- Here we use entities that we defined at the beginning. --> &RFC3552; &RFC5226;
-            <!-- A reference written by by an organization not a person. --> &RFC8569; &RFC8609;
-            &I-D.irtf-icnrg-terminology; 
+            &RFC5226; 
+            &RFC8569; 
+            &RFC8609; 
+            &RFC7927; 
             
             <reference anchor="AESGCM" target="https://doi.org/10.6028/NIST.SP.800-38D">
                 <front>
@@ -1390,6 +1403,7 @@ interior_direct(data, segment, level, k, m, children)
                     <date year="various"/>
                 </front>
             </reference>
+            
             <reference anchor="NDNTLV" target="http://named-data.net/doc/ndn-tlv/">
                 <front>
                     <title>NDN Packet Format Specification.</title>
@@ -1397,6 +1411,7 @@ interior_direct(data, segment, level, k, m, children)
                     <date year="2016"/>
                 </front>
             </reference>
+            
             <reference anchor="repository"
                 target="https://redmine.named-data.net/projects/repo-ng/wiki/Repo_Protocol_Specification">
                 <front>
@@ -1405,6 +1420,7 @@ interior_direct(data, segment, level, k, m, children)
                     <date year="Various"/>
                 </front>
             </reference>
+            
             <reference anchor="FLICImplementation" target="https://github.com/mmosko/ccnpy">
                 <front>
                     <title>FLIC Implementation in Python</title>

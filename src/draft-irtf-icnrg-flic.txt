@@ -310,7 +310,7 @@ Internet-Draft                    FLIC                        April 2021
    uses: manifest metadata, and pointer annotations.  These are
    described in Section 3.4 and Section 3.5 respectively.
 
-   FLIC goes to considerable lengths to be created and parsed by
+   FLIC goes to considerable lengths to allow creation and parsing by
    application-independent library code.  Therefore, any options used by
    applications in the data structure or encryption capabilities MUST
    NOT require applications to have application-specific Manifest
