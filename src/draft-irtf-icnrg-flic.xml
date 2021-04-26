@@ -189,16 +189,16 @@
         
         <ul>
           <li>A manifest might define (or use) a default name constructor and mix subsequent Manifest and Data objects under that same namespace.  The manifest only needs to use one Hash Group and can freely mix Manifest and Data pointers.</li>
-          <li>A manifest might define (or use) a default name constructor for subsequent Manifests and define a second NCD for the application data. This places all subsequent manifests under the default constructor and places all application data under the second NCD.  The Manifest must use at least two Hash Groups.</li>
-        </ul>
-        <t>There are a few options on how to organize the Hash Groups:</t>
-        <ol type="(%d)" spacing="compact"> 
-          <li>Manifest Hash Group followed by Data Hash group,</li>
-          <li>Data Hash Group followed by Manifest Hash Group,</li>
-          <li>Intermix multiple manifest and data hash groups for interleaved reading, or</li>
-          <li>use a data-on-leaf only approach: the interior manifests would use the manifest hash group and the leaves would use the data has group. Other organizations are possible.</li>
-        </ol>
-        <ul>
+          <li>
+          	<t>A manifest might define (or use) a default name constructor for subsequent Manifests and define a second NCD for the application data. This places all subsequent manifests under the default constructor and places all application data under the second NCD.  The Manifest must use at least two Hash Groups.</t>
+          	<t>There are a few options on how to organize the Hash Groups:</t>
+        	<ol type="(%d)" spacing="compact"> 
+          		<li>Manifest Hash Group followed by Data Hash group,</li>
+          		<li>Data Hash Group followed by Manifest Hash Group,</li>
+          		<li>Intermix multiple manifest and data hash groups for interleaved reading, or</li>
+          		<li>use a data-on-leaf only approach: the interior manifests would use the manifest hash group and the leaves would use the data has group. Other organizations are possible.</li>
+        	</ol>
+          </li>
           <li>Define multiple NCDs for subsequent manifests and data, or not use the default NCD, or use some other organization.</li>
         </ul>
         
