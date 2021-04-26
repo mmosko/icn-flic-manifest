@@ -530,14 +530,14 @@ D0 D1
       <section anchor="encodings"> <name>Protocol Encodings</name>
       
         <section anchor="CCNxEncoding"><name>CCNx Encoding</name>
-          <t>In CCNx, all Manifest content objects use a PayloadType of T_PYLDTYPE_MANIFEST, while all application data content objects use a PayloadType of T_PYLDTYPE_DATA.</t>
+          <t>In CCNx, application data content objects use a PayloadType of T_PAYLOADTYPE_DATA. In order to clearly distinguish FLIC Manifests from application data, a different payload type is required. Therefore this specification defines a new payload type of T_PAYLOADTYPE_FLIC.</t>
           
           <figure anchor="CCNxGrammer"><name>CCNx Embedding Grammar</name>
             <sourcecode type="abnf">
 ManifestContentObject = TYPE LENGTH [Name] [ExpiryTime] PayloadType Payload
 Name = TYPE LENGTH *OCTET ; As per RFC8569
 ExpiryTime = TYPE LENGTH *OCTET ; As per RFC8569
-PayloadType = TYPE LENGTH T_PYLDTYPE_MANIFEST ; Value TBD
+PayloadType = TYPE LENGTH T_PAYLOADTYPE_FLIC ; Value TBD
 Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
             </sourcecode>
           </figure>
@@ -876,16 +876,52 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
     </section>
 
     <section anchor="IANA"><name>IANA Considerations</name>
-      <t>TODO Need IANA actions:              </t>
-      <ul spacing="normal">
-        <li>Create a registry for Manifest Data and Annotation TLVs</li>
-        <li>Register the SizeAnnotation TLV</li>
-      </ul>
-      <t>
-                Also TODO: This section must be updated to reflect the IANA registries described in
-                <xref target="RFC8609" format="default"/>
-      </t>
-      <t>We use the definitions of AEAD_AES_128_GCM, AEAD_AES_128_CCM, AEAD_AES_256_GCM, AEAD_AES_256_CCM from <xref target="RFC5116"/>.</t>
+      <t>IANA is requested to perform the actions in the following sub-sections.</t>
+      <aside><t>IANA should also note that FLIC uses the definitions of AEAD_AES_128_GCM, AEAD_AES_128_CCM, AEAD_AES_256_GCM, AEAD_AES_256_CCM from <xref target="RFC5116"/>.</t></aside>
+      
+      <section><name>FLIC Payload Type</name>
+      	<t>Register FLIC as a Payload Type in the <em>CCNx Payload Types</em> Registry referring to the description in <xref target='CCNxEncoding'/> as follows:</t>
+      	<table><name>FLIC CCNx Payload Type</name>
+      	  <thead>
+      		<tr>
+      		  <th align='center'>Type</th>
+      		  <th align='center'>Name</th>
+      		  <th align='center'>Reference</th>
+      		</tr>
+      	   </thead>
+      	  <tbody>
+      	  	<tr>
+      	  	  <td align='center'>TBA</td>
+      	  	  <td align='center'>T_PAYLOADTYPE_FLIC</td>
+      	  	  <td align='center'><xref target='CCNxEncoding'/> and Section 3.6.2.2.1 of <xref target='RFC8609'/> </td>
+      	  	</tr>
+      	  </tbody>
+      	</table>
+      </section>
+      
+      <section><name>FLIC Manifest Metadata and Annotation TLVs</name>
+      	<t>Create the following registry to be titled <em>FLIC Manifest Metadata and Annotation TLVs</em> Manifest Metadata is described in <xref target='metadata'/>; Pointer Annotations are described in <xref target='annotations'/>. The registration procedure is <strong>Specification Required</strong>. The Type value is 2 octets.  The range is 0x0000-0xFFFF. Allocate a value for the single <em>SizeAnnotation</em> TLV.</t>
+      	<table><name>FLIC Manifest Metadata and Annotation TLVs</name>			
+      	  <thead>
+      		<tr>
+      		  <th align='center'>Type</th>
+      		  <th align='center'>Name</th>
+      		  <th align='center'>Reference</th>
+      		</tr>
+      	   </thead>
+      	  <tbody>
+      	  	<tr>
+      	  	  <td align='center'>TBA</td>
+      	  	  <td align='center'>T_SIZE_ANNOTATION</td>
+      	  	  <td align='center'>Size (<xref target='annotations'/>)</td>
+      	  	</tr>
+      	  </tbody>
+      	</table>
+      </section>
+      	
+      
+      
+      
     </section>
     
     <section anchor="Security" numbered="true" toc="default">
