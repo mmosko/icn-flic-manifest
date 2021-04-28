@@ -126,7 +126,7 @@
       
       <t>FLIC's design allows straightforward applications that just need to traverse a linear set of related objects to do so simply, but FLIC has two extensibility mechanisms that allow for more sophisticated uses: manifest metadata, and pointer annotations. These are described in <xref target="metadata" format="default"/> and <xref target="annotations"/> respectively.</t>
       
-      <t>FLIC goes to considerable lengths to allow creation and parsing by application-independent library code. Therefore, any options used by applications in the data structure or encryption capabilities MUST NOT require applications to have application-specific Manifest traversal algorithms. This ensures that such application agnostic libraries can always successfully parse and traverse any FLIC Manifest by ignoring the optional capabilities.</t>
+      <t anchor='libraries'>FLIC goes to considerable lengths to allow creation and parsing by application-independent library code. Therefore, any options used by applications in the data structure or encryption capabilities MUST NOT require applications to have application-specific Manifest traversal algorithms. This ensures that such application agnostic libraries can always successfully parse and traverse any FLIC Manifest by ignoring the optional capabilities.</t>
     </section>
 
     <section anchor="structure"><name>FLIC Structure</name>
@@ -918,21 +918,43 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
       	  </tbody>
       	</table>
       </section>
-      	
-      
-      
-      
     </section>
     
-    <section anchor="Security" numbered="true" toc="default">
-      <name>Security Considerations</name>
-      <t>TODO Need a discussion on:                 </t>
+    <section anchor="Security"><name>Security Considerations</name>
+      <t>TODO Need a discussion on:</t>
       <ul spacing="normal">
-        <li>signing and hash chaining security.</li>
-        <li>republishing under a new namespace.</li>
-        <li>encryption mechanisms.</li>
-        <li>encryption key distribution mechanisms.</li>
+        <li>signing and hash chaining security. (<strong>Note: Did I cover this adequately below?</strong>)</li>
+        <li>republishing under a new namespace. (<strong>Note: need help here - is this to reinforce that you can re-publish application data by creating a new root Manifest and signing that, requiring only one signature to change?</strong>)</li>
+        <li>encryption mechanisms. (<strong>Note: did I cover this adequately below?</strong>)</li>
+        <li>encryption key distribution mechanisms.(<strong>Note: not sure what needs to be said here</strong>)</li>
+        <li>discussion of privacy, leaking of linkability information - <strong>could really use some helop here</strong>.</li> 
       </ul>
+      <t><strong>Anything else?????</strong>.</t>
+      
+      <section><name>Integrity and Origin authentication of FLIC Manifests</name>
+      	<t>A FLIC Manifest is used to describe how to form Interests to access large CCNx or NDN application data. The Manifest is itself either an individual content object, or a tree of content objects linked together via the corresponding content hashes. The NDN and CCnx protocol architectures direct provide both individual object integrity (using cryptographically strong hashes) and data origin authentication (using signatures). The protocol specifications, <xref target='NDN'/> and <xref target='RFC8609'>CCNx</xref> respectively, provide the protocol machinery and keying to support strong integrity and authentication. Therefore, FLIC utilizes the existing protocol specifications for these functions, rather than providing its own. There are a few subtle differences in the handling of signatures and keys in NDN and CCNx worth recapitulating here:</t>
+      	<ul>
+      		<li>NDN in general adds a signature to every individual data packet rather than aggregating signatures via some object-level scheme. When employing FLIC Manifests to multi-packet NDN objects, it is expected that the individual packet signatures would be elided and the signture on the Manifest used instead.</li>
+      		<li>In contrast, CCNx is biased to have primitive objects or pieces thereof be "nameless" in the sense they are identified only by their hashes rather than each having a name directly bound to the content through an individual signature. Therefore, CCNx depends heavily on FLIC (or an alternative method) to provide the name and the signed binding of the name to the content described in the Manifest</li>
+      	</ul>
+      	<t>A FLIC Manifest therefore gets integrity of its individual pieces through the existing secure hashing procedures of the underlying protocols. Origin authentication of the entire Manifest is achieved through hash chaining and applying a signature <strong>only</strong> to the root Manifest of a manifest tree. It is important to note that the Name of the Manifest, which is what the signature is bound to, need not bear any particular relationship to the names of the application objects pointed to in the Manifest via Name Constructors. This has a number of important benefits described in (see <xref target='nameconstructors'/>).</t>
+      </section>
+      
+      <section><name>Confidentiality of Manifest Data</name>
+      	<t>ICN protocol architectures like CCNx and NDN, while providing integrity and origin authentication as described above, leaves confidentiality issues entirely in the domain of the ICN application. Therefore, since FLIC is an application-level construct in both NDN and CCNx, it is incumbent on this specification for FLIC to provide the desired confidentiality properties using encryption. One could leave the specification of Manifest encryption entirely in the hands of the individual application utilizing FLIC, but this would be undesirable for a number of reasons:</t>
+      	<ul>
+      		<li>The sensitivity of the information in a Manifest may be different from the sensitivity of the application data it describes. In some cases, it may not be necessary to encrypt manifests, or to encrypt them with a different keying scheme from that used for the application data</li>
+      		<li>One of the major capabilities enabled by FLIC is to allow repositories or forwarding caches to operate on Manifests (see in particular <xref target='metadata'/>). In order to allow such intermediaries to interpret manifests without revealing the underlying application data, separate encryption and keying is necessary</li>
+      		<li>A strong design goal of FLIC is <em>universality</em> such that it can be used transparently by many different ICN applications. This argues that FLIC should have a set of common encryption and keying capabilities that can be delegated to library code and not have to be re-worked by each individual application (see <xref target='libraries'/>)</li>
+      	</ul>
+      	
+      	<t>Therefore, this specification directly specifies two encryption encapsulations and associated links to key management, as described in <xref target='encryption'/>. As more experience is gained with various use cases, additional encryption capabilities may be needed and hence we expect the encryption aspects of this specification to evolve over time</t>
+      </section>
+      
+      <section><name>Privacy of names and linkability of access patterns</name>
+      	<t>What to ay here, if anything?</t>
+      </section>
+      	  
     </section>
   </middle>
   
@@ -947,11 +969,11 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
 		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5990.xml"/>	
 		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6655.xml"/>
 		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8017.xml"/>
+		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8569.xml"/>
+		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8609.xml"/>
       </references>
 
       <references><name>Informative References</name>
-		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8569.xml"/>
-		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8609.xml"/>
 		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7927.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-wood-icnrg-ccnxkeyexchange-02.xml"/>
         
