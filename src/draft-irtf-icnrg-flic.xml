@@ -53,19 +53,20 @@
     <keyword>Information Centric Networking</keyword>
     
     <abstract>
-    	<t>This document describes a bare bones "index table"-approach for organizing a set of ICN data objects into a large, File-Like ICN Collection (FLIC). At the core of this collection is a so called manifest which acts as the collection's root node. The manifest               contains an index table with pointers, each pointer being a hash value pointing to either a final data block or another index table node.</t>
+    	<t>This document describes a simple "index table" data structure and its associated ICN data objects for organizing a set of primitive ICN data objects into a large, File-Like ICN Collection (FLIC). At the core of this collection is a <em>manifest</em> which acts as the collection's root node. The manifest contains an index table with pointers, each pointer being a hash value pointing to either a final data block or another index table node.</t>
 	    </abstract>
   </front>
 
   <middle>
     <section><name>Introduction</name>
-      <t>ICN architectures such as Content-Centric Networking (CCNx)<xref target="RFC8569" format="default"/> and Named Data Networking <xref target="NDN" format="default"/> are well suited for static content distribution.  Each piece of  possibly immutable) static content is assigned a name by its  producer.  Consumers fetch this content using said name. Optionally, consumers may specify the full name of content, which includes its name and a unique (with overwhelming probability) cryptographic digest of said content.  (See <xref target="RFC7927" format="default"/> for a formal definition of "full name".)</t>
+      <t>ICN architectures such as Content-Centric Networking (CCNx)<xref target="RFC8569" format="default"/> and Named Data Networking <xref target="NDN" format="default"/> are well suited for static content distribution.  Each piece of (possibly immutable) static content is assigned a name by its  producer.  Consumers fetch this content using said name. Optionally, consumers may specify the full name of content, which includes its name and a unique (with overwhelming probability) cryptographic digest of said content.  (See <xref target="RFC7927" format="default"/> for a formal definition of "full name".)</t>
       
-      <t>To enable requests with full names, consumers need a priori knowledge of content digests.  Manifests, or catalogs, are data structures commonly employed to store and transport this information.  Typically, manifests are signed content objects (data) which carry a collection of hash digests.  Therefore, as content objects, manifests themselves may be fetched by full name. Thus, manifests may contain hash digests of, or pointers to, other manifests or content objects.  A collection of manifests and content objects represents a large piece of application data, e.g., one that cannot otherwise fit in a single content object.</t>
+      <t>To enable requests with full names, consumers need a priori knowledge of content digests.  Manifests, a form of catalog, are data structures commonly employed to store and transport this information.  Typically, ICN manifests are signed content objects (data) which carry a collection of hash digests.  Therefore, as content objects, manifests themselves may be fetched by full name. Thus, manifests may contain either hash digests of, or pointers to, either other manifests or content objects.  A collection of manifests and content objects represents a large piece of application data, e.g., one that cannot otherwise fit in a single content object.</t>
       
-      <t>Structurally, this relationship between manifests and content objects is reminiscent of the UNIX inode concept with index tables and memory pointers.  In this document, we specify a simple, yet extensible, manifest data structure called FLIC - <em>File-Like ICN Collection</em>.  FLIC is suitable for ICN protocol suites such as CCNx and NDN.  We describe the FLIC design, grammar, and various use cases, e.g., seeking, de-duplication, extension, and variable-sized encoding. We also include FLIC encoding examples for CCNx and NDN.</t>
+      <t>Structurally, this relationship between manifests and content objects is reminiscent of the UNIX inode concept with index tables and memory pointers.  In this document, we specify a simple, yet extensible, manifest data structure called FLIC - <em>File-Like ICN Collection</em>.  FLIC is suitable for ICN protocol suites such as CCNx and NDN.  We describe the FLIC design, grammar, and various use cases, e.g., ordered fetch, seeking, de-duplication, extension, and variable-sized encoding. We also include FLIC encoding examples for CCNx and NDN.</t>
       
-      <t>The purpose of a manifest is to concisely name the constiuent pieces of a larger object. A FLIC manifest does this by using a first manifest to name and cryptographically sign the data structure and then use more concise lists of hash-based names to indicate the constituent pieces.  This maintains strong security from a single signature. A Manifest entry gives one enough information to create an Interest for that entry, so it must specify the name, the hash digest, and if needed the locators.</t>
+      <t>The purpose of a manifest is to concisely name the constiuent pieces of a larger object. A FLIC manifest does this by using a <em>root</em> manifest to name and cryptographically sign the data structure and then use concise lists of hash-based names to indicate the constituent pieces.  This maintains strong security from a single signature. A Manifest entry gives one enough information to create an <em>Interest</em> for that entry, so it must specify the name, the hash digest, and if needed, the locators.</t>
+      <aside><t>Note: the reader is assumed to be familiar with general ICN concepts from CCNx or NDN. We use the terminology documented in <xref target="RFC7927" format="default"/></t></aside> 
       
       <t>FLIC is a distributed data structure best illustrated by the following picture.</t>
       <figure>
@@ -90,18 +91,18 @@
             	]]></artwork>
       </figure>
 
-      <t>A key design decision is how one names the root manifest, the application data, and other subsequent manifests. For this, FLIC uses the concept of a Name Constructor.  The root manifest (in fact, any FLIC manifest) may include a Name Constructor that instructs a manifest reader how to properly create Interests for the associated application data and                subsequent manifests. The Name Constructors allow interest construction via using a well-known, application-independent set of rules.  Some name constructor forms are tailored towards specific ICN protocols, such as CCNx or NDN; some are generalists and could work with many protocols.  We describe the allowed methods in  <xref target="nameconstructors" format="default"/>. There are also particulars of how to encode the name schema in a given ICN protocol, which we describe in <xref target="encodings" format="default"/>.</t>
+      <t>A key design decision is how one names the root manifest, the application data, and other subsequent manifests. For this, FLIC uses the concept of a Name Constructor.  The root manifest (in fact, any FLIC manifest) may include a Name Constructor that instructs a manifest reader how to properly create Interests for the associated application data and                subsequent manifests. The Name Constructors allow interest construction using a well-known, application-independent set of rules.  Some name constructor forms are tailored towards specific ICN protocols, such as CCNx or NDN; some are more general and could work with many protocols.  We describe the allowed Name Constructor methods in  <xref target="nameconstructors" format="default"/>. There are also particulars of how to encode the name schema in a given ICN protocol, which we describe in <xref target="encodings" format="default"/>.</t>
       
-      <t>Locators are routing hints to find a Content Object / Data.  They exist in both CCNx  and NDN, though the specific protocol mechanisms differ. A FLIC manifest encodes locators the same for both ICN protocols, though they are encoded differently in the underlying protocol. See <xref target="encodings" format="default"/> for encoding differences.</t>
+      <t>Locators are routing hints to find a Content Object / Data.  They exist in both CCNx  and NDN, though the specific protocol mechanisms differ. A FLIC manifest represents locators in the same way for both ICN protocols, though they are encoded differently in the underlying protocol. See <xref target="encodings" format="default"/> for encoding differences.</t>
       
       <t>We follow the <xref target="RFC8569" format="default">CCNx</xref> terminology where a Content Object is the data structure that holds application payload. It is made up of an optional Name, a PayloadType, a Payload, and an optional Signature.</t>
       
-      <t>FLIC has encodings for <xref target="CCNxEncoding" format="default">CCNx encoding</xref>                as per <xref target="RFC8609" format="default">RFC 8609</xref> and for <xref target="NDNEncoding" format="default">NDN</xref>.</t>
+      <t>FLIC has encodings for <xref target="CCNxEncoding" format="default">CCNx</xref> as per <xref target="RFC8609" format="default">RFC 8609</xref> and for <xref target="NDNEncoding" format="default">NDN</xref>.</t>
       
       <t>An example implementation in Python may be found at <xref target="FLICImplementation" format="default"/>.</t>
       
       <section><name>FLIC as an ICN experimental tool</name>
-        <t>FLIC enables experimentation with how to structure and retrieve large data objects and collections in ICN. By having a common data structure application scan rely on, with a common library of code that can be used to create and parse manifest data structures, applications using ICN protocols can both avoid unnecessary reinvention and also have enhanced interoperability. Since the design attempts to balance simplicity, universality, and extensibility, there are a number of important experimental goals to achieve that may wind up in conflict with one another. We provide a partial list of these experimental issues in section <xref target="experiments"/>. It is also important for users of FLIC to understand that some flexibility and extensions might be removed if use cases do not materialize to justify their inclusion in an eventual standard.</t>
+        <t>FLIC enables experimentation with how to structure and retrieve large data objects and collections in ICN. By having a common data structure applications can rely on, with a common library of code that can be used to create and parse manifest data structures, applications using ICN protocols can both avoid unnecessary reinvention and also have enhanced interoperability. Since the design attempts to balance simplicity, universality, and extensibility, there are a number of important experimental goals to achieve that may wind up in conflict with one another. We provide a partial list of these experimental issues in <xref target="experiments"/>. It is also important for users of FLIC to understand that some flexibility and extensions might be removed if use cases do not materialize to justify their inclusion in an eventual standard.</t>
       </section>
       
       <section><name>Requirements Language</name>
@@ -109,18 +110,16 @@
       </section>
     </section>
 
-    <section anchor="goals"><name>Design Goals</name>
+    <section anchor="overview"><name>Design Overview</name>
       <t>The preferred FLIC structure copies the proven UNIX inode concept of direct and indirect pointers, but without the specific structural forms of direct versus indirect.</t>
       
       <t>In FLIC terms, a direct pointer links to application-level data, which is a Content Object with application data in the Payload.  An indirect pointer links to a Content Object with a FLIC Manifest in the Payload.</t>
       
-      <t>Links in FLIC use hash-based naming of Content Objects, for the function block numbers play in UNIX inodes. Both CCNx and NDN support hash-based naming, though the details differ.  See <xref target="CCNxEncoding" format="default"/> and <xref target="NDNEncoding" format="default"/>. A substantial advantage of using hash-based naming is that it permits block-level de-duplication of                application data because two blocks with the same payload will have the same hash name.</t>
+      <t>Links in FLIC use hash-based naming of Content Objects analogous to the function block numbers play in UNIX inodes. Both CCNx and NDN support hash-based naming, though the details differ (see <xref target="CCNxEncoding" format="default"/> and <xref target="NDNEncoding" format="default"/>). A substantial advantage of using hash-based naming is that it permits block-level de-duplication of application data because two blocks with the same payload will have the same hash name. Because FLIC uses hash-based naming, FLIC graphs are inherently acyclic.</t>
       
-      <t>Because FLIC uses hash-based naming, FLIC graphs are inherently acyclic.</t>
+      <t>The preferred FLIC structure includes a root manifest with a strong cryptographic signature and then cryptographically strong  (e.g. SHA256) hash names as pointers to other manifests.  The advantage of this structure is that the single signature in the root manifest covers the entire data structure no matter how many additional manifests are in the data structure.  Another advantage of this structure is it removes the need to use chunk (CCNx) or segment (NDN) name components for the subordinate manifests.</t>
       
-      <t>The preferred FLIC structure includes a root manifest with a strong cryptographic signature and then strong hash names to other manifests (e.g. SHA256).  The advantage of this structure is that the single signature in the root manifest covers the entire data structure no matter how many additional manifests are in the data structure.  Another advantage of this structure is it removes the need to use chunk (CCNx) or segment (NDN) name components for the subordinate manifests.</t>
-      
-      <t>FLIC supports manifest encryption separate from application payload encryption.  It has a flexible encryption envelope to support various encryption algorithms and key discovery mechanisms.  The byte layout allows for in-place encryption and decryption.</t>
+      <t>FLIC supports manifest encryption separate from application payload encryption (See <xref target="encryption"/>).  It has a flexible encryption envelope to support various encryption algorithms and key discovery mechanisms. The byte layout allows for in-place encryption and decryption.</t>
       
       <t>A limitation of this approach is that one cannot construct a hash-based name for a child until one knows the payload of that child. In practical terms, this means that one must have the complete application payload available at the time of manifest creation.</t>
       
@@ -170,11 +169,11 @@
       <section anchor="locators"><name>Locators</name>
         <t>Locators are routing hints used by forwarders to get an Interest to a node in the network that can resolve the Interest's name.  In some naming conventions, the name might only be a hash-based name so the Locator is the only available routing information.</t>
         
-        <t>A manifest Node may define one or more Locator prefixes that can be used in the construction of Interests from the pointers in the manifest.  The Locators are inherited when walking a manifest tree, so they do not need to be defined everywhere.  It is RECOMMENDED that only the Root manifest contain Locators so that a single operation can update the locators.  One usecase when storing application payloads at different replicas is to replace the Root manifest with a new one that contains locators for the current replicas.</t>
+        <t>A manifest Node may define one or more Locator prefixes that can be used in the construction of Interests from the pointers in the manifest.  The Locators are inherited when walking a manifest tree, so they do not need to be defined everywhere.  It is RECOMMENDED that only the Root manifest contain Locators so that a single operation can update the locators.  One use case when storing application payloads at different replicas is to replace the Root manifest with a new one that contains locators for the current replicas.</t>
       </section>
       
       <section anchor="nameconstructors"><name>Name Constructors</name>
-        <t>A Manifest may define zero or more name constructors in NameConstructorDefinitions (NCD) located in the Manifest Node.  An NCD associated a Name Constructor Id (NCID) to a Name Constructor. The NCID is used in other parts of the Manifest to refer to that specific definition.</t>
+        <t>A Manifest may define zero or more name constructors in NameConstructorDefinitions (NCD) located in the Manifest Node.  An NCD associates a Name Constructor Id (NCID) to a Name Constructor. The NCID is used in other parts of the Manifest to refer to that specific definition.</t>
         
         <t>NCID 0 is the default name constructor.  If it is not defined in an NCD, it is assumed to be a HashNamingConstructor.  A Manifest may re-define the default as needed.</t>
         
@@ -196,13 +195,13 @@
           		<li>Manifest Hash Group followed by Data Hash group,</li>
           		<li>Data Hash Group followed by Manifest Hash Group,</li>
           		<li>Intermix multiple manifest and data hash groups for interleaved reading, or</li>
-          		<li>use a data-on-leaf only approach: the interior manifests would use the manifest hash group and the leaves would use the data has group. Other organizations are possible.</li>
+          		<li>use a data-on-leaf only approach: the interior manifests would use the manifest hash group and the leaves would use the data hash group. Other organizations are possible.</li>
         	</ol>
           </li>
           <li>Define multiple NCDs for subsequent manifests and data, or not use the default NCD, or use some other organization.</li>
         </ul>
         
-        <t>In this specification, we define the following four types of Name Constructors.  Additional name constructor types may be specified in a subsequent revision of the specification.  Here, we informally define the name constructors.  Section <xref target="grammar"/> specifies the encoding of each name constructor.</t>
+        <t>In this specification, we define the following four types of Name Constructors.  Additional name constructor types may be specified in a subsequent revision of the specification.  Here, we informally define the name constructors.  <xref target="grammar"/> specifies the encoding of each name constructor.</t>
         
         <dl newline="false" spacing="normal">
           <dt>Type 0 (Interest-Derived Naming):</dt>
@@ -212,7 +211,7 @@
           <dd>Use the Manifest Name, less a hash component, as the Interest name, and append the desired hash value.</dd>
           
           <dt>Type 2 (Prefix List):</dt>
-          <dd>The NCD specifies a list of 1 or more name prefixes.  The consumer may use any (or all) of those prefixes the desired hash appended.</dd>
+          <dd>The NCD specifies a list of 1 or more name prefixes.  The consumer may use any (or all) of those prefixes with the desired hash appended.</dd>
           
           <dt>Type 3 (Segmented Naming):</dt>
           <dd>As in Type 2, but the consumer MUST maintain a 0-based counter for each NCID associated with the in-order index of each hash and use that counter as a Segment number in the name.</dd>
@@ -234,11 +233,11 @@
       </section>
       
       <section anchor="grammar"><name>Manifest Grammar (ABNF)</name>
-        <t>The manifest grammar is mostly independent of the transport ICN protocol. The TLV encoding therefore follows the corresponding ICN protocol, so for CCNx FLIC uses 2 octet length, 2 octet type and for NDN uses the 1/3/5 octet types and lengths (see <xref target="NDNTLV"/> for details). There are also some differences in how one structures and resolves links. <xref target="RFC8569" format="default"/> defines HashValue and Link for CCNx encodings. The NDN ImplicitSha256DigestComponent defines HashValue and NDN Delegation (from Link Object) defines Link for NDN. <xref target="encodings"/> below                    specifies these differences.</t>
+        <t>The manifest grammar is mostly, but not entirely independent of the ICN protocol used to encode and transport it. The TLV encoding therefore follows the corresponding ICN protocol, so for CCNx FLIC uses 2 octet length, 2 octet type and for NDN uses the 1/3/5 octet types and lengths (see <xref target="NDNTLV"/> for details). There are also some differences in how one structures and resolves links. <xref target="RFC8569" format="default"/> defines HashValue and Link for CCNx encodings. The NDN ImplicitSha256DigestComponent defines HashValue and NDN Delegation (from Link Object) defines Link for NDN. <xref target="encodings"/> below                    specifies these differences.</t>
         
-        <t>The basic structure of a FLIC manifest is a security context, a node, and an authentication tag.  The security context and authentication tag are not needed  if the node is unencrypted.  A node is made up of a set of metadata, the <tt>NodeData</tt>, that applies to the entire node, and one or more <tt>HashGroups</tt> that contain pointers.</t>
+        <t>The basic structure of a FLIC manifest comprises a security context, a node, and an authentication tag.  The security context and authentication tag are not needed  if the node is unencrypted.  A node is made up of a set of metadata, the <tt>NodeData</tt>, that applies to the entire node, and one or more <tt>HashGroups</tt> that contain pointers.</t>
         
-        <t>The <tt>NodeData</tt> element defines the namespaces used by the manifest. There may be multiple namespaces, depending on how one names subsequent  manifests or data objects.  Each <tt>HashGroup</tt> may reference a single namespace to control how one forms Interests from the <tt>HashGroup</tt>.  If one is using separate namespaces for                    manifests and application data, one needs at least two hash groups.  For a manifest structure of "MMMDDD," (where M means manifest (indirect pointer) and D means data (direct pointer)) for example, one would have a first <tt>HashGroup</tt>&gt; for the child manifests with its namespace and a second <tt>HashGroup</tt> for the data pointers with the other namespace. If one used a structure like "MMMDDDMMM," then one would need three hash groups.</t>
+        <t>The <tt>NodeData</tt> element defines the namespaces used by the manifest. There may be multiple namespaces, depending on how one names subsequent  manifests or data objects.  Each <tt>HashGroup</tt> may reference a single namespace to control how one forms Interests from the <tt>HashGroup</tt>.  If one is using separate namespaces for                    manifests and application data, one needs at least two hash groups.  For a manifest structure of "MMMDDD," (where M means manifest (indirect pointer) and D means data (direct pointer)) for example, one would have a first <tt>HashGroup</tt> for the child manifests with its namespace and a second <tt>HashGroup</tt> for the data pointers with the other namespace. If one used a structure like "MMMDDDMMM," then one would need three hash groups.</t>
         
         <figure anchor="flicgrammar"><name>FLIC Grammar</name>
 			<sourcecode type="abnf">
@@ -394,11 +393,11 @@ D0 D1
       <section anchor="encryption"><name>Manifest Encryption Modes</name>
         <t>This document specifies two encryption modes.  The first is a preshared key mode, where the parties are assumed to have the decryption keys already. It uses AES-GCM or AES-CCM. This is useful, for example, when using a key agreement protocol such as <xref target='I-D.wood-icnrg-ccnxkeyexchange'>CCNxKE</xref>. The second is an RSA key encapsulation mode (<xref target='RFC5990'>RsaKem</xref>), which may be used for group keying.</t>
         
-        <t>Additional modes may be defined in subsequent specifications.  We expect that an RSA KemDem (mode and Elliptic Curve mode should be specified.</t>
+        <t>Additional modes may be defined in subsequent specifications.  We expect that an RSA KemDem mode and Elliptic Curve mode should be specified.</t>
         
         <t>All encryption modes use standard encryption algorithms and specifications. Where appropriate, we adopt the TLS 1.2 standards for how to use the encryption algorithms. This section specifies how to encode algorithm parameters or ICN-specific data.</t>
         
-        <t>For group key based encryption, we use RsaKem. This specification only details the pertinent aspects of the encryption.  It describes how a consumer locates the appropriate keys in the ICN namespace. It does not specify aspects of a key manager which may or may not be used as part of key distribution and management, nor does it specify the protocol between a key manager and a publisher.  In it's simpliest                    form, the publisher could be the key manager, in which case there is no                    extra protocol needed between the publisher and key manager.</t>
+        <t>For group key based encryption, we use RsaKem. This specification only details the pertinent aspects of the encryption.  It describes how a consumer locates the appropriate keys in the ICN namespace. It does not specify aspects of a key manager which may or may not be used as part of key distribution and management, nor does it specify the protocol between a key manager and a publisher.  In its simpliest                    form, the publisher could be the key manager, in which case there is no                    extra protocol needed between the publisher and key manager.</t>
         
         <t>While the preshared key algorithm is limited in use, the AES encryption mode described applies to the group key mechanisms too. The group key mechanism facilitates the distribution of the shared key without an on-line key agreement protocol like (the expired draft) <xref target='I-D.wood-icnrg-ccnxkeyexchange'>CCNxKE</xref>.</t>
                 
@@ -456,7 +455,7 @@ D0 D1
           <t>To create the wrapped key using a Key Encryption Key:</t>
           <ol>
           	<li>Obtain the CEK in binary format (e.g. 32 bytes for 256 bits)</li>
-            <li>RSA encrypt the CEK using the KEK public key with OAEP padding, following <xref target="RFC8017">RFC8017 Sec 7.1</xref>. <strong>The encryption is not signed because the root Manifest must be signed by the publisher already.</strong></li>
+            <li>RSA encrypt the CEK using the KEK public key with OAEP padding, following <xref target="RFC8017">RFC8017 Sec 7.1</xref>. The encryption is not signed because the root Manifest must have been signed by the publisher already.</li>
           </ol>
           
           <t>To decrypt the wrapped key using a Key Encryption Key:</t>
@@ -590,7 +589,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
               
               <li>The Root Manifest has an NsDef that specifies SegmentedPrefix and the SegmentedPrefixSchema element specifies the SegmentedPrefixName.</li>
               
-              <li>The publisher will track the chunk number of each content object within the NsId. Objects will be numbered in their traversal order.  Within each manifest, the name will be constructed from the SegmentedPrefixName plus a Chunk name component.</li>
+              <li>The publisher tracks the chunk number of each content object within the NsId. Objects are be numbered in their traversal order.  Within each manifest, the name can be constructed from the SegmentedPrefixName plus a Chunk name component.</li>
               
               <li>The Top Manifest has the name SegmentedPrefixName plus chunk  number.  It may have cache control directies.  It's GroupData elements must have an NsId that references the NsDef.</li>
               
@@ -609,7 +608,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
             
             <t>Each manifest (Top, Internal, Leaf) uses two or more HashGroups, where each HashGroup has only Direct (with the second NsId) or Indirect (with the first NsId).  The number of hash groups will depend on how the publisher wishes to interleave direct and indirect pointers.</t>
             
-            <t>Manifests and data objects are named as appropriate for their naming schema.</t>
+            <t>Manifests and data objects derive their names according to the application's naming schema.</t>
           </section>
         </section>
         
@@ -617,7 +616,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
           <t>In NDN, all Manifest Data objects use a ContentType of FLIC (1024), while all application data content objects use a PayloadType of Blob.</t>
           
           <section anchor="NDNHashNaming"><name>NDN Hash Naming</name>
-            <t>In NDN Hash Naming, a Data Object has a 0-length name.  This means that an Interest will only have an ImplicitDigest name component in it.  This method relies on using NDN ForwardingHints.                         </t>
+            <t>In NDN Hash Naming, a Data Object has a 0-length name.  This means that an Interest will only have an ImplicitDigest name component in it.  This method relies on using NDN Forwarding Hints.                         </t>
             
             <t>It proceeds as follows:</t>
             <ul>
@@ -664,7 +663,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
               
               <li>The Root Manifest has an NsDef that specifies SegmentedPrefix and the SegmentedPrefixSchema element specifies the SegmentedPrefixName.</li>
               
-              <li>The publisher will track the segment number of each Data object within a SegmentedPrefix NsId. Data is numbered in  traversal order.  Within each manifest, the name is constructed from the SegmentedPrefixName plus a Segment name component.</li>
+              <li>The publisher tracks the segment number of each Data object within a SegmentedPrefix NsId. Data is numbered in  traversal order.  Within each manifest, the name is constructed from the SegmentedPrefixName plus a Segment name component.</li>
               
               <li>The Top Manifest has the name SegmentedPrefixName plus segment number.  It may have cache control directies.  Its GroupData elements must have an NsId that references the NsDef.</li>
               
@@ -683,7 +682,8 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
             
             <t>Each manifest (Top, Internal, Leaf) uses two or more HashGroups, where eash HashGroup has only Direct (with the second NsId) or Indirect (with the first NsId).  The number of hash groups will depend on how the publisher wishes to interleave direct and indirect pointers.</t>
             
-            <t>Manifests and data objects are named as appropriate for their naming schema.</t>
+            <t>Manifests and data objects derive their names according to the application's naming schema.</t>
+            
           </section>
         </section>
       </section>
@@ -715,7 +715,7 @@ Root -> M0 ----> M1 ----> ...
     
     <section anchor="experiments" numbered="true" toc="default">
       <name>Experimenting with FLIC</name>
-      <t>FLIC is expected to raise a number of salient experiments in the use of ICN protools by applications. These experiments will help not only to inform the desirable structure of ICN applications but reflect back to the features included in FLIC in expectation of their value to those applications. While many interesting design aspects of FLIC will remain to be discovered through experience, a number of important questions to be answered through experimentation include:</t>
+      <t>FLIC is expected to enable a number of salient experiments in the use of ICN protools by applications. These experiments will help not only to inform the desirable structure of ICN applications but reflect back to the features included in FLIC to evaluate their usefulness to those applications. While many interesting design aspects of FLIC remain to be discovered through experience, a number of important questions to be answered through experimentation include:</t>
       <ul>
         <li>use for just files or other collections like directories</li>
         <li>use for particular applications, like streaming media manifests</li>
@@ -927,17 +927,17 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
         <li>republishing under a new namespace. (<strong>Note: need help here - is this to reinforce that you can re-publish application data by creating a new root Manifest and signing that, requiring only one signature to change?</strong>)</li>
         <li>encryption mechanisms. (<strong>Note: did I cover this adequately below?</strong>)</li>
         <li>encryption key distribution mechanisms.(<strong>Note: not sure what needs to be said here</strong>)</li>
-        <li>discussion of privacy, leaking of linkability information - <strong>could really use some helop here</strong>.</li> 
+        <li>discussion of privacy, leaking of linkability information - <strong>could really use some help here</strong>.</li> 
       </ul>
       <t><strong>Anything else?????</strong>.</t>
       
-      <section><name>Integrity and Origin authentication of FLIC Manifests</name>
-      	<t>A FLIC Manifest is used to describe how to form Interests to access large CCNx or NDN application data. The Manifest is itself either an individual content object, or a tree of content objects linked together via the corresponding content hashes. The NDN and CCnx protocol architectures direct provide both individual object integrity (using cryptographically strong hashes) and data origin authentication (using signatures). The protocol specifications, <xref target='NDN'/> and <xref target='RFC8609'>CCNx</xref> respectively, provide the protocol machinery and keying to support strong integrity and authentication. Therefore, FLIC utilizes the existing protocol specifications for these functions, rather than providing its own. There are a few subtle differences in the handling of signatures and keys in NDN and CCNx worth recapitulating here:</t>
+      <section><name>Integrity and Origin Authentication of FLIC Manifests</name>
+      	<t>A FLIC Manifest is used to describe how to form Interests to access large CCNx or NDN application data. The Manifest is itself either an individual content object, or a tree of content objects linked together via the corresponding content hashes. The NDN and CCnx protocol architectures directly provide both individual object integrity (using cryptographically strong hashes) and data origin authentication (using signatures). The protocol specifications, <xref target='NDN'/> and <xref target='RFC8609'>CCNx</xref> respectively, provide the protocol machinery and keying to support strong integrity and authentication. Therefore, FLIC utilizes the existing protocol specifications for these functions, rather than providing its own. There are a few subtle differences in the handling of signatures and keys in NDN and CCNx worth recapitulating here:</t>
       	<ul>
       		<li>NDN in general adds a signature to every individual data packet rather than aggregating signatures via some object-level scheme. When employing FLIC Manifests to multi-packet NDN objects, it is expected that the individual packet signatures would be elided and the signture on the Manifest used instead.</li>
       		<li>In contrast, CCNx is biased to have primitive objects or pieces thereof be "nameless" in the sense they are identified only by their hashes rather than each having a name directly bound to the content through an individual signature. Therefore, CCNx depends heavily on FLIC (or an alternative method) to provide the name and the signed binding of the name to the content described in the Manifest</li>
       	</ul>
-      	<t>A FLIC Manifest therefore gets integrity of its individual pieces through the existing secure hashing procedures of the underlying protocols. Origin authentication of the entire Manifest is achieved through hash chaining and applying a signature <strong>only</strong> to the root Manifest of a manifest tree. It is important to note that the Name of the Manifest, which is what the signature is bound to, need not bear any particular relationship to the names of the application objects pointed to in the Manifest via Name Constructors. This has a number of important benefits described in (see <xref target='nameconstructors'/>).</t>
+      	<t>A FLIC Manifest therefore gets integrity of its individual pieces through the existing secure hashing procedures of the underlying protocols. Origin authentication of the entire Manifest is achieved through hash chaining and applying a signature <strong>only</strong> to the root Manifest of a manifest tree. It is important to note that the Name of the Manifest, which is what the signature is bound to, need not bear any particular relationship to the names of the application objects pointed to in the Manifest via Name Constructors. This has a number of important benefits described in <xref target='nameconstructors'/>.</t>
       </section>
       
       <section><name>Confidentiality of Manifest Data</name>
@@ -948,7 +948,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
       		<li>A strong design goal of FLIC is <em>universality</em> such that it can be used transparently by many different ICN applications. This argues that FLIC should have a set of common encryption and keying capabilities that can be delegated to library code and not have to be re-worked by each individual application (see <xref target='libraries'/>)</li>
       	</ul>
       	
-      	<t>Therefore, this specification directly specifies two encryption encapsulations and associated links to key management, as described in <xref target='encryption'/>. As more experience is gained with various use cases, additional encryption capabilities may be needed and hence we expect the encryption aspects of this specification to evolve over time</t>
+      	<t>Therefore, this specification directly specifies two encryption encapsulations and associated links to key management, as described in <xref target='encryption'/>. As more experience is gained with various use cases, additional encryption capabilities may be needed and hence we expect the encryption aspects of this specification to evolve over time.</t>
       </section>
       
       <section><name>Privacy of names and linkability of access patterns</name>
@@ -1045,7 +1045,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
     </references>
   
     <section anchor="building-trees"><name>Building Trees</name>
-      <t>This section describes one method to build trees.  It constructs a pre-order tree in a single pass of the application data, going from the tail to the beginning. This allows us to work up the right side of the tree in a single pass, then work down each left branch until we exhaust the data.  Using the reverse-order traversal, we create the right-most-child manifest, then its parent, then the indirect pointers of that parent, then the parent's direct pointers,then the parent of the parent (repeating). This process uses recursion, as it is the clearest way to show the code. A more optimized approach could do it in a true single pass.</t>
+      <t>This appendix describes one method to build trees.  It constructs a pre-order tree in a single pass of the application data, going from the tail to the beginning. This allows us to work up the right side of the tree in a single pass, then work down each left branch until we exhaust the data.  Using the reverse-order traversal, we create the right-most-child manifest, then its parent, then the indirect pointers of that parent, then the parent's direct pointers,then the parent of the parent (repeating). This process uses recursion, as it is the clearest way to show the code. A more optimized approach could do it in a true single pass.</t>
       
       <t>Because we're building from the bottom up, we use the term 'level' to be the distance from the right-most child up. Level 0 is the bottom-most level of the tree, such as where node 7 is:</t>
       <artwork align="center" name="" type="" alt=""><![CDATA[
