@@ -1175,7 +1175,6 @@ li > p:last-of-type {
   margin-bottom: 0;
 }
 </style>
-<link href="rfc-local.css" rel="stylesheet" type="text/css">
 <script type="application/javascript">async function addMetadata(){try{const e=document.styleSheets[0].cssRules;for(let t=0;t<e.length;t++)if(/#identifiers/.exec(e[t].selectorText)){const a=e[t].cssText.replace("#identifiers","#external-updates");document.styleSheets[0].insertRule(a,document.styleSheets[0].cssRules.length)}}catch(e){console.log(e)}const e=document.getElementById("external-metadata");if(e)try{var t,a="",o=function(e){const t=document.getElementsByTagName("meta");for(let a=0;a<t.length;a++)if(t[a].getAttribute("name")===e)return t[a].getAttribute("content");return""}("rfc.number");if(o){t="https://www.rfc-editor.org/rfc/rfc"+o+".json";try{const e=await fetch(t);a=await e.json()}catch(e){t=document.URL.indexOf("html")>=0?document.URL.replace(/html$/,"json"):document.URL+".json";const o=await fetch(t);a=await o.json()}}if(!a)return;e.style.display="block";const s="",d="https://datatracker.ietf.org/doc",n="https://datatracker.ietf.org/ipr/search",c="https://www.rfc-editor.org/info",l=a.doc_id.toLowerCase(),i=a.doc_id.slice(0,3).toLowerCase(),f=a.doc_id.slice(3).replace(/^0+/,""),u={status:"Status",obsoletes:"Obsoletes",obsoleted_by:"Obsoleted By",updates:"Updates",updated_by:"Updated By",see_also:"See Also",errata_url:"Errata"};let h="<dl style='overflow:hidden' id='external-updates'>";["status","obsoletes","obsoleted_by","updates","updated_by","see_also","errata_url"].forEach(e=>{if("status"==e){a[e]=a[e].toLowerCase();var t=a[e].split(" "),o=t.length,w="",p=1;for(let e=0;e<o;e++)p<o?w=w+r(t[e])+" ":w+=r(t[e]),p++;a[e]=w}else if("obsoletes"==e||"obsoleted_by"==e||"updates"==e||"updated_by"==e){var g,m="",b=1;g=a[e].length;for(let t=0;t<g;t++)a[e][t]&&(a[e][t]=String(a[e][t]).toLowerCase(),m=b<g?m+"<a href='"+s+"/rfc/".concat(a[e][t])+"'>"+a[e][t].slice(3)+"</a>, ":m+"<a href='"+s+"/rfc/".concat(a[e][t])+"'>"+a[e][t].slice(3)+"</a>",b++);a[e]=m}else if("see_also"==e){var y,L="",C=1;y=a[e].length;for(let t=0;t<y;t++)if(a[e][t]){a[e][t]=String(a[e][t]);var _=a[e][t].slice(0,3),v=a[e][t].slice(3).replace(/^0+/,"");L=C<y?"RFC"!=_?L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+_+" "+v+"</a>, ":L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+v+"</a>, ":"RFC"!=_?L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+_+" "+v+"</a>":L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+v+"</a>",C++}a[e]=L}else if("errata_url"==e){var R="";R=a[e]?R+"<a href='"+a[e]+"'>Errata exist</a> | <a href='"+d+"/"+l+"'>Datatracker</a>| <a href='"+n+"/?"+i+"="+f+"&submit="+i+"'>IPR</a> | <a href='"+c+"/"+l+"'>Info page</a>":"<a href='"+d+"/"+l+"'>Datatracker</a> | <a href='"+n+"/?"+i+"="+f+"&submit="+i+"'>IPR</a> | <a href='"+c+"/"+l+"'>Info page</a>",a[e]=R}""!=a[e]?"Errata"==u[e]?h+=`<dt>More info:</dt><dd>${a[e]}</dd>`:h+=`<dt>${u[e]}:</dt><dd>${a[e]}</dd>`:"Errata"==u[e]&&(h+=`<dt>More info:</dt><dd>${a[e]}</dd>`)}),h+="</dl>",e.innerHTML=h}catch(e){console.log(e)}else console.log("Could not locate metadata <div> element");function r(e){return e.charAt(0).toUpperCase()+e.slice(1)}}window.removeEventListener("load",addMetadata),window.addEventListener("load",addMetadata);</script>
 </head>
 <body>
@@ -1184,11 +1183,11 @@ li > p:last-of-type {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">FLIC</td>
-<td class="right">June 2021</td>
+<td class="right">July 2021</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Tschudin, et al.</td>
-<td class="center">Expires 30 December 2021</td>
+<td class="center">Expires 2 January 2022</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1201,12 +1200,12 @@ li > p:last-of-type {
 <dd class="internet-draft">draft-irtf-icnrg-flic-03</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2021-06-28" class="published">28 June 2021</time>
+<time datetime="2021-07-01" class="published">1 July 2021</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2021-12-30">30 December 2021</time></dd>
+<dd class="expires"><time datetime="2022-01-02">2 January 2022</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1253,7 +1252,7 @@ li > p:last-of-type {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 30 December 2021.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 2 January 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1278,176 +1277,176 @@ li > p:last-of-type {
         <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
 <a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
         </h2>
-<nav class="toc"><ul class="toc ulEmpty compact ulBare">
-<li class="toc ulEmpty compact ulBare" id="section-toc.1-1.1">
+<nav class="toc"><ul class="ulBare toc compact ulEmpty">
+<li class="ulBare toc compact ulEmpty" id="section-toc.1-1.1">
             <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a></p>
-<ul class="toc ulEmpty compact ulBare">
-<li class="toc ulEmpty compact ulBare" id="section-toc.1-1.1.2.1">
+<ul class="toc compact ulEmpty ulBare">
+<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.1.2.1">
                 <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-flic-as-an-icn-experimental" class="xref">FLIC as an ICN experimental tool</a></p>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.1.2.2">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.1.2.2">
                 <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="xref">1.2</a>.  <a href="#name-requirements-language" class="xref">Requirements Language</a></p>
 </li>
             </ul>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.2">
+          <li class="ulBare toc compact ulEmpty" id="section-toc.1-1.2">
             <p id="section-toc.1-1.2.1"><a href="#section-2" class="xref">2</a>.  <a href="#name-design-overview" class="xref">Design Overview</a></p>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3">
+          <li class="ulBare toc compact ulEmpty" id="section-toc.1-1.3">
             <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-flic-structure" class="xref">FLIC Structure</a></p>
-<ul class="toc ulEmpty compact ulBare">
-<li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.1">
+<ul class="toc compact ulEmpty ulBare">
+<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.1">
                 <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="xref">3.1</a>.  <a href="#name-terminology" class="xref">Terminology</a></p>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.2">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.2">
                 <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="xref">3.2</a>.  <a href="#name-locators" class="xref">Locators</a></p>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.3">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.3">
                 <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="xref">3.3</a>.  <a href="#name-name-constructors" class="xref">Name Constructors</a></p>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.4">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.4">
                 <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="xref">3.4</a>.  <a href="#name-manifest-metadata" class="xref">Manifest Metadata</a></p>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.5">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.5">
                 <p id="section-toc.1-1.3.2.5.1"><a href="#section-3.5" class="xref">3.5</a>.  <a href="#name-pointer-annotations" class="xref">Pointer Annotations</a></p>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.6">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.6">
                 <p id="section-toc.1-1.3.2.6.1"><a href="#section-3.6" class="xref">3.6</a>.  <a href="#name-manifest-grammar-abnf" class="xref">Manifest Grammar (ABNF)</a></p>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.7">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.7">
                 <p id="section-toc.1-1.3.2.7.1"><a href="#section-3.7" class="xref">3.7</a>.  <a href="#name-manifest-trees" class="xref">Manifest Trees</a></p>
-<ul class="toc ulEmpty compact ulBare">
-<li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.7.2.1">
+<ul class="toc compact ulEmpty ulBare">
+<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.7.2.1">
                     <p id="section-toc.1-1.3.2.7.2.1.1"><a href="#section-3.7.1" class="xref">3.7.1</a>.  <a href="#name-traversal" class="xref">Traversal</a></p>
 </li>
                 </ul>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.8">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.8">
                 <p id="section-toc.1-1.3.2.8.1"><a href="#section-3.8" class="xref">3.8</a>.  <a href="#name-manifest-encryption-modes" class="xref">Manifest Encryption Modes</a></p>
-<ul class="toc ulEmpty compact ulBare">
-<li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.8.2.1">
+<ul class="toc compact ulEmpty ulBare">
+<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.8.2.1">
                     <p id="section-toc.1-1.3.2.8.2.1.1"><a href="#section-3.8.1" class="xref">3.8.1</a>.  <a href="#name-aead-mode" class="xref">AEAD Mode</a></p>
 </li>
-                  <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.8.2.2">
+                  <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.8.2.2">
                     <p id="section-toc.1-1.3.2.8.2.2.1"><a href="#section-3.8.2" class="xref">3.8.2</a>.  <a href="#name-rsa-oaep-key-transport-mode" class="xref">RSA-OAEP Key Transport Mode</a></p>
 </li>
                 </ul>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.9">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.9">
                 <p id="section-toc.1-1.3.2.9.1"><a href="#section-3.9" class="xref">3.9</a>.  <a href="#name-protocol-encodings" class="xref">Protocol Encodings</a></p>
-<ul class="toc ulEmpty compact ulBare">
-<li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.9.2.1">
+<ul class="toc compact ulEmpty ulBare">
+<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.9.2.1">
                     <p id="section-toc.1-1.3.2.9.2.1.1"><a href="#section-3.9.1" class="xref">3.9.1</a>.  <a href="#name-ccnx-encoding" class="xref">CCNx Encoding</a></p>
-<ul class="toc ulEmpty compact ulBare">
-<li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.9.2.1.2.1">
+<ul class="toc compact ulEmpty ulBare">
+<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.9.2.1.2.1">
                         <p id="section-toc.1-1.3.2.9.2.1.2.1.1"><a href="#section-3.9.1.1" class="xref">3.9.1.1</a>.  <a href="#name-ccnx-hash-naming" class="xref">CCNx Hash Naming</a></p>
 </li>
-                      <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.9.2.1.2.2">
+                      <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.9.2.1.2.2">
                         <p id="section-toc.1-1.3.2.9.2.1.2.2.1"><a href="#section-3.9.1.2" class="xref">3.9.1.2</a>.  <a href="#name-ccnx-single-prefix" class="xref">CCNx Single Prefix</a></p>
 </li>
-                      <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.9.2.1.2.3">
+                      <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.9.2.1.2.3">
                         <p id="section-toc.1-1.3.2.9.2.1.2.3.1"><a href="#section-3.9.1.3" class="xref">3.9.1.3</a>.  <a href="#name-ccnx-segmented-prefix" class="xref">CCNx Segmented Prefix</a></p>
 </li>
-                      <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.9.2.1.2.4">
+                      <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.9.2.1.2.4">
                         <p id="section-toc.1-1.3.2.9.2.1.2.4.1"><a href="#section-3.9.1.4" class="xref">3.9.1.4</a>.  <a href="#name-ccnx-hybrid-schema" class="xref">CCNx Hybrid Schema</a></p>
 </li>
                     </ul>
 </li>
-                  <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.9.2.2">
+                  <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.9.2.2">
                     <p id="section-toc.1-1.3.2.9.2.2.1"><a href="#section-3.9.2" class="xref">3.9.2</a>.  <a href="#name-ndn-encoding" class="xref">NDN Encoding</a></p>
-<ul class="toc ulEmpty compact ulBare">
-<li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.9.2.2.2.1">
+<ul class="toc compact ulEmpty ulBare">
+<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.9.2.2.2.1">
                         <p id="section-toc.1-1.3.2.9.2.2.2.1.1"><a href="#section-3.9.2.1" class="xref">3.9.2.1</a>.  <a href="#name-ndn-hash-naming" class="xref">NDN Hash Naming</a></p>
 </li>
-                      <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.9.2.2.2.2">
+                      <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.9.2.2.2.2">
                         <p id="section-toc.1-1.3.2.9.2.2.2.2.1"><a href="#section-3.9.2.2" class="xref">3.9.2.2</a>.  <a href="#name-ndn-single-prefix" class="xref">NDN Single Prefix</a></p>
 </li>
-                      <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.9.2.2.2.3">
+                      <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.9.2.2.2.3">
                         <p id="section-toc.1-1.3.2.9.2.2.2.3.1"><a href="#section-3.9.2.3" class="xref">3.9.2.3</a>.  <a href="#name-ndn-segmented-prefix" class="xref">NDN Segmented Prefix</a></p>
 </li>
-                      <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.9.2.2.2.4">
+                      <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.9.2.2.2.4">
                         <p id="section-toc.1-1.3.2.9.2.2.2.4.1"><a href="#section-3.9.2.4" class="xref">3.9.2.4</a>.  <a href="#name-ndn-hybrid-schema" class="xref">NDN Hybrid Schema</a></p>
 </li>
                     </ul>
 </li>
                 </ul>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.10">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.10">
                 <p id="section-toc.1-1.3.2.10.1"><a href="#section-3.10" class="xref">3.10</a>. <a href="#name-example-structures" class="xref">Example Structures</a></p>
-<ul class="toc ulEmpty compact ulBare">
-<li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.10.2.1">
+<ul class="toc compact ulEmpty ulBare">
+<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.10.2.1">
                     <p id="section-toc.1-1.3.2.10.2.1.1"><a href="#section-3.10.1" class="xref">3.10.1</a>.  <a href="#name-leaf-only-data" class="xref">Leaf-only data</a></p>
 </li>
-                  <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.3.2.10.2.2">
+                  <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.3.2.10.2.2">
                     <p id="section-toc.1-1.3.2.10.2.2.1"><a href="#section-3.10.2" class="xref">3.10.2</a>.  <a href="#name-linear" class="xref">Linear</a></p>
 </li>
                 </ul>
 </li>
             </ul>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.4">
+          <li class="ulBare toc compact ulEmpty" id="section-toc.1-1.4">
             <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-experimenting-with-flic" class="xref">Experimenting with FLIC</a></p>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.5">
+          <li class="ulBare toc compact ulEmpty" id="section-toc.1-1.5">
             <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-usage-examples" class="xref">Usage Examples</a></p>
-<ul class="toc ulEmpty compact ulBare">
-<li class="toc ulEmpty compact ulBare" id="section-toc.1-1.5.2.1">
+<ul class="toc compact ulEmpty ulBare">
+<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.5.2.1">
                 <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="xref">5.1</a>.  <a href="#name-locating-flic-leaf-and-mani" class="xref">Locating FLIC leaf and manifest nodes</a></p>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.5.2.2">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.5.2.2">
                 <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="xref">5.2</a>.  <a href="#name-seeking" class="xref">Seeking</a></p>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.5.2.3">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.5.2.3">
                 <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="xref">5.3</a>.  <a href="#name-block-level-de-duplication" class="xref">Block-level de-duplication</a></p>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.5.2.4">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.5.2.4">
                 <p id="section-toc.1-1.5.2.4.1"><a href="#section-5.4" class="xref">5.4</a>.  <a href="#name-growing-icn-collections" class="xref">Growing ICN collections</a></p>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.5.2.5">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.5.2.5">
                 <p id="section-toc.1-1.5.2.5.1"><a href="#section-5.5" class="xref">5.5</a>.  <a href="#name-re-publishing-a-flic-under-" class="xref">Re-publishing a FLIC under a new name</a></p>
 </li>
             </ul>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.6">
+          <li class="ulBare toc compact ulEmpty" id="section-toc.1-1.6">
             <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
-<ul class="toc ulEmpty compact ulBare">
-<li class="toc ulEmpty compact ulBare" id="section-toc.1-1.6.2.1">
+<ul class="toc compact ulEmpty ulBare">
+<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.6.2.1">
                 <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="xref">6.1</a>.  <a href="#name-flic-payload-type" class="xref">FLIC Payload Type</a></p>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.6.2.2">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.6.2.2">
                 <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="xref">6.2</a>.  <a href="#name-flic-manifest-metadata-and-" class="xref">FLIC Manifest Metadata and Annotation TLVs</a></p>
 </li>
             </ul>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.7">
+          <li class="ulBare toc compact ulEmpty" id="section-toc.1-1.7">
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
-<ul class="toc ulEmpty compact ulBare">
-<li class="toc ulEmpty compact ulBare" id="section-toc.1-1.7.2.1">
+<ul class="toc compact ulEmpty ulBare">
+<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.7.2.1">
                 <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="xref">7.1</a>.  <a href="#name-integrity-and-origin-authen" class="xref">Integrity and Origin Authentication of FLIC Manifests</a></p>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.7.2.2">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.7.2.2">
                 <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="xref">7.2</a>.  <a href="#name-confidentiality-of-manifest" class="xref">Confidentiality of Manifest Data</a></p>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.7.2.3">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.7.2.3">
                 <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="xref">7.3</a>.  <a href="#name-privacy-of-names-and-linkab" class="xref">Privacy of names and linkability of access patterns</a></p>
 </li>
             </ul>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.8">
+          <li class="ulBare toc compact ulEmpty" id="section-toc.1-1.8">
             <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-references" class="xref">References</a></p>
-<ul class="toc ulEmpty compact ulBare">
-<li class="toc ulEmpty compact ulBare" id="section-toc.1-1.8.2.1">
+<ul class="toc compact ulEmpty ulBare">
+<li class="toc compact ulEmpty ulBare" id="section-toc.1-1.8.2.1">
                 <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="xref">8.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
 </li>
-              <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.8.2.2">
+              <li class="toc compact ulEmpty ulBare" id="section-toc.1-1.8.2.2">
                 <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="xref">8.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
 </li>
             </ul>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.9">
+          <li class="ulBare toc compact ulEmpty" id="section-toc.1-1.9">
             <p id="section-toc.1-1.9.1"><a href="#appendix-A" class="xref">Appendix A</a>.  <a href="#name-building-trees" class="xref">Building Trees</a></p>
 </li>
-          <li class="toc ulEmpty compact ulBare" id="section-toc.1-1.10">
+          <li class="ulBare toc compact ulEmpty" id="section-toc.1-1.10">
             <p id="section-toc.1-1.10.1"><a href="#appendix-B" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a></p>
 </li>
         </ul>
@@ -1458,14 +1457,16 @@ li > p:last-of-type {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">ICN architectures such as Content-Centric Networking (CCNx)<span>[<a href="#RFC8569" class="xref">RFC8569</a>]</span> and Named Data Networking <span>[<a href="#NDN" class="xref">NDN</a>]</span> are well suited for static content distribution.  Each piece of (possibly immutable) static content is assigned a name by its  producer.  Consumers fetch this content using said name. Optionally, consumers may specify the full name of content, which includes its name and a unique (with overwhelming probability) cryptographic digest of said content.  (See <span>[<a href="#RFC7927" class="xref">RFC7927</a>]</span> for a formal definition of "full name".)<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">To enable requests with full names, consumers need a priori knowledge of content digests.  Manifests, a form of catalog, are data structures commonly employed to store and transport this information.  Typically, ICN manifests are signed content objects (data) which carry a collection of hash digests.  Therefore, as content objects, manifests themselves may be fetched by full name. Thus, manifests may contain either hash digests of, or pointers to, either other manifests or content objects.  A collection of manifests and content objects represents a large piece of application data, e.g., one that cannot otherwise fit in a single content object.<a href="#section-1-2" class="pilcrow">¶</a></p>
-<p id="section-1-3">Structurally, this relationship between manifests and content objects is reminiscent of the UNIX inode concept with index tables and memory pointers.  In this document, we specify a simple, yet extensible, manifest data structure called FLIC - <em>File-Like ICN Collection</em>.  FLIC is suitable for ICN protocol suites such as CCNx and NDN.  We describe the FLIC design, grammar, and various use cases, e.g., ordered fetch, seeking, de-duplication, extension, and variable-sized encoding. We also include FLIC encoding examples for CCNx and NDN.<a href="#section-1-3" class="pilcrow">¶</a></p>
-<p id="section-1-4">The purpose of a manifest is to concisely name the constiuent pieces of a larger object. A FLIC manifest does this by using a <em>root</em> manifest to name and cryptographically sign the data structure and then use concise lists of hash-based names to indicate the constituent pieces.  This maintains strong security from a single signature. A Manifest entry gives one enough information to create an <em>Interest</em> for that entry, so it must specify the name, the hash digest, and if needed, the locators.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<aside id="section-1-5">
-        <p id="section-1-5.1">Note: the reader is assumed to be familiar with general ICN concepts from CCNx or NDN. We use the terminology documented in <span>[<a href="#RFC7927" class="xref">RFC7927</a>]</span><a href="#section-1-5.1" class="pilcrow">¶</a></p>
+<p id="section-1-1">ICN architectures such as Content-Centric Networking (CCNx)<span>[<a href="#RFC8569" class="xref">RFC8569</a>]</span> and Named Data Networking <span>[<a href="#NDN" class="xref">NDN</a>]</span> are well suited for static content distribution.  Each piece of (possibly immutable) static content is assigned a name by its  producer.  Consumers fetch this content using said name. Optionally, consumers may specify the full name of content, which includes its name and a unique (with overwhelming probability) cryptographic digest of said content.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<aside id="section-1-2">
+        <p id="section-1-2.1">Note: The reader is assumed to be familiar with general ICN concepts from CCNx or NDN. For general ICN terms, this document uses the terminology defined in <span>[<a href="#RFC7927" class="xref">RFC7927</a>]</span>. Where more specificity is needed, we utilize <span><a href="#RFC8569" class="xref">CCNx</a> [<a href="#RFC8569" class="xref">RFC8569</a>]</span> terminology where a Content Object is the data structure that holds application payload. 
+
+ Terms defined specifically for FLIC are enumerated below in <a href="#Terminology" class="xref">Section 3.1</a>.<a href="#section-1-2.1" class="pilcrow">¶</a></p>
 </aside>
-<p id="section-1-6">FLIC is a distributed data structure best illustrated by the following picture.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-3">To enable requests with full names, consumers need a priori knowledge of content digests.  Manifests, a form of catalog, are data structures commonly employed to store and transport this information.  Typically, ICN manifests are signed content objects (data) which carry a collection of hash digests.  Therefore, as content objects, manifests themselves may be fetched by full name. Thus, manifests may contain either hash digests of, or pointers to, either other manifests or content objects.  A collection of manifests and content objects represents a large piece of application data, e.g., one that cannot otherwise fit in a single content object.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">Structurally, this relationship between manifests and content objects is reminiscent of the UNIX inode concept with index tables and memory pointers.  In this document, we specify a simple, yet extensible, manifest data structure called FLIC - <em>File-Like ICN Collection</em>.  FLIC is suitable for ICN protocol suites such as CCNx and NDN.  We describe the FLIC design, grammar, and various use cases, e.g., ordered fetch, seeking, de-duplication, extension, and variable-sized encoding. We also include FLIC encoding examples for CCNx and NDN.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">The purpose of a manifest is to concisely name, and hence point to, the constiuent pieces of a larger object. A FLIC manifest does this by using a <em>root</em> manifest to name and cryptographically sign the data structure and then use concise lists of hash-based names to indicate the constituent pieces.  This maintains strong security from a single signature. A Manifest entry gives one enough information to create an <em>Interest</em> for that entry, so it must specify the name, the hash digest, and if needed, the locators.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-6">FLIC is a distributed data structure illustrated by the following picture.<a href="#section-1-6" class="pilcrow">¶</a></p>
 <span id="name-a-flic-manifest-and-its-dir"></span><figure id="figure-1">
         <div class="artwork art-text alignCenter" id="section-1-7.1">
 <pre>
@@ -1490,11 +1491,9 @@ li > p:last-of-type {
 <figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
 <a href="#name-a-flic-manifest-and-its-dir" class="selfRef">A FLIC manifest and its directed acyclic graph</a>
         </figcaption></figure>
-<p id="section-1-8">A key design decision is how one names the root manifest, the application data, and other subsequent manifests. For this, FLIC uses the concept of a Name Constructor.  The root manifest (in fact, any FLIC manifest) may include a Name Constructor that instructs a manifest reader how to properly create Interests for the associated application data and                subsequent manifests. The Name Constructors allow interest construction using a well-known, application-independent set of rules.  Some name constructor forms are tailored towards specific ICN protocols, such as CCNx or NDN; some are more general and could work with many protocols.  We describe the allowed Name Constructor methods in  <a href="#nameconstructors" class="xref">Section 3.3</a>. There are also particulars of how to encode the name schema in a given ICN protocol, which we describe in <a href="#encodings" class="xref">Section 3.9</a>.<a href="#section-1-8" class="pilcrow">¶</a></p>
-<p id="section-1-9">Locators are routing hints to find a Content Object / Data.  They exist in both CCNx  and NDN, though the specific protocol mechanisms differ. A FLIC manifest represents locators in the same way for both ICN protocols, though they are encoded differently in the underlying protocol. See <a href="#encodings" class="xref">Section 3.9</a> for encoding differences.<a href="#section-1-9" class="pilcrow">¶</a></p>
-<p id="section-1-10">We follow the <span><a href="#RFC8569" class="xref">CCNx</a> [<a href="#RFC8569" class="xref">RFC8569</a>]</span> terminology where a Content Object is the data structure that holds application payload. It is made up of an optional Name, a PayloadType, a Payload, and an optional Signature.<a href="#section-1-10" class="pilcrow">¶</a></p>
-<p id="section-1-11">FLIC has encodings for <span><a href="#CCNxEncoding" class="xref">CCNx</a> (<a href="#CCNxEncoding" class="xref">Section 3.9.1</a>)</span> as per <span><a href="#RFC8609" class="xref">RFC 8609</a> [<a href="#RFC8609" class="xref">RFC8609</a>]</span> and for <span><a href="#NDNEncoding" class="xref">NDN</a> (<a href="#NDNEncoding" class="xref">Section 3.9.2</a>)</span>.<a href="#section-1-11" class="pilcrow">¶</a></p>
-<p id="section-1-12">An example implementation in Python may be found at <span>[<a href="#FLICImplementation" class="xref">FLICImplementation</a>]</span>.<a href="#section-1-12" class="pilcrow">¶</a></p>
+<p id="section-1-8">A key design decision is how one names the root manifest, the application data, and subsidiary manifests. For this, FLIC uses the concept of a Name Constructor.  The root manifest (in fact, any FLIC manifest) may include a Name Constructor that instructs a manifest reader how to properly create Interests for the associated application data and                subsidiary manifests. The Name Constructors allow interest construction using a well-known, application-independent set of rules.  Some name constructor forms are tailored towards specific ICN protocols, such as CCNx or NDN; some are more general and could work with many protocols.  We describe the allowed Name Constructor methods in  <a href="#nameconstructors" class="xref">Section 3.3</a>. There are also particulars of how to encode the name schema in a given ICN protocol, which we describe in <a href="#encodings" class="xref">Section 3.9</a>.<a href="#section-1-8" class="pilcrow">¶</a></p>
+<p id="section-1-9">FLIC has encodings for <span><a href="#CCNxEncoding" class="xref">CCNx</a> (<a href="#CCNxEncoding" class="xref">Section 3.9.1</a>)</span> as per <span><a href="#RFC8609" class="xref">RFC 8609</a> [<a href="#RFC8609" class="xref">RFC8609</a>]</span> and for <span><a href="#NDNEncoding" class="xref">NDN</a> (<a href="#NDNEncoding" class="xref">Section 3.9.2</a>)</span>.<a href="#section-1-9" class="pilcrow">¶</a></p>
+<p id="section-1-10">An example implementation in Python may be found at <span>[<a href="#FLICImplementation" class="xref">FLICImplementation</a>]</span>.<a href="#section-1-10" class="pilcrow">¶</a></p>
 <section id="section-1.1">
         <h3 id="name-flic-as-an-icn-experimental">
 <a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-flic-as-an-icn-experimental" class="section-name selfRef">FLIC as an ICN experimental tool</a>
@@ -1513,15 +1512,18 @@ li > p:last-of-type {
       <h2 id="name-design-overview">
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-design-overview" class="section-name selfRef">Design Overview</a>
       </h2>
-<p id="section-2-1">The preferred FLIC structure copies the proven UNIX inode concept of direct and indirect pointers, but without the specific structural forms of direct versus indirect.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-1">The FLIC design adopts the proven UNIX inode concept of direct and indirect pointers, but without the specific structural forms of direct versus indirect. The pointers in FLIC use hash-based naming of Content Objects analogous to the function block numbers play in UNIX inodes. More generally, a FLIC structure is in most cases a tree, although any acyclic di-graph is a legal form.<a href="#section-2-1" class="pilcrow">¶</a></p>
 <p id="section-2-2">In FLIC terms, a direct pointer links to application-level data, which is a Content Object with application data in the Payload.  An indirect pointer links to a Content Object with a FLIC Manifest in the Payload.<a href="#section-2-2" class="pilcrow">¶</a></p>
-<p id="section-2-3">Links in FLIC use hash-based naming of Content Objects analogous to the function block numbers play in UNIX inodes. Both CCNx and NDN support hash-based naming, though the details differ (see <a href="#CCNxEncoding" class="xref">Section 3.9.1</a> and <a href="#NDNEncoding" class="xref">Section 3.9.2</a>). A substantial advantage of using hash-based naming is that it permits block-level de-duplication of application data because two blocks with the same payload will have the same hash name. Because FLIC uses hash-based naming, FLIC graphs are inherently acyclic.<a href="#section-2-3" class="pilcrow">¶</a></p>
-<p id="section-2-4">The preferred FLIC structure includes a root manifest with a strong cryptographic signature and then cryptographically strong  (e.g. SHA256) hash names as pointers to other manifests.  The advantage of this structure is that the single signature in the root manifest covers the entire data structure no matter how many additional manifests are in the data structure.  Another advantage of this structure is it removes the need to use chunk (CCNx) or segment (NDN) name components for the subordinate manifests.<a href="#section-2-4" class="pilcrow">¶</a></p>
-<p id="section-2-5">FLIC supports manifest encryption separate from application payload encryption (See <a href="#encryption" class="xref">Section 3.8</a>).  It has a flexible encryption envelope to support various encryption algorithms and key discovery mechanisms. The byte layout allows for in-place encryption and decryption.<a href="#section-2-5" class="pilcrow">¶</a></p>
-<p id="section-2-6">A limitation of this approach is that one cannot construct a hash-based name for a child until one knows the payload of that child. In practical terms, this means that one must have the complete application payload available at the time of manifest creation.<a href="#section-2-6" class="pilcrow">¶</a></p>
-<p id="section-2-7">FLIC's design allows straightforward applications that just need to traverse a linear set of related objects to do so simply, but FLIC has two extensibility mechanisms that allow for more sophisticated uses: manifest metadata, and pointer annotations. These are described in <a href="#metadata" class="xref">Section 3.4</a> and <a href="#annotations" class="xref">Section 3.5</a> respectively.<a href="#section-2-7" class="pilcrow">¶</a></p>
+<p id="section-2-3"> Because FLIC uses hash-based pointers as names, FLIC graphs are inherently acyclic. Both CCNx and NDN support hash-based naming, though the details differ (see <a href="#CCNxEncoding" class="xref">Section 3.9.1</a> and <a href="#NDNEncoding" class="xref">Section 3.9.2</a>).<a href="#section-2-3" class="pilcrow">¶</a></p>
+<aside id="section-2-4">
+        <p id="section-2-4.1">Note: A substantial advantage of using hash-based naming is that it permits block-level de-duplication of application data because two blocks with the same payload will have the same hash name.<a href="#section-2-4.1" class="pilcrow">¶</a></p>
+</aside>
+<p id="section-2-5">The FLIC structure that it is expected most applications would use consists of a root manifest with a strong cryptographic signature and then cryptographically strong  (e.g. SHA256 <span>[<a href="#SHS" class="xref">SHS</a>]</span>) hash names as pointers to other manifests.  The advantage of this structure is that the single signature in the root manifest covers the entire data structure no matter how many additional manifests are in the data structure.  Another advantage of this structure is it removes the need to use chunk (CCNx) or segment (NDN) name components for the subordinate manifests.<a href="#section-2-5" class="pilcrow">¶</a></p>
+<p id="section-2-6">FLIC supports manifest encryption separate from application payload encryption (See <a href="#encryption" class="xref">Section 3.8</a>).  It has a flexible encryption envelope to support various encryption algorithms and key discovery mechanisms. The byte layout allows for in-place encryption and decryption.<a href="#section-2-6" class="pilcrow">¶</a></p>
+<p id="section-2-7">A limitation of this approach is that one cannot construct a hash-based name for a child until one knows the payload of that child. In practical terms, this means that one must have the complete application payload available at the time of manifest creation.<a href="#section-2-7" class="pilcrow">¶</a></p>
+<p id="section-2-8">FLIC's design allows straightforward applications that just need to traverse a linear set of related objects to do so simply, but FLIC has two extensibility mechanisms that allow for more sophisticated uses: manifest metadata, and pointer annotations. These are described in <a href="#metadata" class="xref">Section 3.4</a> and <a href="#annotations" class="xref">Section 3.5</a> respectively.<a href="#section-2-8" class="pilcrow">¶</a></p>
 <div id="libraries">
-<p id="section-2-8">FLIC goes to considerable lengths to allow creation and parsing by application-independent library code. Therefore, any options used by applications in the data structure or encryption capabilities MUST NOT require applications to have application-specific Manifest traversal algorithms. This ensures that such application agnostic libraries can always successfully parse and traverse any FLIC Manifest by ignoring the optional capabilities.<a href="#section-2-8" class="pilcrow">¶</a></p>
+<p id="section-2-9">FLIC goes to considerable lengths to allow creation and parsing by application-independent library code. Therefore, any options used by applications in the data structure or encryption capabilities MUST NOT require applications to have application-specific Manifest traversal algorithms. This ensures that such application agnostic libraries can always successfully parse and traverse any FLIC Manifest by ignoring the optional capabilities.<a href="#section-2-9" class="pilcrow">¶</a></p>
 </div>
 </section>
 </div>
@@ -1549,7 +1551,7 @@ li > p:last-of-type {
 </dd>
           <dd class="break"></dd>
 <dt id="section-3.1-1.7">Manifest:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.1-1.8">a CCNx ContentObject with PayloadType 'Manifest' and a Payload of the encoded manifest. A leaf manifest only has direct pointers. An internal manifest has a mixture of direct and indirect manifests.<a href="#section-3.1-1.8" class="pilcrow">¶</a>
+          <dd style="margin-left: 1.5em" id="section-3.1-1.8">a CCNx ContentObject with PayloadType 'Manifest' and a Payload of the encoded manifest. A leaf manifest only has direct pointers. An internal manifest has a mixture of direct and indirect pointers.<a href="#section-3.1-1.8" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
 <dt id="section-3.1-1.9">Leaf Manifest:</dt>
@@ -1569,7 +1571,7 @@ li > p:last-of-type {
 </dd>
           <dd class="break"></dd>
 <dt id="section-3.1-1.17">Top Manifest:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.1-1.18">A preferred manifest structure is to use a Root manifest that points to a single Internal manifest called the Top Manifest. The Top manifest the begins the structure used to organize manifests.<a href="#section-3.1-1.18" class="pilcrow">¶</a>
+          <dd style="margin-left: 1.5em" id="section-3.1-1.18">One useful manifest structure is to use a Root manifest that points to a single Internal manifest called the Top Manifest. The Top manifest the begins the structure used to organize manifests. It is also possible to elide the two and use only a root manifest that also serves in the role of the top manifest.<a href="#section-3.1-1.18" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
 <dt id="section-3.1-1.19">Name Constructor:</dt>
@@ -1588,7 +1590,7 @@ li > p:last-of-type {
         <h3 id="name-locators">
 <a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-locators" class="section-name selfRef">Locators</a>
         </h3>
-<p id="section-3.2-1">Locators are routing hints used by forwarders to get an Interest to a node in the network that can resolve the Interest's name.  In some naming conventions, the name might only be a hash-based name so the Locator is the only available routing information.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-1">Locators are routing hints used by forwarders to get an Interest to a node in the network that can resolve the Interest's name.  In some naming conventions, the name might only be a hash-based name so the Locator is the only available routing information. Locators exist in both CCNx  and NDN, though the specific protocol mechanisms differ. A FLIC manifest represents locators in the same way for both ICN protocols, though they are encoded differently in the underlying protocol. See <a href="#encodings" class="xref">Section 3.9</a> for encoding differences.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <p id="section-3.2-2">A manifest Node may define one or more Locator prefixes that can be used in the construction of Interests from the pointers in the manifest.  The Locators are inherited when walking a manifest tree, so they do not need to be defined everywhere.  It is RECOMMENDED that only the Root manifest contain Locators so that a single operation can update the locators.  One use case when storing application payloads at different replicas is to replace the Root manifest with a new one that contains locators for the current replicas.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1659,7 +1661,10 @@ li > p:last-of-type {
 <a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-manifest-metadata" class="section-name selfRef">Manifest Metadata</a>
         </h3>
 <p id="section-3.4-1">The FLIC Manifest may be extended by defining TLVs that apply to the Manifest as a whole, or alternatively, individually to every data object pointed to by the Manifest. This basic specification does not specify any, but metadata TLVs may be defined through additional RFCs or via Vendor TLVs.  FLIC uses a Vendor TLV structure identical to <span>[<a href="#RFC8609" class="xref">RFC8609</a>]</span> for vendor-specific annotations that require no standardization process.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
-<p id="section-3.4-2">For example, some applications may find it useful to allow specialized consumers such as <em>repositories</em> (for example <span>[<a href="#repository" class="xref">repository</a>]</span>) or enhanced forwarder caches to pre-place, or adaptively pre-fetch data in order to improve robustness and/or retrieval latency. We note in passing that FLICs ability to use separate namespaces for the Manifest and the underlying Data allows different                    encryption keys to be used, hence giving a network element like a cache or repository access to the Manifest data does not as a side effect reveal the contents of the application data itself.<a href="#section-3.4-2" class="pilcrow">¶</a></p>
+<p id="section-3.4-2">For example, some applications may find it useful to allow specialized consumers such as <em>repositories</em> (for example <span>[<a href="#repository" class="xref">repository</a>]</span>) or enhanced forwarder caches to pre-place, or adaptively pre-fetch data in order to improve robustness and/or retrieval latency. Metadata can supply hints to such entities about what subset of the compound object to fetch and in what order.<a href="#section-3.4-2" class="pilcrow">¶</a></p>
+<aside id="section-3.4-3">
+          <p id="section-3.4-3.1">Note: FLICs ability to use separate namespaces for the Manifest and the underlying Data allows different                    encryption keys to be used, hence giving a network element like a cache or repository access to the Manifest data does not as a side effect reveal the contents of the application data itself.<a href="#section-3.4-3.1" class="pilcrow">¶</a></p>
+</aside>
 </section>
 </div>
 <div id="annotations">
@@ -1668,7 +1673,7 @@ li > p:last-of-type {
 <a href="#section-3.5" class="section-number selfRef">3.5. </a><a href="#name-pointer-annotations" class="section-name selfRef">Pointer Annotations</a>
         </h3>
 <p id="section-3.5-1">FLIC allows each manifest pointer to be annotated with extra data. Annotations allow applications to exploit metadata about each Data Object pointed to without having to first fetch the corresponding Content Object. This specification defines one such annotation. The <em>SizeAnnotation</em> specifies the number of application layer octets covered by the pointer.<a href="#section-3.5-1" class="pilcrow">¶</a></p>
-<p id="section-3.5-2">An annotation may, for example, give hints about a preferred traversal order for fetching the data, or an importance/precedence indication to aid applications that do not require every content object pointed to in the manifest to be fetched. This can be very useful for real-time or streaming media applications that can perform error concealment when rendering the media.<a href="#section-3.5-2" class="pilcrow">¶</a></p>
+<p id="section-3.5-2">An annotation may, for example, give hints about a desirable traversal order for fetching the data, or an importance/precedence indication to aid applications that do not require every content object pointed to in the manifest to be fetched. This can be very useful for real-time or streaming media applications that can perform error concealment when rendering the media.<a href="#section-3.5-2" class="pilcrow">¶</a></p>
 <p id="section-3.5-3">Additional annotations may be defined through additional RFCs or via Vendor TLVs. FLIC uses a Vendor TLV structure identical to <span>[<a href="#RFC8609" class="xref">RFC8609</a>]</span> for vendor-specific annotations that require no standardization process.<a href="#section-3.5-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1818,7 +1823,7 @@ LocatorPrefix = TYPE LENGTH Link
           <h4 id="name-traversal">
 <a href="#section-3.7.1" class="section-number selfRef">3.7.1. </a><a href="#name-traversal" class="section-name selfRef">Traversal</a>
           </h4>
-<p id="section-3.7.1-1">FLIC manifests use a pre-order traversal.  This means they are read top to bottom, left to right. The algorithms in <a href="#pseudocode" class="xref">Figure 3</a> show the in-order forward traversal code and the reverse-oder traversal code, which we use below to construct such a tree. This document does not mandate how to build trees.  <a href="#building-trees" class="xref">Appendix A</a> provides a detailed example of building inode-like trees.<a href="#section-3.7.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.7.1-1">FLIC manifests use a pre-order traversal.  This means they are read top to bottom, left to right. The algorithms in <a href="#pseudocode" class="xref">Figure 3</a> show the pre-order forward traversal code and the reverse-order traversal code, which we use below to construct such a tree. This document does not mandate how to build trees.  <a href="#building-trees" class="xref">Appendix A</a> provides a detailed example of building inode-like trees.<a href="#section-3.7.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.7.1-2">If using Annotated Pointers, an annotation could influence the traversal order.<a href="#section-3.7.1-2" class="pilcrow">¶</a></p>
 <span id="name-traversal-pseudocode"></span><div id="pseudocode">
 <figure id="figure-3">
@@ -1835,8 +1840,8 @@ reverse_preorder(node)
     if (node = null)
         return
     for (i = node.child.length - 1, i &gt;= 0, i-- )
-    reverse_preorder(node.child[i])
-        visit(node)
+        reverse_preorder(node.child[i])
+    visit(node)
 </pre>
 </div>
 <figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
@@ -2015,7 +2020,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 <p id="section-3.9.1.1-1">The Hash Naming namespace uses CCNx nameless content objects.<a href="#section-3.9.1.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.9.1.1-2">It proceeds as follows:<a href="#section-3.9.1.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3.9.1.1-3.1">The Root Manifest content object has a name used to fetch the manifest. It is signed by the publisher. It has a set of Locators used to fetch the remainder of the manifest.  It has a single HashPointer that points to the Top Manifest.  It may also have cache control directives, such as ExpiryTime.<a href="#section-3.9.1.1-3.1" class="pilcrow">¶</a>
+<li class="normal" id="section-3.9.1.1-3.1">The Root Manifest content object bound to a name assigned by the publisher and signed by the publisher. It also may have a set of Locators used to fetch the remainder of the manifest. The root manifest has a single HashPointer that points to the Top Manifest.  It may also have cache control directives, such as ExpiryTime.<a href="#section-3.9.1.1-3.1" class="pilcrow">¶</a>
 </li>
               <li class="normal" id="section-3.9.1.1-3.2">The Root Manifest has an NsDef that specifies HashSchema.  Its GroupData uses that NsId. All internal and leaf manifests use the same GroupData NsId.  A Manifest Tree MAY omit the NsDef and NsId elements and rely on the default being HashSchema.<a href="#section-3.9.1.1-3.2" class="pilcrow">¶</a>
 </li>
@@ -2322,9 +2327,11 @@ interest(name=/a/b/c, implicitDigest=h2)
         <h3 id="name-seeking">
 <a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-seeking" class="section-name selfRef">Seeking</a>
         </h3>
-<p id="section-5.2-1">Fast seeking (without having to sequentially fetch all content) works                     by skipping over entries for which we know their size.  The following                     expression shows how to compute the byte offset of the data pointed                     at by pointer P_i, offset_i.  In this formula, let P_i represent the Size value of the <em>i</em>-th pointer.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-1">Fast seeking (without having to sequentially fetch all content) works                     by skipping over entries for which we know their size.  The following                     expression shows how to compute the byte offset of the data pointed                     at by pointer <code>P_i</code>, call it <code>offset_i</code>.  In this formula, let <code>P_i.size</code> represent the Size value of the <em>i</em>-th pointer.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
 <div id="section-5.2-2">
-<pre class="sourcecode">offset_i = \sum_{i = 1}^{i - 1} P_i.size</pre><a href="#section-5.2-2" class="pilcrow">¶</a>
+<pre class="sourcecode lang-pseudocode">
+offset_i = \sum_{k=1}^{i-1} &gt;  P_k.size.
+</pre><a href="#section-5.2-2" class="pilcrow">¶</a>
 </div>
 <p id="section-5.2-3">With this offset, seeking is done as follows:<a href="#section-5.2-3" class="pilcrow">¶</a></p>
 <span id="name-seeking-algorithm"></span><div id="Seeking1">
@@ -2333,11 +2340,11 @@ interest(name=/a/b/c, implicitDigest=h2)
 <pre class="sourcecode lang-pseudocode">
 Input: seek_pos P, a FLIC manifest with a hash group having N entries
 Output: pointer index i and byte offset o, or out-of-range error
-Algo:
+Algorithm:
     offset = 0
     for i in 1..N do
-    if (P &gt; P_i.size)
-        return (i, P - offset)
+        if (P &gt; offset + P_i.size)
+            return (i, P - offset)
     offset += P_i.size
     return out-of-range
 </pre>
@@ -2346,10 +2353,10 @@ Algo:
 <a href="#name-seeking-algorithm" class="selfRef">Seeking Algorithm</a>
           </figcaption></figure>
 </div>
-<p id="section-5.2-5">Seeking in a BlockHashGroup is different since offsets can be quickly                 computed.  This is because the size of each pointer P_i except the                 last is equal to the SizePerPtr value.  For a BlockHashGroup with N                 pointers, OverallByteCount D, and SizePerPointer L, the size of P_i                 is equal to the following:<a href="#section-5.2-5" class="pilcrow">¶</a></p>
+<p id="section-5.2-5">Seeking in a BlockHashGroup is different since offsets can be quickly                 computed.  This is because the size of each pointer P_i except the                 last is equal to the SizePerPtr value.  For a BlockHashGroup with N                 pointers, OverallByteCount D, and SizePerPointer L, the size of P_N                 is equal to the following:<a href="#section-5.2-5" class="pilcrow">¶</a></p>
 <div class="artwork art-text alignLeft" id="section-5.2-6">
 <pre>
-                D - ((i - 1) * L)
+                D - ((N - 1) * L)
 </pre><a href="#section-5.2-6" class="pilcrow">¶</a>
 </div>
 <p id="section-5.2-7">In a BlockHashGroup with k pointers, the size of P_k is equal to:<a href="#section-5.2-7" class="pilcrow">¶</a></p>
@@ -2440,11 +2447,11 @@ new dataN &lt;-- h_N -  -  -  -  -  -  -  -/
         <h3 id="name-re-publishing-a-flic-under-">
 <a href="#section-5.5" class="section-number selfRef">5.5. </a><a href="#name-re-publishing-a-flic-under-" class="section-name selfRef">Re-publishing a FLIC under a new name</a>
         </h3>
-<p id="section-5.5-1">There are several usecases for republishing a collection under a new namespace, or having one collection exist under several namespaces:<a href="#section-5.5-1" class="pilcrow">¶</a></p>
+<p id="section-5.5-1">There are several use cases for republishing a collection under a new namespace, or having one collection exist under several namespaces:<a href="#section-5.5-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-5.5-2.1">It can happen that a publisher's namespace is part of a service provider's prefix.  When switching provider, the publisher may want to republish the old data under a new name.<a href="#section-5.5-2.1" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-5.5-2.2">A publishes wishes to distribute its content to several caches and would like  a local result to appear.  For example, the publisher /alpha wishes to place content at /beta and /gamma, but routing to /alpha would not send a request to either of those                             sites.  Each of /beta and /gamma could create a locally named and signed version of the root manifest with appropriate keys (or delegate that to /alpha) so the results are always                             local without having to change the bulk of the maniest tree.<a href="#section-5.5-2.2" class="pilcrow">¶</a>
+          <li class="normal" id="section-5.5-2.2">A publishes wishes to distribute its content to several repositories and would like a result to be delivered from the repository for consumers who have good connectivity to that repository.  For example, the publisher /alpha wishes to place content at /beta and /gamma, but routing only to /alpha would not send a request to either /beta or /gamma.  The operators of of /beta and /gamma could create a named and signed version of the root manifest with appropriate keys (or delegate that to /alpha) so the results are always delivered by the corresponding repository without having to change the bulk of the manifest tree.<a href="#section-5.5-2.2" class="pilcrow">¶</a>
 </li>
         </ul>
 <p id="section-5.5-3">This can easily be achieved with a single nameless root manifest for the large FLIC plus arbitrarily many per-name manifests (which are signed by whomever wants to publish this data):<a href="#section-5.5-3" class="pilcrow">¶</a></p>
@@ -2465,7 +2472,7 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
 <aside id="section-5.5-5">
           <p id="section-5.5-5.1">Note that the hash computation (of h) only requires reading the nameless root manifest, not the entire FLIC.<a href="#section-5.5-5.1" class="pilcrow">¶</a></p>
 </aside>
-<p id="section-5.5-6">This example points out the problem of HashGroups having  locator metadata elements: A retriever would be urged to follow these hints which are "hardcoded" deep inside the FLIC but might have become  outdated.  We therefore recommend to name FLIC manifests only at the highest level (where these names have no locator function).  Child nodes in a FLIC manifest should not be named as these names serve no purpose except retrieving a sub-tree's manifest by name, if would be required.<a href="#section-5.5-6" class="pilcrow">¶</a></p>
+<p id="section-5.5-6">This example points out the problem of HashGroups having their own locator metadata elements: A retriever would be urged to follow these hints which are "hardcoded" deep inside the FLIC but might have become  outdated.  We therefore recommend to name FLIC manifests only at the highest level (where these names have no locator function).  Child nodes in a FLIC manifest should not be named as these names serve no purpose except retrieving a sub-tree's manifest by name, if would be required.<a href="#section-5.5-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2576,7 +2583,7 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
 </li>
           <li class="normal" id="section-7.2-2.2">One of the major capabilities enabled by FLIC is to allow repositories or forwarding caches to operate on Manifests (see in particular <a href="#metadata" class="xref">Section 3.4</a>). In order to allow such intermediaries to interpret manifests without revealing the underlying application data, separate encryption and keying is necessary<a href="#section-7.2-2.2" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-7.2-2.3">A strong design goal of FLIC is <em>universality</em> such that it can be used transparently by many different ICN applications. This argues that FLIC should have a set of common encryption and keying capabilities that can be delegated to library code and not have to be re-worked by each individual application (see <a href="#libraries" class="xref">Section 2, Paragraph 8</a>)<a href="#section-7.2-2.3" class="pilcrow">¶</a>
+          <li class="normal" id="section-7.2-2.3">A strong design goal of FLIC is <em>universality</em> such that it can be used transparently by many different ICN applications. This argues that FLIC should have a set of common encryption and keying capabilities that can be delegated to library code and not have to be re-worked by each individual application (see <a href="#libraries" class="xref">Section 2, Paragraph 9</a>)<a href="#section-7.2-2.3" class="pilcrow">¶</a>
 </li>
         </ul>
 <p id="section-7.2-3">Therefore, this specification directly specifies two encryption encapsulations and associated links to key management, as described in <a href="#encryption" class="xref">Section 3.8</a>. As more experience is gained with various use cases, additional encryption capabilities may be needed and hence we expect the encryption aspects of this specification to evolve over time.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
@@ -2673,6 +2680,10 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
         <dd>
 <span class="refAuthor">Barker, E.</span>, <span class="refAuthor">Chen, L.</span>, <span class="refAuthor">Roginsky, A.</span>, <span class="refAuthor">Vassilev, A.</span>, <span class="refAuthor">Davis, R.</span>, and <span class="refAuthor">S. Simon</span>, <span class="refTitle">"Recommendation for Pair-Wise Key-Establishment Using Integer Factorization Cryptography"</span>, <span class="seriesInfo">National Institute of Standards and Technology SP 800-56B Rev. 2</span>, <time datetime="2019" class="refDate">2019</time>, <span>&lt;<a href="https://doi.org/10.6028/NIST.SP.800-56Br2">https://doi.org/10.6028/NIST.SP.800-56Br2</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="SHS">[SHS]</dt>
+        <dd>
+<span class="refAuthor">Technology, N. I. O. S. A.</span>, <span class="refTitle">"Secure Hash Standard, United States of American, National Institute of Science and Technology, Federal Information Processing Standard (FIPS) 180-4"</span>, <span class="seriesInfo">National Institute of Standards and Technology SP 180-4</span>, <time datetime="2012" class="refDate">2012</time>, <span>&lt;<a href="https://csrc.nist.gov/publications/fips/fips180-4/%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20fips180-4_final.pdf">https://csrc.nist.gov/publications/fips/fips180-4/               fips180-4_final.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="venti">[venti]</dt>
       <dd>
 <span class="refTitle">"Venti: a new approach to archival storage"</span>, <span class="seriesInfo">Bell Labs Document Archive /sts/doc</span>, <time datetime="2002" class="refDate">2002</time>, <span>&lt;<a href="http://doc.cat-v.org/plan_9/4th_edition/papers/venti/">http://doc.cat-v.org/plan_9/4th_edition/papers/venti/</a>&gt;</span>. </dd>
@@ -2767,7 +2778,7 @@ interior_manifest(data, segment, level, k, m, right_most_child)
 interior_indirect(data, segment, level, k, m, children)
     # Reserve space at the head of the segment for this node's direct pointers before
     # descending to children.  We want the top of the tree packed.
-    reserve_count = min(m, segment.tail - segment.head)
+    reserve_count = min(k, segment.tail - segment.head)
     segment.head += reserve_count
 
     while len(children) &lt; m and not segment.head == segment.tail:
