@@ -5,12 +5,12 @@
 ICNRG                                                        C. Tschudin
 Internet-Draft                                       University of Basel
 Intended status: Experimental                                  C.A. Wood
-Expires: 2 January 2022                                       Cloudflare
+Expires: 10 May 2022                                          Cloudflare
                                                               M.E. Mosko
                                                               PARC, Inc.
                                                             D. Oran, Ed.
                                        Network Systems Research & Design
-                                                             1 July 2021
+                                                         6 November 2021
 
 
                     File-Like ICN Collections (FLIC)
@@ -41,7 +41,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 2 January 2022.
+   This Internet-Draft will expire on 10 May 2022.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Tschudin, et al.         Expires 2 January 2022                 [Page 1]
+Tschudin, et al.           Expires 10 May 2022                  [Page 1]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Tschudin, et al.         Expires 2 January 2022                 [Page 2]
+Tschudin, et al.           Expires 10 May 2022                  [Page 2]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    7.  Security Considerations . . . . . . . . . . . . . . . . . . .  31
@@ -165,9 +165,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                 [Page 3]
+Tschudin, et al.           Expires 10 May 2022                  [Page 3]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    The purpose of a manifest is to concisely name, and hence point to,
@@ -221,9 +221,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                 [Page 4]
+Tschudin, et al.           Expires 10 May 2022                  [Page 4]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    An example implementation in Python may be found at
@@ -277,9 +277,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                 [Page 5]
+Tschudin, et al.           Expires 10 May 2022                  [Page 5]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    The FLIC structure that it is expected most applications would use
@@ -333,9 +333,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                 [Page 6]
+Tschudin, et al.           Expires 10 May 2022                  [Page 6]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
       using a content object hash restriction and a locator name to
@@ -389,9 +389,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                 [Page 7]
+Tschudin, et al.           Expires 10 May 2022                  [Page 7]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
 3.2.  Locators
@@ -445,9 +445,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                 [Page 8]
+Tschudin, et al.           Expires 10 May 2022                  [Page 8]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    We expect that an application constructing a Manifest will take one
@@ -501,9 +501,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                 [Page 9]
+Tschudin, et al.           Expires 10 May 2022                  [Page 9]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    Type 3 (Segmented Naming):  As in Type 2, but the consumer MUST
@@ -557,9 +557,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 10]
+Tschudin, et al.           Expires 10 May 2022                 [Page 10]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
 3.6.  Manifest Grammar (ABNF)
@@ -578,19 +578,19 @@ Internet-Draft                    FLIC                         July 2021
    The basic structure of a FLIC manifest comprises a security context,
    a node, and an authentication tag.  The security context and
    authentication tag are not needed if the node is unencrypted.  A node
-   is made up of a set of metadata, the "NodeData", that applies to the
-   entire node, and one or more "HashGroups" that contain pointers.
+   is made up of a set of metadata, the NodeData, that applies to the
+   entire node, and one or more HashGroups that contain pointers.
 
-   The "NodeData" element defines the namespaces used by the manifest.
+   The NodeData element defines the namespaces used by the manifest.
    There may be multiple namespaces, depending on how one names
-   subsequent manifests or data objects.  Each "HashGroup" may reference
-   a single namespace to control how one forms Interests from the
-   "HashGroup".  If one is using separate namespaces for manifests and
+   subsequent manifests or data objects.  Each HashGroup may reference a
+   single namespace to control how one forms Interests from the
+   HashGroup.  If one is using separate namespaces for manifests and
    application data, one needs at least two hash groups.  For a manifest
    structure of "MMMDDD," (where M means manifest (indirect pointer) and
    D means data (direct pointer)) for example, one would have a first
-   "HashGroup" for the child manifests with its namespace and a second
-   "HashGroup" for the data pointers with the other namespace.  If one
+   HashGroup for the child manifests with its namespace and a second
+   HashGroup for the data pointers with the other namespace.  If one
    used a structure like "MMMDDDMMM," then one would need three hash
    groups.
 
@@ -613,9 +613,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 11]
+Tschudin, et al.           Expires 10 May 2022                 [Page 11]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    NcId = TYPE LENGTH INTEGER
@@ -659,8 +659,8 @@ Internet-Draft                    FLIC                         July 2021
 
                            Figure 2: FLIC Grammar
 
-   SecurityCtx:  information about how to decrypt an "EncryptedNode".
-      The structure will depend on the specific encryption algorithm.
+   SecurityCtx:  information about how to decrypt an EncryptedNode.  The
+      structure will depend on the specific encryption algorithm.
 
    AlgorithmId:  The ID of the encryption method (e.g. preshared key, a
       broadcast encryption scheme, etc.)
@@ -669,9 +669,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 12]
+Tschudin, et al.           Expires 10 May 2022                 [Page 12]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    EncryptedNode:  An opaque octet string with an optional
@@ -725,9 +725,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 13]
+Tschudin, et al.           Expires 10 May 2022                 [Page 13]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    preorder(node)
@@ -781,9 +781,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 14]
+Tschudin, et al.           Expires 10 May 2022                 [Page 14]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    Additional modes may be defined in subsequent specifications.  We
@@ -813,7 +813,7 @@ Internet-Draft                    FLIC                         July 2021
 3.8.1.  AEAD Mode
 
    This mechanism uses AES-GEM [AESGCM] or AES-CCM [RFC3310] for
-   manifest encryption.  A publisher creating a "SecurityCtx" SHOULD use
+   manifest encryption.  A publisher creating a SecurityCtx SHOULD use
    the mechanisms in [RFC6655] for AES-CCM Nonce generation and
    [RFC5288] for AES-GCM Nonce generation.
 
@@ -829,32 +829,32 @@ Internet-Draft                    FLIC                         July 2021
    AEAD_AES_128_GCM, AEAD_AES_256_CCM and AEAH_AES_256_GCM to specify
    the key length and algorithm.
 
-   The "KeyNum" identifies a key on the receiver.  The key MUST be
-   exactly of the length specific by the Mode.  Many receivers may have
-   the same key with the same "KeyNum".
+   The KeyNum identifies a key on the receiver.  The key MUST be exactly
+   of the length specific by the Mode.  Many receivers may have the same
+   key with the same KeyNum.
 
 
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 15]
+Tschudin, et al.           Expires 10 May 2022                 [Page 15]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
-   When a Consumer reads a manifest that specifies a "KeyNum", the
+   When a Consumer reads a manifest that specifies a KeyNum, the
    consumer SHOULD verify that the Manifest's publisher is an expected
    one for the KeyNum's usage.  This trust mechanism employed to
    ascertain whether the publisher is expected is beyond the scope of
    this document, but we provide an outline of one such possible trust
-   mechanism.  When a consumer learns a shared key and "KeyNum", it
-   associates that "KeyNum" with the publisher ID used in a public key
+   mechanism.  When a consumer learns a shared key and KeyNum, it
+   associates that KeyNum with the publisher ID used in a public key
    signature.  When the consumer receives a signed manifest (e.g. the
    root manifest of a manifest tree), the consumer matches the KeyNum's
    publisher with the Manifest's publisher.
 
-   Each encrypted manifest node has a full security context ("KeyNum,
-   Nonce, Mode").  The AEAD decryption is independent for each manifest
+   Each encrypted manifest node has a full security context (KeyNum,
+   Nonce, Mode).  The AEAD decryption is independent for each manifest
    so Manifest objects can be fetched and decrypted in any order.  This
    design also ensures that if a manifest tree points to the same
    subtree repeatedly, such as for deduplication, the decryptions are
@@ -862,9 +862,9 @@ Internet-Draft                    FLIC                         July 2021
 
    To encrypt a Manifest, the publisher:
 
-   1.  Removes any "SecurityCtx" or "AuthTag" from the Manifest.
+   1.  Removes any SecurityCtx or AuthTag from the Manifest.
 
-   2.  Creates a "SecurityCtx" and adds it to the Manifest.
+   2.  Creates a SecurityCtx and adds it to the Manifest.
 
    3.  Treats the Manifest TLV through the end of the Node TLV Length as
        unencrypted authenticated Header.  That includes anything from
@@ -874,28 +874,28 @@ Internet-Draft                    FLIC                         July 2021
    4.  Treats the body of the Node to the end of the Manifest as
        encrypted data.
 
-   5.  Appends the AEAD "AuthTag" to the end of the Manifest, increasing
+   5.  Appends the AEAD AuthTag to the end of the Manifest, increasing
        the Manifest's length
 
-   6.  Changes the TLV type of the Node to "EncryptedNode".
+   6.  Changes the TLV type of the Node to EncryptedNode.
 
    To decrypt a Manifest, the consumer:
 
-   1.  Verifies that the "KeyNum" exists and the publisher is trusted
-       for that "KeyNum".
+   1.  Verifies that the KeyNum exists and the publisher is trusted for
+       that KeyNum.
 
-   2.  Saves the "AuthTag" and removes it from the Manifest, decreasing
+   2.  Saves the AuthTag and removes it from the Manifest, decreasing
        the Manifest length.
 
-   3.  Changes the "EncryptedNode" type to "Node".
+   3.  Changes the EncryptedNode type to Node.
 
 
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 16]
+Tschudin, et al.           Expires 10 May 2022                 [Page 16]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    4.  Treats everything from the Manifest TLV through the end of the
@@ -906,7 +906,7 @@ Internet-Draft                    FLIC                         July 2021
    5.  Treats the body of the Node to the end of the Manifest as
        encrypted data.
 
-   6.  Verifies and decrypts the data using the key and saved "AuthTag".
+   6.  Verifies and decrypts the data using the key and saved AuthTag.
 
    7.  If the decryption fails, the consumer SHOULD notify the user and
        stop further processing of the manifest.
@@ -941,27 +941,27 @@ Internet-Draft                    FLIC                         July 2021
       protocol.
 
    This Manifest specification requires that if a group member fetches
-   the KEK key at Locator it can decrypt the "WrappedKey" and retrieve
-   the CEK.
+   the KEK key at Locator it can decrypt the WrappedKey and retrieve the
+   CEK.
 
 
 
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 17]
+Tschudin, et al.           Expires 10 May 2022                 [Page 17]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    In one example, a publisher could request a key for a group and the
-   Key Manager could securely communicate ("CEK, Wapped_CEK, KeyId,
-   Locator") back to the publisher.  The Key Manager is responsible for
+   Key Manager could securely communicate (CEK, Wapped_CEK, KeyId,
+   Locator) back to the publisher.  The Key Manager is responsible for
    publishing the Locator.  In another example, the publisher could be a
    group member and have a group private key in which case the publisher
    can create their own key encryption key, publish it under the Locator
-   and proceed.  The publisher generates "CEK, Wrapped_CEK, KeyId", and
-   a Locator on its own.
+   and proceed.  The publisher generates CEK, Wrapped_CEK, KeyId, and a
+   Locator on its own.
 
    To create the wrapped key using a Key Encryption Key:
 
@@ -983,9 +983,8 @@ Internet-Draft                    FLIC                         July 2021
 
    1.  Acquires the set of (CEK, Wrapped_CEK, KeyId, Locator).
 
-   2.  Creates a "SecurityCtx" and adds it to the Manifest.  The
-       "SecurityCtx" includes an "AEADNonce" and "AEADMode", as per AEAD
-       mode.
+   2.  Creates a SecurityCtx and adds it to the Manifest.  The
+       SecurityCtx includes an AEADNonce and AEADMode, as per AEAD mode.
 
    3.  Encrypts the Manifest as per AEAD Mode using the RSA-OAEP
        SecurityCtx and CEK.
@@ -1005,13 +1004,14 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 18]
+
+Tschudin, et al.           Expires 10 May 2022                 [Page 18]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
-   4.  Using the "CEK", "AEADNonce", and "AEADMode", decrypt the
-       Manifest as per AEAD Mode, ignoring the KeyNum steps.
+   4.  Using the CEK, AEADNonce, and AEADMode, decrypt the Manifest as
+       per AEAD Mode, ignoring the KeyNum steps.
 
 3.9.  Protocol Encodings
 
@@ -1061,9 +1061,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 19]
+Tschudin, et al.           Expires 10 May 2022                 [Page 19]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    *  To form an Interest for a direct or indirect pointer, use a Name
@@ -1117,9 +1117,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 20]
+Tschudin, et al.           Expires 10 May 2022                 [Page 20]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    *  The Root Manifest content object has a name used to fetch the
@@ -1173,9 +1173,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 21]
+Tschudin, et al.           Expires 10 May 2022                 [Page 21]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    Manifests and data objects derive their names according to the
@@ -1229,9 +1229,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 22]
+Tschudin, et al.           Expires 10 May 2022                 [Page 22]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    It proceeds as follows:
@@ -1285,9 +1285,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 23]
+Tschudin, et al.           Expires 10 May 2022                 [Page 23]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    *  The Root Manifest has an NsDef that specifies SegmentedPrefix and
@@ -1341,9 +1341,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 24]
+Tschudin, et al.           Expires 10 May 2022                 [Page 24]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
 3.10.  Example Structures
@@ -1397,9 +1397,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 25]
+Tschudin, et al.           Expires 10 May 2022                 [Page 25]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
 5.  Usage Examples
@@ -1453,9 +1453,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 26]
+Tschudin, et al.           Expires 10 May 2022                 [Page 26]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
 5.2.  Seeking
@@ -1463,8 +1463,8 @@ Internet-Draft                    FLIC                         July 2021
    Fast seeking (without having to sequentially fetch all content) works
    by skipping over entries for which we know their size.  The following
    expression shows how to compute the byte offset of the data pointed
-   at by pointer "P_i", call it "offset_i".  In this formula, let
-   "P_i.size" represent the Size value of the _i_-th pointer.
+   at by pointer P_i, call it offset_i.  In this formula, let P_i.size
+   represent the Size value of the _i_-th pointer.
 
    offset_i = \sum_{k=1}^{i-1} >  P_k.size.
 
@@ -1509,9 +1509,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 27]
+Tschudin, et al.           Expires 10 May 2022                 [Page 27]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    Input: seek_pos P, a FLIC manifest with a hash group having
@@ -1565,9 +1565,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 28]
+Tschudin, et al.           Expires 10 May 2022                 [Page 28]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
            old data < -  -  -  mfst_old <-- h_old -  - mfst_new
@@ -1621,9 +1621,9 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 29]
+Tschudin, et al.           Expires 10 May 2022                 [Page 29]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    This example points out the problem of HashGroups having their own
@@ -1677,9 +1677,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 30]
+Tschudin, et al.           Expires 10 May 2022                 [Page 30]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
              +======+===================+====================+
@@ -1733,9 +1733,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 31]
+Tschudin, et al.           Expires 10 May 2022                 [Page 31]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    *  NDN in general adds a signature to every individual data packet
@@ -1789,9 +1789,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 32]
+Tschudin, et al.           Expires 10 May 2022                 [Page 32]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    *  A strong design goal of FLIC is _universality_ such that it can be
@@ -1809,7 +1809,7 @@ Internet-Draft                    FLIC                         July 2021
 
 7.3.  Privacy of names and linkability of access patterns
 
-   What to ay here, if anything?
+   What to say here, if anything?
 
 8.  References
 
@@ -1845,9 +1845,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 33]
+Tschudin, et al.           Expires 10 May 2022                 [Page 33]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    [RFC6655]  McGrew, D. and D. Bailey, "AES-CCM Cipher Suites for
@@ -1901,9 +1901,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 34]
+Tschudin, et al.           Expires 10 May 2022                 [Page 34]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    [RFC7927]  Kutscher, D., Ed., Eum, S., Pentikousis, K., Psaras, I.,
@@ -1957,9 +1957,9 @@ Appendix A.  Building Trees
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 35]
+Tschudin, et al.           Expires 10 May 2022                 [Page 35]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    The Python-like pseudocode build_tree(data, n, k, m) algorithm
@@ -2013,9 +2013,9 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 36]
+Tschudin, et al.           Expires 10 May 2022                 [Page 36]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    interior_manifest(data, segment, level, k, m, right_most_child)
@@ -2069,9 +2069,9 @@ Authors' Addresses
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 37]
+Tschudin, et al.           Expires 10 May 2022                 [Page 37]
 
-Internet-Draft                    FLIC                         July 2021
+Internet-Draft                    FLIC                     November 2021
 
 
    Email: marc.mosko@parc.com
@@ -2125,4 +2125,4 @@ Internet-Draft                    FLIC                         July 2021
 
 
 
-Tschudin, et al.         Expires 2 January 2022                [Page 38]
+Tschudin, et al.           Expires 10 May 2022                 [Page 38]
