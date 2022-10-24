@@ -1,3 +1,6 @@
-lib/
-.targets.mk
-.DS_Store
+.idea
+venv/
+venv-ide/
+draft*.txt
+draft*.html
+
