@@ -11,9 +11,11 @@ OUTPUT=$(VERSIONED).txt $(VERSIONED).html
 all: | venv $(OUTPUT)
 
 %.txt: $(SRC)
+	echo "Building TEXT output"
 	venv/bin/python3 render.py -i $< -o $@ -f text
 
 %.html: $(SRC)
+	echo "Building HTML output"
 	venv/bin/python3 render.py -i $< -o $@ -f html
 
 venv:

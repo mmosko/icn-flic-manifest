@@ -65,15 +65,17 @@ if __name__ == "__main__":
 
     api_text = f'https://author-tools.ietf.org/api/render/{output_format}'
     with requests.session() as sess:
-        #payload = {'file': (input_file, open(input_file, 'rb'), 'text/xml')}
         files = {'file': open(input_file, 'rb')}
         response = sess.post(api_text, files=files)
-        print(response.status_code)
+        if not response.ok:
+            print(f"status = {response.status_code}, reason = {response.reason}")
+            exit(-1)
         output = response.json()
         print_logs(output)
 
         try:
             download_url = output['url']
+            print(f'Downloading {download_url} as {output_file}')
             rendered = sess.get(download_url)
             with open(output_file,'w') as fh:
                 fh.write(rendered.text)
