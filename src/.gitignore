@@ -3,4 +3,7 @@ venv/
 venv-ide/
 draft*.txt
 draft*.html
-
+*.pdf
+*.html
+*.txt
+*.bak

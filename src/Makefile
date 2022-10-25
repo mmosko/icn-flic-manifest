@@ -1,25 +1,29 @@
 
 .PHONY: all reqs
 
-VER=03
+VER=04
 BASE=draft-irtf-icnrg-flic
-SRC=$(BASE).xml
 VERSIONED=$(BASE)-$(VER)
-OUTPUT=$(VERSIONED).txt $(VERSIONED).html
+OUTPUT=$(VERSIONED).txt $(VERSIONED).html $(VERSIONED).pdf
 
 
 all: | venv $(OUTPUT)
 
-%.txt: $(SRC)
-	echo "Building TEXT output"
+%.txt: %.xml
+	@echo "Building TEXT output"
 	venv/bin/python3 render.py -i $< -o $@ -f text
 
-%.html: $(SRC)
-	echo "Building HTML output"
+%.html: %.xml
+	@echo "Building HTML output"
 	venv/bin/python3 render.py -i $< -o $@ -f html
 
+%.pdf: %.xml
+	@echo "Building PDF output"
+	venv/bin/python3 render.py -i $< -o $@ -f pdf
+
 venv:
-	python3 -m venv venv
+	@echo "Creating Python virtual environment"
+	@python3 -m venv venv
 	# If pip does not succeed, remove the venv directory to try again later
-	if ! venv/bin/python3 -m pip install -r requirements.txt; then rm -rf venv; fi
+	@if ! venv/bin/python3 -m pip install -r requirements.txt; then rm -rf venv; fi
 
