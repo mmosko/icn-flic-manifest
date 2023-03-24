@@ -1,0 +1,18 @@
+
+
+# The group key we assume all users have
+openssl genrsa -out group_key.pem 2048
+openssl rsa -in group_key.pem -pubout -out group_key.pub
+
+# The key we want to distribute, 256-bit
+openssl rand -out cek_key 32
+
+# Wrap the CEK
+openssl rsautl -encrypt -pubin -inkey group_key.pub -in cek_key -out cek_key.enc -oaep
+
+# Recover the CEK
+openssl rsautl -decrypt -inkey group_key.pem -in cek_key.enc -out cek_key.dec -oaep
+
+# Should be identical
+diff cek_key cek_key.dec
+
