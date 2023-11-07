@@ -2,7 +2,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
 <rfc xmlns:xi="http://www.w3.org/2001/XInclude" 
 	category="exp" 
-	docName="draft-irtf-icnrg-flic-04" 
+	docName="draft-irtf-icnrg-flic-05" 
 	ipr="trust200902" 
 	obsoletes="" 
 	updates="" 
@@ -536,14 +536,16 @@ AnnotatedPtrs = TYPE LENGTH *PointerBlock
 PointerBlock = TYPE LENGTH *Annotation Ptr
 Ptr = TYPE LENGTH HashValue
 
-Annotation = SizeAnnotation / Vendor
+Annotation = SizeAnnotation / SegmentIdAnnotation / Vendor
 SizeAnnotation = TYPE LENGTH Integer
+SegmentIdAnnotation = TYPE LENGTH Integer
 Vendor = TYPE LENGTH PEN *OCTET
 
 GroupData = TYPE LENGTH [NcId] [LeafSize] [LeafDigest]
-            [SubtreeSize] [SubtreeDigest]
+            [SubtreeSize] [SubtreeDigest] [StartSegmentId]
 LeafSize = TYPE LENGTH INTEGER
 LeafDigest = TYPE LENGTH HashValue
+StartSegmentId = TYPE LENGTH Integer
 
 AEADCtx = TYPE LENGTH AEADData
 AEADData = KeyNum AEADNonce Mode
@@ -602,6 +604,9 @@ LocatorPrefix = TYPE LENGTH Link]]>
           
           <dt>LeafDigest:</dt>
           <dd>Digest of all application data immediately under the Group</dd>
+          
+          <dt>StartSegmentId:</dt>
+          <dd>If using </dd>
           
           <dt>Ptr:</dt>
           <dd>The ContentObjectHash of a child, which may be a data ContentObject (i.e. with Payload) or another Manifest Node.</dd>
@@ -968,6 +973,9 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
             <aside>
               <t><strong>Optional</strong>: Use AnnotatedPointers to indicate the segment number of
                 each hash pointer to avoid needing to infer the segment numbers.</t>
+              <t><strong>Optional</strong>: Use StartSegmentId in GroupData to indicate the segment number of
+                for each group.  The producer must ensure that each subsequent GroupData starts
+                at the correct offset.</t>
             </aside>
 
             <t>It proceeds as follows:</t>
@@ -1100,6 +1108,9 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
             <aside>
               <t><strong>Optional</strong>: Use AnnotatedPointers to indicate the segment number of
                 each hash pointer to avoid needing to infer the segment numbers.</t>
+              <t><strong>Optional</strong>: Use StartSegmentId in GroupData to indicate the segment number of
+                for each group.  The producer must ensure that each subsequent GroupData starts
+                at the correct offset.</t>
             </aside>
 
             <t>It proceeds as follows:</t>
@@ -1153,6 +1164,42 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
               schema.</t>
 
           </section>
+        </section>
+        
+        <section anchor="explain_segmented">
+          <name>Segmented Schema Details</name>
+          <t>When using CCNx Segmented Prefix Strategy or NDN Segmented Prefix strategy, the
+          consumer must determine the segment number to use in the name.  There are
+          two methods.</t>
+          <ul spacing="normal">
+            <li>If fetching a pointer with a SegmentIdAnnotation, the consumer MUST use that
+              segment number for the pointer.  A pointer with SegmentIdAnnotation does not
+              increment the SegmentId used by the GroupData case.</li>
+            <li>If the GroupData has a StartSegmentId parameter, then that segment number MUST
+              be used for the first in-order pointer of the group.  The consumer then increments
+              the segment number for each in-order pointer of that group. 
+            </li>
+          </ul>
+          <t>Every group of a segmented NsId MUST have either a GroupData with a StartSegmentId, or
+            use annotated pointers with SegmentIdAnnotation.</t>
+          <t>A segment number MUST indicate exactly one data item.  That is, the producer
+            MUST NOT duplicate the segment number in an object name for different objects.  
+            The object hash MUST be the same for the same segment number of a name.  </t>
+          <t>It is allowed to have multiple manifest entries with the same segment number (see below).</t>
+          <t>While a producer is allowed to mix using GroupData StartSegmentId and SegmentIdAnnotation,
+            we in general do not consider that a good idea.  It is up to the manifest producer to ensure
+            that every segment may be fetched, and fetch in the right order.  
+            Segments, when fetched in the <strong>manifest order</strong> reconstruct the original data.
+          </t>
+          <t>Let us make this clear, the original data is constructed by the in-order manifest retrieval, not
+          the segment number order.  We recommend that the manifest in-order sequence SHOULD correspond
+          to the segment number sequence.</t>
+          <t>A consumer is not required to fetch every segment.  A consumer may fetch segments in any order
+            it chooses.  It may skip around or omit segments.</t>
+          <t>It is allowed to have multiple pointers to the same segment number.  This
+          can be used for data de-duplication, e.g. multiple occurances of the same binary string within
+          the reconstructed data object. If the producer uses this method, then the original data
+          cannot be reconstructed by simply fetching the sequence numbers in order.</t>
         </section>
       </section>
       
