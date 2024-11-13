@@ -1524,9 +1524,8 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
     </section>
 
     <section anchor="IANA"><name>IANA Considerations</name>
-      <t>FLIC adds two values to existing regiries and defines a new registry in the 
-        "Content-Centric Networking (CCNx)" group.  Although not required by CCNx, which uses hierarchical
-        TLV types, we have put FLIC types in a single table with unique type values.</t>
+      <t>FLIC adds two values to existing registries and defines a new registry in the 
+        "Content-Centric Networking (CCNx)" group.</t>
 
         <t>The FLIC registries follow the CCNx convention of reserving the namespace 0x1000 - 0x1FFF
           for experimental use.  It also uses the T_ORG (0x0FFF) definition for organizational

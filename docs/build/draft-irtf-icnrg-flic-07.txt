@@ -1866,10 +1866,8 @@ Internet-Draft                    FLIC                     November 2024
 
 6.  IANA Considerations
 
-   FLIC adds two values to existing regiries and defines a new registry
-   in the "Content-Centric Networking (CCNx)" group.  Although not
-   required by CCNx, which uses hierarchical TLV types, we have put FLIC
-   types in a single table with unique type values.
+   FLIC adds two values to existing registries and defines a new
+   registry in the "Content-Centric Networking (CCNx)" group.
 
    The FLIC registries follow the CCNx convention of reserving the
    namespace 0x1000 - 0x1FFF for experimental use.  It also uses the
@@ -1892,6 +1890,8 @@ Internet-Draft                    FLIC                     November 2024
 
    *  The Type value (when used in CCNx) is 2 octets with a range of
       0x0000 - 0xFFFF.
+
+
 
 
 
