@@ -284,7 +284,8 @@
           <dt>Manifest:</dt>
           <dd>a CCNx ContentObject with PayloadType 'Manifest' and a Payload of the encoded
             manifest. A leaf manifest only has direct pointers. An internal manifest has a mixture
-            of direct and indirect pointers.</dd>
+            of direct and indirect pointers.  The outer TLV type of the payload identifies
+            the manifest specifically as a FLIC manifest.</dd>
 
           <dt>Manifest Waste:</dt>
           <dd>a metric used to measure the amount of waste in a manifest tree. Waste is the number
@@ -294,6 +295,14 @@
 
           <dt>Name Constructor:</dt>
           <dd>The specification of how to construct an Interest for a Manifest entry.</dd>
+
+          <dt>Node</dt>
+          <dd>The <tt>Node</tt> section of a manifest holds the manifest information.  It has
+          node-wide metadata in a <tt>NodeData</tt> section, and then a series of <tt>HashGroups</tt>.</dd>
+
+          <dt>EncryptedNode</dt>
+          <dd>A <tt>Node</tt> that is encrypted as specified in the Manifest's <tt>SecurityCtx</tt>.
+          It is opaque octetes.</dd>
 
           <dt>Root Manifest:</dt>
           <dd>A signed, named, manifest that points to nameless manifest nodes. This structure means
@@ -552,6 +561,7 @@ PEN = 3OCTET ; IANA Private Enterprise Number
 
 GroupData = TYPE LENGTH [NcId] [LeafSize] [LeafDigest]
             [SubtreeSize] [SubtreeDigest] [StartSegmentId]
+            0*Vendor
 LeafSize = TYPE LENGTH INTEGER
 LeafDigest = TYPE LENGTH HashValue
 StartSegmentId = TYPE LENGTH Integer
@@ -561,14 +571,14 @@ AEADData = KeyNum AEADNonce AEADMode
 KeyNum = TYPE LENGTH INTEGER
 AEADNonce = TYPE LENGTH 1*OCTET
 AEADMode = TYPE LENGTH (AEAD_AES_128_GCM / AEAD_AES_256_GCM /
-           AEAD_AES_128_CCM / AEAD_AES_128_CCM)
+           AEAD_AES_128_CCM / AEAD_AES_128_CCM) ; RFC5116 definitions
 
 RsaKemCtx = TYPE LENGTH RsaKemData
 RsaKemData = AEADData [WrappedData]
-WrappedData = KeyId WrappedKey LocatorPrefix
+WrappedData = KeyId WrappedKey KeyLink ; KeyLink as pre RFC8609
 KeyId = TYPE LENGTH HashValue; ID of Key Encryption Key
 WrappedKey = TYPE LENGTH 4OCTET 1*OCTET  ; 4-byte salt plus AES key
-LocatorPrefix = TYPE LENGTH Link]]>
+]]>
 			</sourcecode>
         </figure>
 
@@ -576,9 +586,12 @@ LocatorPrefix = TYPE LENGTH Link]]>
           <dt>SecurityCtx:</dt>
           <dd>information about how to decrypt an <tt>EncryptedNode</tt>. The structure will depend on the specific encryption algorithm.</dd>
 
+          <dt>AEADMode</dt>
+          <dd>"AEAD Algorithms" values from IANA "Authenticated Encryption with Associated Data (AEAD) Parameters."
+            FLIC only specifies the use of four basic algorithms with full authentication tag.</dd>
+
           <dt>AlgorithmId:</dt>
           <dd>The ID of the encryption method (e.g. preshared key, a broadcast encryption scheme, etc.)</dd>
-
           <dt>AlgorithmData:</dt>
           <dd>The context for the encryption algorithm.</dd>
 
@@ -1511,38 +1524,72 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
     </section>
 
     <section anchor="IANA"><name>IANA Considerations</name>
-      <t>IANA is requested to perform the actions in the following sub-sections.</t>
-      <aside><t>IANA should also note that FLIC uses the definitions of AEAD_AES_128_GCM, AEAD_AES_128_CCM, AEAD_AES_256_GCM, AEAD_AES_256_CCM from <xref target="RFC5116"/>.</t></aside>
+      <t>FLIC adds two values to existing regiries and defines a new registry in the 
+        "Content-Centric Networking (CCNx)" group.  Although not required by CCNx, which uses hierarchical
+        TLV types, we have put FLIC types in a single table with unique type values.</t>
 
-      <section><name>FLIC Payload Type</name>
-      	<t>Register FLIC as a Payload Type in the <em>CCNx Payload Types</em> Registry referring to the description in <xref target='CCNxEncoding'/> as follows:</t>
-      	<table><name>FLIC CCNx Payload Type</name>
-      	  <thead>
-      		<tr>
-      		  <th align='center'>Type</th>
-      		  <th align='center'>Name</th>
-      		  <th align='center'>Reference</th>
-      		</tr>
-      	   </thead>
-      	  <tbody>
-      	  	<tr>
-      	  	  <td align='center'>TBA</td>
-      	  	  <td align='center'>T_PAYLOADTYPE_FLIC</td>
-      	  	  <td align='center'><xref target='CCNxEncoding'/> and Section 3.6.2.2.1 of <xref target='RFC8609'/> </td>
-      	  	</tr>
-      	  </tbody>
-      	</table>
-      </section>
+        <t>The FLIC registries follow the CCNx convention of reserving the namespace 0x1000 - 0x1FFF
+          for experimental use.  It also uses the T_ORG (0x0FFF) definition for organizational
+          (vendor) extensions in the <tt>NodeData</tt> and <tt>GroupData</tt> fields.</t>
 
-      <section>
-        <name>FLIC Manifest Metadata and Annotation TLVs</name>
-        <t>Create the following registry to be titled <em>FLIC Manifest Metadata and Annotation
-            TLVs</em> Manifest Metadata is described in <xref target="metadata"/>; Pointer
-          Annotations are described in <xref target="annotations"/>. The registration procedure is
-            <strong>Specification Required</strong>. The Type value is 2 octets. The range is
-          0x0000-0xFFFF. Allocate a value for the single <em>SizeAnnotation</em> TLV.</t>
+      <aside><t>Do we need this official link to AEAD table?</t></aside>
+
+      <t>IANA will list this document as an additional reference for the following entries in the 
+        "CCNx Hash Function Types" registry (https://www.iana.org/assignments/aead-parameters).
+        The FLIC parameter <tt>AEADMode</tt> is defined to use the values from that table.</t>
+
+
+      <t>IANA will list this document as an additional reference for the following entries in the 
+        "Authenticated Encryption with Associated Data (AEAD) Parameters" registry (https://www.iana.org/assignments/aead-parameters).
+        The FLIC parameter <tt>AEADMode</tt> is defined to use the values from that table.</t>
+        <table><name>FLIC AEADMode Values</name>
+          <thead>
+          <tr>
+            <th align='center'>Numeric ID</th>
+            <th align='center'>Name</th>
+            <th align='center'>Reference</th>
+          </tr>
+           </thead>
+          <tbody>
+            <tr>
+              <td align='center'>1</td>
+              <td align='center'>AEAD_AES_128_GCM</td>
+              <td align='center'><xref target='RFC5116'/> </td>
+            </tr>
+             <tr>
+              <td align='center'>2</td>
+              <td align='center'>AEAD_AES_256_GCM</td>
+              <td align='center'><xref target='RFC5116'/> </td>
+            </tr>
+            <tr>
+              <td align='center'>3</td>
+              <td align='center'>AEAD_AES_128_CCM</td>
+              <td align='center'><xref target='RFC5116'/> </td>
+            </tr>
+             <tr>
+              <td align='center'>4</td>
+              <td align='center'>AEAD_AES_256_CCM</td>
+              <td align='center'><xref target='RFC5116'/> </td>
+            </tr>
+          </tbody>
+        </table>
+
+      <t>IANA will assign value "0x0004" to "T_MANIFEST_ID" in the "CCNx Name Segment Types" registry.</t>
+
+      <t>IANA will assign value "0x0003" to "T_PAYLOADTYPE_MANIFEST" in the "CCNx Payload Types" registry.</t>
+
+      <t>IANA will add the following new registry and sub-registries to the 
+        "Content-Centric Networking (CCNx)" registry group at https://www.iana.org/assignments/ccnx):
+      </t>
+
+        <ul spacing="normal">
+          <li>Registry Name: FLIC Manifest</li>
+          <li>Registration Procedure: Specification Required</li>
+          <li>The Type value (when used in CCNx) is 2 octets with a range of 0x0000 - 0xFFFF.</li>
+        </ul>
+
         <table>
-          <name>FLIC Manifest Metadata and Annotation TLVs</name>
+          <name>FLIC Manifest</name>
           <thead>
             <tr>
               <th align="center">Type</th>
@@ -1552,13 +1599,459 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
           </thead>
           <tbody>
             <tr>
-              <td align="center">TBA</td>
-              <td align="center">T_SIZE_ANNOTATION</td>
-              <td align="center">Size (<xref target="annotations"/>)</td>
+              <td align="center">0x0000</td>
+              <td align="center">T_FLIC_MANIFEST</td>
+              <td align="center"></td>
+            </tr>
+
+            <tr>
+              <td align="center">0x0001</td>
+              <td align="center">T_SECURITY_CTX</td>
+              <td align="center"></td>
+            </tr>
+
+            <tr>
+              <td align="center">0x0002</td>
+              <td align="center">T_ENCRYPTED_NODE</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0003</td>
+              <td align="center">T_NODE</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0004</td>
+              <td align="center">T_ENCRYPTED_NODE</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0005</td>
+              <td align="center">T_AUTH_TAG</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0006-0x0FFF</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x1000-0x1FFF</td>
+              <td align="center">Reserved for experimental use</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x2000-0xFFFF</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>          
+          </tbody>
+        </table>
+
+        
+
+        <table>          
+          <name>FLIC Manifest (SecurityCtx)</name>
+          <thead>
+            <tr>
+              <th align="center">Type</th>
+              <th align="center">Name</th>
+              <th align="center">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td align="center">0x0000</td>
+              <td align="center">T_AeadCtx</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0001</td>
+              <td align="center">T_RsaKemCtx</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0007-0x0FFF</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x1000-0x1FFF</td>
+              <td align="center">Reserved for experimental use</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x2000-0xFFFF</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
             </tr>
           </tbody>
         </table>
-      </section>
+
+        <table>          
+          <name>FLIC Manifest (Node)</name>
+          <thead>
+            <tr>
+              <th align="center">Type</th>
+              <th align="center">Name</th>
+              <th align="center">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td align="center">0x0000</td>
+              <td align="center">T_NODE_DATA</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0001</td>
+              <td align="center">T_HASH_GROUP</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0002</td>
+              <td align="center">T_SUBTREE_SIZE</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0003</td>
+              <td align="center">T_SUBTREE_DIGEST</td>
+              <td align="center">Value is in CCNx Hash Format <xref target="RFC8609" section="3.3.3"/></td>
+            </tr>
+            <tr>
+              <td align="center">0x0004</td>
+              <td align="center">T_NCDEF</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0005</td>
+              <td align="center">T_NCID</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0006</td>
+              <td align="center">T_LOCATORS</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0007</td>
+              <td align="center">T_PTRS</td>
+              <td align="center">Value is array of CCNx Hash Format <xref target="RFC8609" section="3.3.3"/></td>
+            </tr>
+            <tr>
+              <td align="center">0x0008</td>
+              <td align="center">T_ANNOTATED_PTRS</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0009</td>
+              <td align="center">T_ANNOTATED_BLOCK</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x000A</td>
+              <td align="center">T_PTR</td>
+              <td align="center">Value is in CCNx Hash Format <xref target="RFC8609" section="3.3.3"/></td>
+            </tr>
+
+            <tr>
+              <td align="center">0x0007-0x000F</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0010</td>
+              <td align="center">T_HashSchema</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0011</td>
+              <td align="center">T_PrefixSchema</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0012</td>
+              <td align="center">T_SegmentedSchema</td>
+              <td align="center"></td>
+            </tr>          
+            <tr>
+              <td align="center">0x0013-0x00FF</td>
+              <td align="center">Unassigned (for new schema types)</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0100-0x0FFE</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0FFF</td>
+              <td align="center">T_ORG</td>
+              <td align="center"><xref target="RFC8609" section="3.3.2"/></td>
+            </tr>
+
+            <tr>
+              <td align="center">0x1000-0x1FFF</td>
+              <td align="center">Reserved for experimental use</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x2000-0xFFFF</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+          </tbody>
+
+        </table>
+
+
+        <table>          
+          <name>FLIC Manifest (NcSchema)</name>
+          <thead>
+            <tr>
+              <th align="center">Type</th>
+              <th align="center">Name</th>
+              <th align="center">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td align="center">0x0000</td>
+              <td align="center">T_NAME</td>
+              <td align="center"><xref target="RFC8609"/></td>
+            </tr>
+            <tr>
+              <td align="center">0x0001</td>
+              <td align="center">T_LOCATORS</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0002</td>
+              <td align="center">T_PROTOCOL_FLAGS</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0003</td>
+              <td align="center">T_SUFFIX_TYPE</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0004-0x000C</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x000D</td>
+              <td align="center">T_LINK</td>
+              <td align="center">Value is a Link <xref target="RFC8609" section="3.3.4"/></td>
+            </tr>
+            <tr>
+              <td align="center">0x000E-0x0FFF</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x1000-0x1FFF</td>
+              <td align="center">Reserved for experimental use</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x2000-0xFFFF</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table>          
+          <name>FLIC Manifest (GroupData)</name>
+          <thead>
+            <tr>
+              <th align="center">Type</th>
+              <th align="center">Name</th>
+              <th align="center">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td align="center">0x0000</td>
+              <td align="center">T_LEAF_SIZE</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0001</td>
+              <td align="center">T_LEAF_DIGEST</td>
+              <td align="center">Value is a CCNx Hash Format <xref target="RFC8609" section="3.3.3"/></td>
+            </tr>
+            <tr>
+              <td align="center">0x0003</td>
+              <td align="center">T_START_SEGMENT_ID</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0004-0x0FFE</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0FFF</td>
+              <td align="center">T_ORG</td>
+              <td align="center"><xref target="RFC8609" section="3.3.2"/></td>
+            </tr>
+            <tr>
+              <td align="center">0x1000-0x1FFF</td>
+              <td align="center">Reserved for experimental use</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x2000-0xFFFF</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+
+          </tbody>
+        </table>
+
+
+        <table>          
+          <name>FLIC Manifest (AEADCtx)</name>
+          <thead>
+            <tr>
+              <th align="center">Type</th>
+              <th align="center">Name</th>
+              <th align="center">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td align="center">0x0000</td>
+              <td align="center">T_KEYNUM</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0001</td>
+              <td align="center">T_Nonce</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0002</td>
+              <td align="center">T_AEADMode</td>
+              <td align="center">Values as per IANA "AEAD Parameters" registry</td>
+            </tr>
+            <tr>
+              <td align="center">0x0003-0x0FFF</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x1000-0x1FFF</td>
+              <td align="center">Reserved for experimental use</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x2000-0xFFFF</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table>          
+          <name>FLIC Manifest (RsaKemCtx)</name>
+          <thead>
+            <tr>
+              <th align="center">Type</th>
+              <th align="center">Name</th>
+              <th align="center">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td align="center">0x0000</td>
+              <td align="center">T_WRAPPED_KEY</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0001-0x0008</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0009</td>
+              <td align="center">T_KEYID</td>
+              <td align="center">As per <xref target="RFC8609" section="3.6.4.1.4.1"/></td>
+            </tr>
+            <tr>
+              <td align="center">0x000A-0x0FFF</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x1000-0x1FFF</td>
+              <td align="center">Reserved for experimental use</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x2000-0xFFFF</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>          
+          </tbody>
+        </table>
+
+
+        <table>          
+          <name>FLIC Manifest (Annotation)</name>
+          <thead>
+            <tr>
+              <th align="center">Type</th>
+              <th align="center">Name</th>
+              <th align="center">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td align="center">0x0000</td>
+              <td align="center">T_ANN_SIZE</td>
+              <td align="center"></td>
+            </tr>  
+            <tr>
+              <td align="center">0x0001</td>
+              <td align="center">T_ANN_SEGMENT_ID</td>
+              <td align="center"></td>
+            </tr>  
+            <tr>
+              <td align="center">0x0002-0x000C</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x000D</td>
+              <td align="center">T_LINK</td>
+              <td align="center">Value is a Link <xref target="RFC8609" section="3.3.4"/></td>
+            </tr>
+            <tr>
+              <td align="center">0x000E-0x0FFE</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0FFF</td>
+              <td align="center">T_ORG</td>
+              <td align="center"><xref target="RFC8609" section="3.3.2"/></td>
+            </tr>
+            <tr>
+              <td align="center">0x1000-0x1FFF</td>
+              <td align="center">Reserved for experimental use</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x2000-0xFFFF</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+          </tbody>
+        </table>
     </section>
 
     <section anchor="Security">

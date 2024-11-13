@@ -37,7 +37,7 @@
     wcwidth 0.2.13
     weasyprint 61.2
 -->
-<link href="/usr/src/app/tmp/3162888a-3758-43de-9a2a-8bcaeed07560/draft-irtf-icnrg-flic-07.xml" rel="alternate" type="application/rfc+xml">
+<link href="/usr/src/app/tmp/530c1eac-4d24-43d7-b01f-e2f9fb1befdb/draft-irtf-icnrg-flic-07.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">/*
 
@@ -1453,14 +1453,6 @@ li > p:last-of-type:only-child {
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
             <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
-                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-flic-payload-type" class="internal xref">FLIC Payload Type</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
-                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-flic-manifest-metadata-and-" class="internal xref">FLIC Manifest Metadata and Annotation TLVs</a></p>
-</li>
-            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
@@ -1710,7 +1702,8 @@ li > p:last-of-type:only-child {
 <dt id="section-3.1-1.15">Manifest:</dt>
           <dd style="margin-left: 1.5em" id="section-3.1-1.16">a CCNx ContentObject with PayloadType 'Manifest' and a Payload of the encoded
             manifest. A leaf manifest only has direct pointers. An internal manifest has a mixture
-            of direct and indirect pointers.<a href="#section-3.1-1.16" class="pilcrow">¶</a>
+            of direct and indirect pointers.  The outer TLV type of the payload identifies
+            the manifest specifically as a FLIC manifest.<a href="#section-3.1-1.16" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
 <dt id="section-3.1-1.17">Manifest Waste:</dt>
@@ -1724,18 +1717,28 @@ li > p:last-of-type:only-child {
           <dd style="margin-left: 1.5em" id="section-3.1-1.20">The specification of how to construct an Interest for a Manifest entry.<a href="#section-3.1-1.20" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.1-1.21">Root Manifest:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.1-1.22">A signed, named, manifest that points to nameless manifest nodes. This structure means
-            that the internal tree structure of internal and leaf manifests have no names and thus
-            may be located anywhere in a namespace, while the root manifest has a name to fetch it
-            by.<a href="#section-3.1-1.22" class="pilcrow">¶</a>
+<dt id="section-3.1-1.21">Node</dt>
+          <dd style="margin-left: 1.5em" id="section-3.1-1.22">The <code>Node</code> section of a manifest holds the manifest information.  It has
+          node-wide metadata in a <code>NodeData</code> section, and then a series of <code>HashGroups</code>.<a href="#section-3.1-1.22" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.1-1.23">Top Manifest:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.1-1.24">One useful manifest structure is to use a Root manifest that points to a single
+<dt id="section-3.1-1.23">EncryptedNode</dt>
+          <dd style="margin-left: 1.5em" id="section-3.1-1.24">A <code>Node</code> that is encrypted as specified in the Manifest's <code>SecurityCtx</code>.
+          It is opaque octetes.<a href="#section-3.1-1.24" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-3.1-1.25">Root Manifest:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.1-1.26">A signed, named, manifest that points to nameless manifest nodes. This structure means
+            that the internal tree structure of internal and leaf manifests have no names and thus
+            may be located anywhere in a namespace, while the root manifest has a name to fetch it
+            by.<a href="#section-3.1-1.26" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-3.1-1.27">Top Manifest:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.1-1.28">One useful manifest structure is to use a Root manifest that points to a single
             Internal manifest called the Top Manifest. The Top manifest the begins the structure
             used to organize manifests. It is also possible to elide the two and use only a root
-            manifest that also serves in the role of the top manifest.<a href="#section-3.1-1.24" class="pilcrow">¶</a>
+            manifest that also serves in the role of the top manifest.<a href="#section-3.1-1.28" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -1995,6 +1998,7 @@ PEN = 3OCTET ; IANA Private Enterprise Number
 
 GroupData = TYPE LENGTH [NcId] [LeafSize] [LeafDigest]
             [SubtreeSize] [SubtreeDigest] [StartSegmentId]
+            0*Vendor
 LeafSize = TYPE LENGTH INTEGER
 LeafDigest = TYPE LENGTH HashValue
 StartSegmentId = TYPE LENGTH Integer
@@ -2004,14 +2008,14 @@ AEADData = KeyNum AEADNonce AEADMode
 KeyNum = TYPE LENGTH INTEGER
 AEADNonce = TYPE LENGTH 1*OCTET
 AEADMode = TYPE LENGTH (AEAD_AES_128_GCM / AEAD_AES_256_GCM /
-           AEAD_AES_128_CCM / AEAD_AES_128_CCM)
+           AEAD_AES_128_CCM / AEAD_AES_128_CCM) ; RFC5116 definitions
 
 RsaKemCtx = TYPE LENGTH RsaKemData
 RsaKemData = AEADData [WrappedData]
-WrappedData = KeyId WrappedKey LocatorPrefix
+WrappedData = KeyId WrappedKey KeyLink ; KeyLink as pre RFC8609
 KeyId = TYPE LENGTH HashValue; ID of Key Encryption Key
 WrappedKey = TYPE LENGTH 4OCTET 1*OCTET  ; 4-byte salt plus AES key
-LocatorPrefix = TYPE LENGTH Link
+
 </pre>
 </div>
 <figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
@@ -2023,67 +2027,72 @@ LocatorPrefix = TYPE LENGTH Link
           <dd style="margin-left: 1.5em" id="section-3.6-5.2">information about how to decrypt an <code>EncryptedNode</code>. The structure will depend on the specific encryption algorithm.<a href="#section-3.6-5.2" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.3">AlgorithmId:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.4">The ID of the encryption method (e.g. preshared key, a broadcast encryption scheme, etc.)<a href="#section-3.6-5.4" class="pilcrow">¶</a>
+<dt id="section-3.6-5.3">AEADMode</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.4">"AEAD Algorithms" values from IANA "Authenticated Encryption with Associated Data (AEAD) Parameters."
+            FLIC only specifies the use of four basic algorithms with full authentication tag.<a href="#section-3.6-5.4" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.5">AlgorithmData:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.6">The context for the encryption algorithm.<a href="#section-3.6-5.6" class="pilcrow">¶</a>
+<dt id="section-3.6-5.5">AlgorithmId:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.6">The ID of the encryption method (e.g. preshared key, a broadcast encryption scheme, etc.)<a href="#section-3.6-5.6" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.7">EncryptedNode:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.8">An opaque octet string with an optional authentication tag (i.e. for AEAD authentication tag)<a href="#section-3.6-5.8" class="pilcrow">¶</a>
+<dt id="section-3.6-5.7">AlgorithmData:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.8">The context for the encryption algorithm.<a href="#section-3.6-5.8" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.9">Node:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.10">A plain-text manifest node. The structure allows for in-place encryption/decryption.<a href="#section-3.6-5.10" class="pilcrow">¶</a>
+<dt id="section-3.6-5.9">EncryptedNode:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.10">An opaque octet string with an optional authentication tag (i.e. for AEAD authentication tag)<a href="#section-3.6-5.10" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.11">NodeData:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.12">the metadata about the Manifest node<a href="#section-3.6-5.12" class="pilcrow">¶</a>
+<dt id="section-3.6-5.11">Node:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.12">A plain-text manifest node. The structure allows for in-place encryption/decryption.<a href="#section-3.6-5.12" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.13">SubtreeSize:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.14">The size of all application data at and below the Node or Group<a href="#section-3.6-5.14" class="pilcrow">¶</a>
+<dt id="section-3.6-5.13">NodeData:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.14">the metadata about the Manifest node<a href="#section-3.6-5.14" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.15">SubtreeDigest:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.16">The cryptographic digest of all application data at and below the Node or Group<a href="#section-3.6-5.16" class="pilcrow">¶</a>
+<dt id="section-3.6-5.15">SubtreeSize:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.16">The size of all application data at and below the Node or Group<a href="#section-3.6-5.16" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.17">Locators:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.18">An array of routing hints to find the manifest components<a href="#section-3.6-5.18" class="pilcrow">¶</a>
+<dt id="section-3.6-5.17">SubtreeDigest:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.18">The cryptographic digest of all application data at and below the Node or Group<a href="#section-3.6-5.18" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.19">HashGroup:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.20">A set of child pointers and associated metadata<a href="#section-3.6-5.20" class="pilcrow">¶</a>
+<dt id="section-3.6-5.19">Locators:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.20">An array of routing hints to find the manifest components<a href="#section-3.6-5.20" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.21">Ptrs:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.22">A list of one or more Hash Values<a href="#section-3.6-5.22" class="pilcrow">¶</a>
+<dt id="section-3.6-5.21">HashGroup:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.22">A set of child pointers and associated metadata<a href="#section-3.6-5.22" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.23">GroupData:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.24">Metadata that applies to a HashGroup<a href="#section-3.6-5.24" class="pilcrow">¶</a>
+<dt id="section-3.6-5.23">Ptrs:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.24">A list of one or more Hash Values<a href="#section-3.6-5.24" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.25">LeafSize:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.26">Size of all application data immediately under the Group (i.e. via direct pointers)<a href="#section-3.6-5.26" class="pilcrow">¶</a>
+<dt id="section-3.6-5.25">GroupData:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.26">Metadata that applies to a HashGroup<a href="#section-3.6-5.26" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.27">LeafDigest:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.28">Digest of all application data immediately under the Group<a href="#section-3.6-5.28" class="pilcrow">¶</a>
+<dt id="section-3.6-5.27">LeafSize:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.28">Size of all application data immediately under the Group (i.e. via direct pointers)<a href="#section-3.6-5.28" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.29">StartSegmentId:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.30">
+<dt id="section-3.6-5.29">LeafDigest:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.30">Digest of all application data immediately under the Group<a href="#section-3.6-5.30" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-3.6-5.31">StartSegmentId:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.32">
             If using a name constructor that requires a chunk number (segment number), this field indicates the starting value
             for the group.  Using the StartSegmentId means that a consumer does not need to track the segment id between
-            manifests and simplifies interest name generation.<a href="#section-3.6-5.30" class="pilcrow">¶</a>
+            manifests and simplifies interest name generation.<a href="#section-3.6-5.32" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.31">Ptr:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.32">The ContentObjectHash of a child, which may be a data ContentObject (i.e. with Payload) or another Manifest Node.<a href="#section-3.6-5.32" class="pilcrow">¶</a>
+<dt id="section-3.6-5.33">Ptr:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.34">The ContentObjectHash of a child, which may be a data ContentObject (i.e. with Payload) or another Manifest Node.<a href="#section-3.6-5.34" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -3067,67 +3076,557 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
       <h2 id="name-iana-considerations">
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-6-1">IANA is requested to perform the actions in the following sub-sections.<a href="#section-6-1" class="pilcrow">¶</a></p>
-<aside id="section-6-2">
-        <p id="section-6-2.1">IANA should also note that FLIC uses the definitions of AEAD_AES_128_GCM, AEAD_AES_128_CCM, AEAD_AES_256_GCM, AEAD_AES_256_CCM from <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span>.<a href="#section-6-2.1" class="pilcrow">¶</a></p>
+<p id="section-6-1">FLIC adds two values to existing regiries and defines a new registry in the 
+        "Content-Centric Networking (CCNx)" group.  Although not required by CCNx, which uses hierarchical
+        TLV types, we have put FLIC types in a single table with unique type values.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-2">The FLIC registries follow the CCNx convention of reserving the namespace 0x1000 - 0x1FFF
+          for experimental use.  It also uses the T_ORG (0x0FFF) definition for organizational
+          (vendor) extensions in the <code>NodeData</code> and <code>GroupData</code> fields.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<aside id="section-6-3">
+        <p id="section-6-3.1">Do we need this official link to AEAD table?<a href="#section-6-3.1" class="pilcrow">¶</a></p>
 </aside>
-<section id="section-6.1">
-        <h3 id="name-flic-payload-type">
-<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-flic-payload-type" class="section-name selfRef">FLIC Payload Type</a>
-        </h3>
-<p id="section-6.1-1">Register FLIC as a Payload Type in the <em>CCNx Payload Types</em> Registry referring to the description in <a href="#CCNxEncoding" class="auto internal xref">Section 3.9.1</a> as follows:<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<span id="name-flic-ccnx-payload-type"></span><table class="center" id="table-1">
-          <caption>
+<p id="section-6-4">IANA will list this document as an additional reference for the following entries in the 
+        "CCNx Hash Function Types" registry (https://www.iana.org/assignments/aead-parameters).
+        The FLIC parameter <code>AEADMode</code> is defined to use the values from that table.<a href="#section-6-4" class="pilcrow">¶</a></p>
+<p id="section-6-5">IANA will list this document as an additional reference for the following entries in the 
+        "Authenticated Encryption with Associated Data (AEAD) Parameters" registry (https://www.iana.org/assignments/aead-parameters).
+        The FLIC parameter <code>AEADMode</code> is defined to use the values from that table.<a href="#section-6-5" class="pilcrow">¶</a></p>
+<span id="name-flic-aeadmode-values"></span><table class="center" id="table-1">
+        <caption>
 <a href="#table-1" class="selfRef">Table 1</a>:
-<a href="#name-flic-ccnx-payload-type" class="selfRef">FLIC CCNx Payload Type</a>
-          </caption>
+<a href="#name-flic-aeadmode-values" class="selfRef">FLIC AEADMode Values</a>
+        </caption>
 <thead>
-            <tr>
-              <th class="text-center" rowspan="1" colspan="1">Type</th>
-              <th class="text-center" rowspan="1" colspan="1">Name</th>
-              <th class="text-center" rowspan="1" colspan="1">Reference</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="text-center" rowspan="1" colspan="1">TBA</td>
-              <td class="text-center" rowspan="1" colspan="1">T_PAYLOADTYPE_FLIC</td>
-              <td class="text-center" rowspan="1" colspan="1">
-                <a href="#CCNxEncoding" class="auto internal xref">Section 3.9.1</a> and Section 3.6.2.2.1 of <span>[<a href="#RFC8609" class="cite xref">RFC8609</a>]</span> </td>
-            </tr>
-          </tbody>
-        </table>
-</section>
-<section id="section-6.2">
-        <h3 id="name-flic-manifest-metadata-and-">
-<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-flic-manifest-metadata-and-" class="section-name selfRef">FLIC Manifest Metadata and Annotation TLVs</a>
-        </h3>
-<p id="section-6.2-1">Create the following registry to be titled <em>FLIC Manifest Metadata and Annotation
-            TLVs</em> Manifest Metadata is described in <a href="#metadata" class="auto internal xref">Section 3.4</a>; Pointer
-          Annotations are described in <a href="#annotations" class="auto internal xref">Section 3.5</a>. The registration procedure is
-            <strong>Specification Required</strong>. The Type value is 2 octets. The range is
-          0x0000-0xFFFF. Allocate a value for the single <em>SizeAnnotation</em> TLV.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
-<span id="name-flic-manifest-metadata-and-a"></span><table class="center" id="table-2">
-          <caption>
+          <tr>
+            <th class="text-center" rowspan="1" colspan="1">Numeric ID</th>
+            <th class="text-center" rowspan="1" colspan="1">Name</th>
+            <th class="text-center" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">1</td>
+            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_128_GCM</td>
+            <td class="text-center" rowspan="1" colspan="1">
+              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">2</td>
+            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_256_GCM</td>
+            <td class="text-center" rowspan="1" colspan="1">
+              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">3</td>
+            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_128_CCM</td>
+            <td class="text-center" rowspan="1" colspan="1">
+              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">4</td>
+            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_256_CCM</td>
+            <td class="text-center" rowspan="1" colspan="1">
+              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
+          </tr>
+        </tbody>
+      </table>
+<p id="section-6-7">IANA will assign value "0x0004" to "T_MANIFEST_ID" in the "CCNx Name Segment Types" registry.<a href="#section-6-7" class="pilcrow">¶</a></p>
+<p id="section-6-8">IANA will assign value "0x0003" to "T_PAYLOADTYPE_MANIFEST" in the "CCNx Payload Types" registry.<a href="#section-6-8" class="pilcrow">¶</a></p>
+<p id="section-6-9">IANA will add the following new registry and sub-registries to the 
+        "Content-Centric Networking (CCNx)" registry group at https://www.iana.org/assignments/ccnx):<a href="#section-6-9" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6-10.1">Registry Name: FLIC Manifest<a href="#section-6-10.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-6-10.2">Registration Procedure: Specification Required<a href="#section-6-10.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-6-10.3">The Type value (when used in CCNx) is 2 octets with a range of 0x0000 - 0xFFFF.<a href="#section-6-10.3" class="pilcrow">¶</a>
+</li>
+      </ul>
+<span id="name-flic-manifest"></span><table class="center" id="table-2">
+        <caption>
 <a href="#table-2" class="selfRef">Table 2</a>:
-<a href="#name-flic-manifest-metadata-and-a" class="selfRef">FLIC Manifest Metadata and Annotation TLVs</a>
-          </caption>
+<a href="#name-flic-manifest" class="selfRef">FLIC Manifest</a>
+        </caption>
 <thead>
-            <tr>
-              <th class="text-center" rowspan="1" colspan="1">Type</th>
-              <th class="text-center" rowspan="1" colspan="1">Name</th>
-              <th class="text-center" rowspan="1" colspan="1">Reference</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="text-center" rowspan="1" colspan="1">TBA</td>
-              <td class="text-center" rowspan="1" colspan="1">T_SIZE_ANNOTATION</td>
-              <td class="text-center" rowspan="1" colspan="1">Size (<a href="#annotations" class="auto internal xref">Section 3.5</a>)</td>
-            </tr>
-          </tbody>
-        </table>
-</section>
+          <tr>
+            <th class="text-center" rowspan="1" colspan="1">Type</th>
+            <th class="text-center" rowspan="1" colspan="1">Name</th>
+            <th class="text-center" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0000</td>
+            <td class="text-center" rowspan="1" colspan="1">T_FLIC_MANIFEST</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0001</td>
+            <td class="text-center" rowspan="1" colspan="1">T_SECURITY_CTX</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0002</td>
+            <td class="text-center" rowspan="1" colspan="1">T_ENCRYPTED_NODE</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0003</td>
+            <td class="text-center" rowspan="1" colspan="1">T_NODE</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0004</td>
+            <td class="text-center" rowspan="1" colspan="1">T_ENCRYPTED_NODE</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0005</td>
+            <td class="text-center" rowspan="1" colspan="1">T_AUTH_TAG</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0006-0x0FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x1000-0x1FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Reserved for experimental use</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x2000-0xFFFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+        </tbody>
+      </table>
+<span id="name-flic-manifest-securityctx"></span><table class="center" id="table-3">
+        <caption>
+<a href="#table-3" class="selfRef">Table 3</a>:
+<a href="#name-flic-manifest-securityctx" class="selfRef">FLIC Manifest (SecurityCtx)</a>
+        </caption>
+<thead>
+          <tr>
+            <th class="text-center" rowspan="1" colspan="1">Type</th>
+            <th class="text-center" rowspan="1" colspan="1">Name</th>
+            <th class="text-center" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0000</td>
+            <td class="text-center" rowspan="1" colspan="1">T_AeadCtx</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0001</td>
+            <td class="text-center" rowspan="1" colspan="1">T_RsaKemCtx</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0007-0x0FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x1000-0x1FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Reserved for experimental use</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x2000-0xFFFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+        </tbody>
+      </table>
+<span id="name-flic-manifest-node"></span><table class="center" id="table-4">
+        <caption>
+<a href="#table-4" class="selfRef">Table 4</a>:
+<a href="#name-flic-manifest-node" class="selfRef">FLIC Manifest (Node)</a>
+        </caption>
+<thead>
+          <tr>
+            <th class="text-center" rowspan="1" colspan="1">Type</th>
+            <th class="text-center" rowspan="1" colspan="1">Name</th>
+            <th class="text-center" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0000</td>
+            <td class="text-center" rowspan="1" colspan="1">T_NODE_DATA</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0001</td>
+            <td class="text-center" rowspan="1" colspan="1">T_HASH_GROUP</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0002</td>
+            <td class="text-center" rowspan="1" colspan="1">T_SUBTREE_SIZE</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0003</td>
+            <td class="text-center" rowspan="1" colspan="1">T_SUBTREE_DIGEST</td>
+            <td class="text-center" rowspan="1" colspan="1">Value is in CCNx Hash Format <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.3.3" class="relref">Section 3.3.3</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>
+</td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0004</td>
+            <td class="text-center" rowspan="1" colspan="1">T_NCDEF</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0005</td>
+            <td class="text-center" rowspan="1" colspan="1">T_NCID</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0006</td>
+            <td class="text-center" rowspan="1" colspan="1">T_LOCATORS</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0007</td>
+            <td class="text-center" rowspan="1" colspan="1">T_PTRS</td>
+            <td class="text-center" rowspan="1" colspan="1">Value is array of CCNx Hash Format <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.3.3" class="relref">Section 3.3.3</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>
+</td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0008</td>
+            <td class="text-center" rowspan="1" colspan="1">T_ANNOTATED_PTRS</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0009</td>
+            <td class="text-center" rowspan="1" colspan="1">T_ANNOTATED_BLOCK</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x000A</td>
+            <td class="text-center" rowspan="1" colspan="1">T_PTR</td>
+            <td class="text-center" rowspan="1" colspan="1">Value is in CCNx Hash Format <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.3.3" class="relref">Section 3.3.3</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>
+</td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0007-0x000F</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0010</td>
+            <td class="text-center" rowspan="1" colspan="1">T_HashSchema</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0011</td>
+            <td class="text-center" rowspan="1" colspan="1">T_PrefixSchema</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0012</td>
+            <td class="text-center" rowspan="1" colspan="1">T_SegmentedSchema</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0013-0x00FF</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned (for new schema types)</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0100-0x0FFE</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">T_ORG</td>
+            <td class="text-center" rowspan="1" colspan="1">
+              <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.3.2" class="relref">Section 3.3.2</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>
+</td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x1000-0x1FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Reserved for experimental use</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x2000-0xFFFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+        </tbody>
+      </table>
+<span id="name-flic-manifest-ncschema"></span><table class="center" id="table-5">
+        <caption>
+<a href="#table-5" class="selfRef">Table 5</a>:
+<a href="#name-flic-manifest-ncschema" class="selfRef">FLIC Manifest (NcSchema)</a>
+        </caption>
+<thead>
+          <tr>
+            <th class="text-center" rowspan="1" colspan="1">Type</th>
+            <th class="text-center" rowspan="1" colspan="1">Name</th>
+            <th class="text-center" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0000</td>
+            <td class="text-center" rowspan="1" colspan="1">T_NAME</td>
+            <td class="text-center" rowspan="1" colspan="1">
+              <span>[<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>
+</td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0001</td>
+            <td class="text-center" rowspan="1" colspan="1">T_LOCATORS</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0002</td>
+            <td class="text-center" rowspan="1" colspan="1">T_PROTOCOL_FLAGS</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0003</td>
+            <td class="text-center" rowspan="1" colspan="1">T_SUFFIX_TYPE</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0004-0x000C</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x000D</td>
+            <td class="text-center" rowspan="1" colspan="1">T_LINK</td>
+            <td class="text-center" rowspan="1" colspan="1">Value is a Link <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.3.4" class="relref">Section 3.3.4</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>
+</td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x000E-0x0FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x1000-0x1FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Reserved for experimental use</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x2000-0xFFFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+        </tbody>
+      </table>
+<span id="name-flic-manifest-groupdata"></span><table class="center" id="table-6">
+        <caption>
+<a href="#table-6" class="selfRef">Table 6</a>:
+<a href="#name-flic-manifest-groupdata" class="selfRef">FLIC Manifest (GroupData)</a>
+        </caption>
+<thead>
+          <tr>
+            <th class="text-center" rowspan="1" colspan="1">Type</th>
+            <th class="text-center" rowspan="1" colspan="1">Name</th>
+            <th class="text-center" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0000</td>
+            <td class="text-center" rowspan="1" colspan="1">T_LEAF_SIZE</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0001</td>
+            <td class="text-center" rowspan="1" colspan="1">T_LEAF_DIGEST</td>
+            <td class="text-center" rowspan="1" colspan="1">Value is a CCNx Hash Format <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.3.3" class="relref">Section 3.3.3</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>
+</td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0003</td>
+            <td class="text-center" rowspan="1" colspan="1">T_START_SEGMENT_ID</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0004-0x0FFE</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">T_ORG</td>
+            <td class="text-center" rowspan="1" colspan="1">
+              <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.3.2" class="relref">Section 3.3.2</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>
+</td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x1000-0x1FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Reserved for experimental use</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x2000-0xFFFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+        </tbody>
+      </table>
+<span id="name-flic-manifest-aeadctx"></span><table class="center" id="table-7">
+        <caption>
+<a href="#table-7" class="selfRef">Table 7</a>:
+<a href="#name-flic-manifest-aeadctx" class="selfRef">FLIC Manifest (AEADCtx)</a>
+        </caption>
+<thead>
+          <tr>
+            <th class="text-center" rowspan="1" colspan="1">Type</th>
+            <th class="text-center" rowspan="1" colspan="1">Name</th>
+            <th class="text-center" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0000</td>
+            <td class="text-center" rowspan="1" colspan="1">T_KEYNUM</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0001</td>
+            <td class="text-center" rowspan="1" colspan="1">T_Nonce</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0002</td>
+            <td class="text-center" rowspan="1" colspan="1">T_AEADMode</td>
+            <td class="text-center" rowspan="1" colspan="1">Values as per IANA "AEAD Parameters" registry</td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0003-0x0FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x1000-0x1FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Reserved for experimental use</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x2000-0xFFFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+        </tbody>
+      </table>
+<span id="name-flic-manifest-rsakemctx"></span><table class="center" id="table-8">
+        <caption>
+<a href="#table-8" class="selfRef">Table 8</a>:
+<a href="#name-flic-manifest-rsakemctx" class="selfRef">FLIC Manifest (RsaKemCtx)</a>
+        </caption>
+<thead>
+          <tr>
+            <th class="text-center" rowspan="1" colspan="1">Type</th>
+            <th class="text-center" rowspan="1" colspan="1">Name</th>
+            <th class="text-center" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0000</td>
+            <td class="text-center" rowspan="1" colspan="1">T_WRAPPED_KEY</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0001-0x0008</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0009</td>
+            <td class="text-center" rowspan="1" colspan="1">T_KEYID</td>
+            <td class="text-center" rowspan="1" colspan="1">As per <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.6.4.1.4.1" class="relref">Section 3.6.4.1.4.1</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>
+</td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x000A-0x0FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x1000-0x1FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Reserved for experimental use</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x2000-0xFFFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+        </tbody>
+      </table>
+<span id="name-flic-manifest-annotation"></span><table class="center" id="table-9">
+        <caption>
+<a href="#table-9" class="selfRef">Table 9</a>:
+<a href="#name-flic-manifest-annotation" class="selfRef">FLIC Manifest (Annotation)</a>
+        </caption>
+<thead>
+          <tr>
+            <th class="text-center" rowspan="1" colspan="1">Type</th>
+            <th class="text-center" rowspan="1" colspan="1">Name</th>
+            <th class="text-center" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0000</td>
+            <td class="text-center" rowspan="1" colspan="1">T_ANN_SIZE</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0001</td>
+            <td class="text-center" rowspan="1" colspan="1">T_ANN_SEGMENT_ID</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0002-0x000C</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x000D</td>
+            <td class="text-center" rowspan="1" colspan="1">T_LINK</td>
+            <td class="text-center" rowspan="1" colspan="1">Value is a Link <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.3.4" class="relref">Section 3.3.4</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>
+</td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x000E-0x0FFE</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">T_ORG</td>
+            <td class="text-center" rowspan="1" colspan="1">
+              <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.3.2" class="relref">Section 3.3.2</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>
+</td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x1000-0x1FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Reserved for experimental use</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x2000-0xFFFF</td>
+            <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+        </tbody>
+      </table>
 </section>
 </div>
 <div id="Security">
