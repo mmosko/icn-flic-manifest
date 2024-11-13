@@ -1532,48 +1532,6 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
           for experimental use.  It also uses the T_ORG (0x0FFF) definition for organizational
           (vendor) extensions in the <tt>NodeData</tt> and <tt>GroupData</tt> fields.</t>
 
-      <aside><t>Do we need this official link to AEAD table?</t></aside>
-
-      <t>IANA will list this document as an additional reference for the following entries in the 
-        "CCNx Hash Function Types" registry (https://www.iana.org/assignments/aead-parameters).
-        The FLIC parameter <tt>AEADMode</tt> is defined to use the values from that table.</t>
-
-
-      <t>IANA will list this document as an additional reference for the following entries in the 
-        "Authenticated Encryption with Associated Data (AEAD) Parameters" registry (https://www.iana.org/assignments/aead-parameters).
-        The FLIC parameter <tt>AEADMode</tt> is defined to use the values from that table.</t>
-        <table><name>FLIC AEADMode Values</name>
-          <thead>
-          <tr>
-            <th align='center'>Numeric ID</th>
-            <th align='center'>Name</th>
-            <th align='center'>Reference</th>
-          </tr>
-           </thead>
-          <tbody>
-            <tr>
-              <td align='center'>1</td>
-              <td align='center'>AEAD_AES_128_GCM</td>
-              <td align='center'><xref target='RFC5116'/> </td>
-            </tr>
-             <tr>
-              <td align='center'>2</td>
-              <td align='center'>AEAD_AES_256_GCM</td>
-              <td align='center'><xref target='RFC5116'/> </td>
-            </tr>
-            <tr>
-              <td align='center'>3</td>
-              <td align='center'>AEAD_AES_128_CCM</td>
-              <td align='center'><xref target='RFC5116'/> </td>
-            </tr>
-             <tr>
-              <td align='center'>4</td>
-              <td align='center'>AEAD_AES_256_CCM</td>
-              <td align='center'><xref target='RFC5116'/> </td>
-            </tr>
-          </tbody>
-        </table>
-
       <t>IANA will assign value "0x0004" to "T_MANIFEST_ID" in the "CCNx Name Segment Types" registry.</t>
 
       <t>IANA will assign value "0x0003" to "T_PAYLOADTYPE_MANIFEST" in the "CCNx Payload Types" registry.</t>
@@ -1936,7 +1894,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
             <tr>
               <td align="center">0x0002</td>
               <td align="center">T_AEADMode</td>
-              <td align="center">Values as per IANA "AEAD Parameters" registry</td>
+              <td align="center"></td>
             </tr>
             <tr>
               <td align="center">0x0003-0x0FFF</td>
@@ -1955,6 +1913,39 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
             </tr>
           </tbody>
         </table>
+
+        <table><name>FLIC Manifest (AEADMode Values)</name>
+          <thead>
+          <tr>
+            <th align='center'>Numeric ID</th>
+            <th align='center'>Name</th>
+            <th align='center'>Reference</th>
+          </tr>
+           </thead>
+          <tbody>
+            <tr>
+              <td align='center'>1</td>
+              <td align='center'>AEAD_AES_128_GCM</td>
+              <td align='center'><xref target='RFC5116'/> </td>
+            </tr>
+             <tr>
+              <td align='center'>2</td>
+              <td align='center'>AEAD_AES_256_GCM</td>
+              <td align='center'><xref target='RFC5116'/> </td>
+            </tr>
+            <tr>
+              <td align='center'>3</td>
+              <td align='center'>AEAD_AES_128_CCM</td>
+              <td align='center'><xref target='RFC5116'/> </td>
+            </tr>
+             <tr>
+              <td align='center'>4</td>
+              <td align='center'>AEAD_AES_256_CCM</td>
+              <td align='center'><xref target='RFC5116'/> </td>
+            </tr>
+          </tbody>
+        </table>
+
 
         <table>          
           <name>FLIC Manifest (RsaKemCtx)</name>

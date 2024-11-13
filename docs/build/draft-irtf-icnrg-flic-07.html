@@ -37,7 +37,7 @@
     wcwidth 0.2.13
     weasyprint 61.2
 -->
-<link href="/usr/src/app/tmp/530c1eac-4d24-43d7-b01f-e2f9fb1befdb/draft-irtf-icnrg-flic-07.xml" rel="alternate" type="application/rfc+xml">
+<link href="/usr/src/app/tmp/ff8ec8a7-5766-4cb5-9f8a-c5aa2b1a814c/draft-irtf-icnrg-flic-07.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">/*
 
@@ -3082,69 +3082,21 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
 <p id="section-6-2">The FLIC registries follow the CCNx convention of reserving the namespace 0x1000 - 0x1FFF
           for experimental use.  It also uses the T_ORG (0x0FFF) definition for organizational
           (vendor) extensions in the <code>NodeData</code> and <code>GroupData</code> fields.<a href="#section-6-2" class="pilcrow">¶</a></p>
-<aside id="section-6-3">
-        <p id="section-6-3.1">Do we need this official link to AEAD table?<a href="#section-6-3.1" class="pilcrow">¶</a></p>
-</aside>
-<p id="section-6-4">IANA will list this document as an additional reference for the following entries in the 
-        "CCNx Hash Function Types" registry (https://www.iana.org/assignments/aead-parameters).
-        The FLIC parameter <code>AEADMode</code> is defined to use the values from that table.<a href="#section-6-4" class="pilcrow">¶</a></p>
-<p id="section-6-5">IANA will list this document as an additional reference for the following entries in the 
-        "Authenticated Encryption with Associated Data (AEAD) Parameters" registry (https://www.iana.org/assignments/aead-parameters).
-        The FLIC parameter <code>AEADMode</code> is defined to use the values from that table.<a href="#section-6-5" class="pilcrow">¶</a></p>
-<span id="name-flic-aeadmode-values"></span><table class="center" id="table-1">
-        <caption>
-<a href="#table-1" class="selfRef">Table 1</a>:
-<a href="#name-flic-aeadmode-values" class="selfRef">FLIC AEADMode Values</a>
-        </caption>
-<thead>
-          <tr>
-            <th class="text-center" rowspan="1" colspan="1">Numeric ID</th>
-            <th class="text-center" rowspan="1" colspan="1">Name</th>
-            <th class="text-center" rowspan="1" colspan="1">Reference</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="text-center" rowspan="1" colspan="1">1</td>
-            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_128_GCM</td>
-            <td class="text-center" rowspan="1" colspan="1">
-              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
-          </tr>
-          <tr>
-            <td class="text-center" rowspan="1" colspan="1">2</td>
-            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_256_GCM</td>
-            <td class="text-center" rowspan="1" colspan="1">
-              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
-          </tr>
-          <tr>
-            <td class="text-center" rowspan="1" colspan="1">3</td>
-            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_128_CCM</td>
-            <td class="text-center" rowspan="1" colspan="1">
-              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
-          </tr>
-          <tr>
-            <td class="text-center" rowspan="1" colspan="1">4</td>
-            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_256_CCM</td>
-            <td class="text-center" rowspan="1" colspan="1">
-              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
-          </tr>
-        </tbody>
-      </table>
-<p id="section-6-7">IANA will assign value "0x0004" to "T_MANIFEST_ID" in the "CCNx Name Segment Types" registry.<a href="#section-6-7" class="pilcrow">¶</a></p>
-<p id="section-6-8">IANA will assign value "0x0003" to "T_PAYLOADTYPE_MANIFEST" in the "CCNx Payload Types" registry.<a href="#section-6-8" class="pilcrow">¶</a></p>
-<p id="section-6-9">IANA will add the following new registry and sub-registries to the 
-        "Content-Centric Networking (CCNx)" registry group at https://www.iana.org/assignments/ccnx):<a href="#section-6-9" class="pilcrow">¶</a></p>
+<p id="section-6-3">IANA will assign value "0x0004" to "T_MANIFEST_ID" in the "CCNx Name Segment Types" registry.<a href="#section-6-3" class="pilcrow">¶</a></p>
+<p id="section-6-4">IANA will assign value "0x0003" to "T_PAYLOADTYPE_MANIFEST" in the "CCNx Payload Types" registry.<a href="#section-6-4" class="pilcrow">¶</a></p>
+<p id="section-6-5">IANA will add the following new registry and sub-registries to the 
+        "Content-Centric Networking (CCNx)" registry group at https://www.iana.org/assignments/ccnx):<a href="#section-6-5" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6-10.1">Registry Name: FLIC Manifest<a href="#section-6-10.1" class="pilcrow">¶</a>
+<li class="normal" id="section-6-6.1">Registry Name: FLIC Manifest<a href="#section-6-6.1" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-6-10.2">Registration Procedure: Specification Required<a href="#section-6-10.2" class="pilcrow">¶</a>
+        <li class="normal" id="section-6-6.2">Registration Procedure: Specification Required<a href="#section-6-6.2" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-6-10.3">The Type value (when used in CCNx) is 2 octets with a range of 0x0000 - 0xFFFF.<a href="#section-6-10.3" class="pilcrow">¶</a>
+        <li class="normal" id="section-6-6.3">The Type value (when used in CCNx) is 2 octets with a range of 0x0000 - 0xFFFF.<a href="#section-6-6.3" class="pilcrow">¶</a>
 </li>
       </ul>
-<span id="name-flic-manifest"></span><table class="center" id="table-2">
+<span id="name-flic-manifest"></span><table class="center" id="table-1">
         <caption>
-<a href="#table-2" class="selfRef">Table 2</a>:
+<a href="#table-1" class="selfRef">Table 1</a>:
 <a href="#name-flic-manifest" class="selfRef">FLIC Manifest</a>
         </caption>
 <thead>
@@ -3202,9 +3154,9 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
           </tr>
         </tbody>
       </table>
-<span id="name-flic-manifest-securityctx"></span><table class="center" id="table-3">
+<span id="name-flic-manifest-securityctx"></span><table class="center" id="table-2">
         <caption>
-<a href="#table-3" class="selfRef">Table 3</a>:
+<a href="#table-2" class="selfRef">Table 2</a>:
 <a href="#name-flic-manifest-securityctx" class="selfRef">FLIC Manifest (SecurityCtx)</a>
         </caption>
 <thead>
@@ -3242,9 +3194,9 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
           </tr>
         </tbody>
       </table>
-<span id="name-flic-manifest-node"></span><table class="center" id="table-4">
+<span id="name-flic-manifest-node"></span><table class="center" id="table-3">
         <caption>
-<a href="#table-4" class="selfRef">Table 4</a>:
+<a href="#table-3" class="selfRef">Table 3</a>:
 <a href="#name-flic-manifest-node" class="selfRef">FLIC Manifest (Node)</a>
         </caption>
 <thead>
@@ -3362,9 +3314,9 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
           </tr>
         </tbody>
       </table>
-<span id="name-flic-manifest-ncschema"></span><table class="center" id="table-5">
+<span id="name-flic-manifest-ncschema"></span><table class="center" id="table-4">
         <caption>
-<a href="#table-5" class="selfRef">Table 5</a>:
+<a href="#table-4" class="selfRef">Table 4</a>:
 <a href="#name-flic-manifest-ncschema" class="selfRef">FLIC Manifest (NcSchema)</a>
         </caption>
 <thead>
@@ -3425,9 +3377,9 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
           </tr>
         </tbody>
       </table>
-<span id="name-flic-manifest-groupdata"></span><table class="center" id="table-6">
+<span id="name-flic-manifest-groupdata"></span><table class="center" id="table-5">
         <caption>
-<a href="#table-6" class="selfRef">Table 6</a>:
+<a href="#table-5" class="selfRef">Table 5</a>:
 <a href="#name-flic-manifest-groupdata" class="selfRef">FLIC Manifest (GroupData)</a>
         </caption>
 <thead>
@@ -3478,9 +3430,9 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
           </tr>
         </tbody>
       </table>
-<span id="name-flic-manifest-aeadctx"></span><table class="center" id="table-7">
+<span id="name-flic-manifest-aeadctx"></span><table class="center" id="table-6">
         <caption>
-<a href="#table-7" class="selfRef">Table 7</a>:
+<a href="#table-6" class="selfRef">Table 6</a>:
 <a href="#name-flic-manifest-aeadctx" class="selfRef">FLIC Manifest (AEADCtx)</a>
         </caption>
 <thead>
@@ -3504,7 +3456,7 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
           <tr>
             <td class="text-center" rowspan="1" colspan="1">0x0002</td>
             <td class="text-center" rowspan="1" colspan="1">T_AEADMode</td>
-            <td class="text-center" rowspan="1" colspan="1">Values as per IANA "AEAD Parameters" registry</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
           </tr>
           <tr>
             <td class="text-center" rowspan="1" colspan="1">0x0003-0x0FFF</td>
@@ -3520,6 +3472,45 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
             <td class="text-center" rowspan="1" colspan="1">0x2000-0xFFFF</td>
             <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
             <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+        </tbody>
+      </table>
+<span id="name-flic-manifest-aeadmode-valu"></span><table class="center" id="table-7">
+        <caption>
+<a href="#table-7" class="selfRef">Table 7</a>:
+<a href="#name-flic-manifest-aeadmode-valu" class="selfRef">FLIC Manifest (AEADMode Values)</a>
+        </caption>
+<thead>
+          <tr>
+            <th class="text-center" rowspan="1" colspan="1">Numeric ID</th>
+            <th class="text-center" rowspan="1" colspan="1">Name</th>
+            <th class="text-center" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">1</td>
+            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_128_GCM</td>
+            <td class="text-center" rowspan="1" colspan="1">
+              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">2</td>
+            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_256_GCM</td>
+            <td class="text-center" rowspan="1" colspan="1">
+              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">3</td>
+            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_128_CCM</td>
+            <td class="text-center" rowspan="1" colspan="1">
+              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">4</td>
+            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_256_CCM</td>
+            <td class="text-center" rowspan="1" colspan="1">
+              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
           </tr>
         </tbody>
       </table>

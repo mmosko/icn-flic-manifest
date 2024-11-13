@@ -105,7 +105,7 @@ Table of Contents
      5.4.  Growing ICN collections . . . . . . . . . . . . . . . . .  33
      5.5.  Re-publishing a FLIC under a new name . . . . . . . . . .  33
    6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  34
-   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  40
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  39
 
 
 
@@ -114,14 +114,14 @@ Tschudin, et al.           Expires 17 May 2025                  [Page 2]
 Internet-Draft                    FLIC                     November 2024
 
 
-     7.1.  Integrity and Origin Authentication of FLIC Manifests . .  41
+     7.1.  Integrity and Origin Authentication of FLIC Manifests . .  40
      7.2.  Confidentiality of Manifest Data  . . . . . . . . . . . .  41
      7.3.  Privacy of names and linkability of access patterns . . .  42
    8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  42
      8.1.  Normative References  . . . . . . . . . . . . . . . . . .  42
      8.2.  Informative References  . . . . . . . . . . . . . . . . .  43
-   Appendix A.  Building Trees . . . . . . . . . . . . . . . . . . .  45
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  47
+   Appendix A.  Building Trees . . . . . . . . . . . . . . . . . . .  44
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  46
 
 1.  Introduction
 
@@ -1876,50 +1876,6 @@ Internet-Draft                    FLIC                     November 2024
    T_ORG (0x0FFF) definition for organizational (vendor) extensions in
    the NodeData and GroupData fields.
 
-      |  Do we need this official link to AEAD table?
-
-   IANA will list this document as an additional reference for the
-   following entries in the "CCNx Hash Function Types" registry
-   (https://www.iana.org/assignments/aead-parameters).  The FLIC
-   parameter AEADMode is defined to use the values from that table.
-
-   IANA will list this document as an additional reference for the
-   following entries in the "Authenticated Encryption with Associated
-   Data (AEAD) Parameters" registry (https://www.iana.org/assignments/
-   aead-parameters).  The FLIC parameter AEADMode is defined to use the
-   values from that table.
-
-
-
-
-
-
-
-
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 34]
-
-Internet-Draft                    FLIC                     November 2024
-
-
-               +============+==================+===========+
-               | Numeric ID |       Name       | Reference |
-               +============+==================+===========+
-               |     1      | AEAD_AES_128_GCM | [RFC5116] |
-               +------------+------------------+-----------+
-               |     2      | AEAD_AES_256_GCM | [RFC5116] |
-               +------------+------------------+-----------+
-               |     3      | AEAD_AES_128_CCM | [RFC5116] |
-               +------------+------------------+-----------+
-               |     4      | AEAD_AES_256_CCM | [RFC5116] |
-               +------------+------------------+-----------+
-
-                       Table 1: FLIC AEADMode Values
-
    IANA will assign value "0x0004" to "T_MANIFEST_ID" in the "CCNx Name
    Segment Types" registry.
 
@@ -1945,19 +1901,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 35]
+Tschudin, et al.           Expires 17 May 2025                 [Page 34]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1984,7 +1928,7 @@ Internet-Draft                    FLIC                     November 2024
        | 0x2000-0xFFFF |           Unassigned          |           |
        +---------------+-------------------------------+-----------+
 
-                           Table 2: FLIC Manifest
+                           Table 1: FLIC Manifest
 
        +===============+===============================+===========+
        |      Type     |              Name             | Reference |
@@ -2000,7 +1944,7 @@ Internet-Draft                    FLIC                     November 2024
        | 0x2000-0xFFFF |           Unassigned          |           |
        +---------------+-------------------------------+-----------+
 
-                    Table 3: FLIC Manifest (SecurityCtx)
+                    Table 2: FLIC Manifest (SecurityCtx)
 
    +===============+===================+==============================+
    |      Type     |        Name       |          Reference           |
@@ -2013,7 +1957,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 17 May 2025                 [Page 36]
+Tschudin, et al.           Expires 17 May 2025                 [Page 35]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2060,7 +2004,7 @@ Internet-Draft                    FLIC                     November 2024
    | 0x2000-0xFFFF |     Unassigned    |                              |
    +---------------+-------------------+------------------------------+
 
-                      Table 4: FLIC Manifest (Node)
+                      Table 3: FLIC Manifest (Node)
 
 
 
@@ -2069,7 +2013,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 17 May 2025                 [Page 37]
+Tschudin, et al.           Expires 17 May 2025                 [Page 36]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2098,7 +2042,7 @@ Internet-Draft                    FLIC                     November 2024
      | 0x2000-0xFFFF |    Unassigned    |                            |
      +---------------+------------------+----------------------------+
 
-                     Table 5: FLIC Manifest (NcSchema)
+                     Table 4: FLIC Manifest (NcSchema)
 
    +===============+====================+=============================+
    |      Type     |        Name        |          Reference          |
@@ -2120,7 +2064,63 @@ Internet-Draft                    FLIC                     November 2024
    | 0x2000-0xFFFF |     Unassigned     |                             |
    +---------------+--------------------+-----------------------------+
 
-                    Table 6: FLIC Manifest (GroupData)
+                    Table 5: FLIC Manifest (GroupData)
+
+
+
+
+Tschudin, et al.           Expires 17 May 2025                 [Page 37]
+
+Internet-Draft                    FLIC                     November 2024
+
+
+       +===============+===============================+===========+
+       |      Type     |              Name             | Reference |
+       +===============+===============================+===========+
+       |     0x0000    |            T_KEYNUM           |           |
+       +---------------+-------------------------------+-----------+
+       |     0x0001    |            T_Nonce            |           |
+       +---------------+-------------------------------+-----------+
+       |     0x0002    |           T_AEADMode          |           |
+       +---------------+-------------------------------+-----------+
+       | 0x0003-0x0FFF |           Unassigned          |           |
+       +---------------+-------------------------------+-----------+
+       | 0x1000-0x1FFF | Reserved for experimental use |           |
+       +---------------+-------------------------------+-----------+
+       | 0x2000-0xFFFF |           Unassigned          |           |
+       +---------------+-------------------------------+-----------+
+
+                      Table 6: FLIC Manifest (AEADCtx)
+
+               +============+==================+===========+
+               | Numeric ID |       Name       | Reference |
+               +============+==================+===========+
+               |     1      | AEAD_AES_128_GCM | [RFC5116] |
+               +------------+------------------+-----------+
+               |     2      | AEAD_AES_256_GCM | [RFC5116] |
+               +------------+------------------+-----------+
+               |     3      | AEAD_AES_128_CCM | [RFC5116] |
+               +------------+------------------+-----------+
+               |     4      | AEAD_AES_256_CCM | [RFC5116] |
+               +------------+------------------+-----------+
+
+                  Table 7: FLIC Manifest (AEADMode Values)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2129,26 +2129,6 @@ Tschudin, et al.           Expires 17 May 2025                 [Page 38]
 
 Internet-Draft                    FLIC                     November 2024
 
-
-      +===============+==================+==========================+
-      |      Type     |       Name       |        Reference         |
-      +===============+==================+==========================+
-      |     0x0000    |     T_KEYNUM     |                          |
-      +---------------+------------------+--------------------------+
-      |     0x0001    |     T_Nonce      |                          |
-      +---------------+------------------+--------------------------+
-      |     0x0002    |    T_AEADMode    | Values as per IANA "AEAD |
-      |               |                  |   Parameters" registry   |
-      +---------------+------------------+--------------------------+
-      | 0x0003-0x0FFF |    Unassigned    |                          |
-      +---------------+------------------+--------------------------+
-      | 0x1000-0x1FFF |   Reserved for   |                          |
-      |               | experimental use |                          |
-      +---------------+------------------+--------------------------+
-      | 0x2000-0xFFFF |    Unassigned    |                          |
-      +---------------+------------------+--------------------------+
-
-                      Table 7: FLIC Manifest (AEADCtx)
 
      +===============+==================+============================+
      |      Type     |       Name       |         Reference          |
@@ -2169,22 +2149,6 @@ Internet-Draft                    FLIC                     November 2024
      +---------------+------------------+----------------------------+
 
                      Table 8: FLIC Manifest (RsaKemCtx)
-
-
-
-
-
-
-
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 39]
-
-Internet-Draft                    FLIC                     November 2024
-
 
      +===============+==================+============================+
      |      Type     |       Name       |         Reference          |
@@ -2214,6 +2178,14 @@ Internet-Draft                    FLIC                     November 2024
 
    TODO Need a discussion on:
 
+
+
+
+Tschudin, et al.           Expires 17 May 2025                 [Page 39]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    *  signing and hash chaining security. (*Note: Did I cover this
       adequately below?*)
 
@@ -2232,15 +2204,6 @@ Internet-Draft                    FLIC                     November 2024
       really use some help here*.
 
    *Anything else?????*.
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 40]
-
-Internet-Draft                    FLIC                     November 2024
-
 
 7.1.  Integrity and Origin Authentication of FLIC Manifests
 
@@ -2272,6 +2235,13 @@ Internet-Draft                    FLIC                     November 2024
       the signed binding of the name to the content described in the
       Manifest
 
+
+
+Tschudin, et al.           Expires 17 May 2025                 [Page 40]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    A FLIC Manifest therefore gets integrity of its individual pieces
    through the existing secure hashing procedures of the underlying
    protocols.  Origin authentication of the entire Manifest is achieved
@@ -2290,14 +2260,6 @@ Internet-Draft                    FLIC                     November 2024
    Therefore, since FLIC is an application-level construct in both NDN
    and CCNx, it is incumbent on this specification for FLIC to provide
    the desired confidentiality properties using encryption.  One could
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 41]
-
-Internet-Draft                    FLIC                     November 2024
-
-
    leave the specification of Manifest encryption entirely in the hands
    of the individual application utilizing FLIC, but this would be
    undesirable for a number of reasons:
@@ -2327,6 +2289,15 @@ Internet-Draft                    FLIC                     November 2024
    additional encryption capabilities may be needed and hence we expect
    the encryption aspects of this specification to evolve over time.
 
+
+
+
+
+Tschudin, et al.           Expires 17 May 2025                 [Page 41]
+
+Internet-Draft                    FLIC                     November 2024
+
+
 7.3.  Privacy of names and linkability of access patterns
 
    What to say here, if anything?
@@ -2344,15 +2315,6 @@ Internet-Draft                    FLIC                     November 2024
               Protocol (HTTP) Digest Authentication Using Authentication
               and Key Agreement (AKA)", RFC 3310, DOI 10.17487/RFC3310,
               September 2002, <https://www.rfc-editor.org/info/rfc3310>.
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 42]
-
-Internet-Draft                    FLIC                     November 2024
-
 
    [RFC5116]  McGrew, D., "An Interface and Algorithms for Authenticated
               Encryption", RFC 5116, DOI 10.17487/RFC5116, January 2008,
@@ -2384,6 +2346,14 @@ Internet-Draft                    FLIC                     November 2024
               DOI 10.17487/RFC8569, July 2019,
               <https://www.rfc-editor.org/info/rfc8569>.
 
+
+
+
+Tschudin, et al.           Expires 17 May 2025                 [Page 42]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    [RFC8609]  Mosko, M., Solis, I., and C. Wood, "Content-Centric
               Networking (CCNx) Messages in TLV Format", RFC 8609,
               DOI 10.17487/RFC8609, July 2019,
@@ -2399,16 +2369,6 @@ Internet-Draft                    FLIC                     November 2024
    [FLICImplementation]
               Mosko, M., "FLIC Implementation in Python", various,
               <https://github.com/mmosko/ccnpy>.
-
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 43]
-
-Internet-Draft                    FLIC                     November 2024
-
 
    [I-D.wood-icnrg-ccnxkeyexchange]
               Mosko, M., Uzun, E., and C. A. Wood, "CCNx Key Exchange
@@ -2439,6 +2399,17 @@ Internet-Draft                    FLIC                     November 2024
               Challenges", RFC 7927, DOI 10.17487/RFC7927, July 2016,
               <https://www.rfc-editor.org/info/rfc7927>.
 
+
+
+
+
+
+
+Tschudin, et al.           Expires 17 May 2025                 [Page 43]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    [RSAKEM]   Barker, E., Chen, L., Roginsky, A., Vassilev, A., Davis,
               R., and S. Simon, "Recommendation for Pair-Wise Key-
               Establishment Using Integer Factorization Cryptography",
@@ -2456,15 +2427,6 @@ Internet-Draft                    FLIC                     November 2024
    [venti]    "Venti: a new approach to archival storage", Bell Labs
               Document Archive /sts/doc, 2002,
               <http://doc.cat-v.org/plan_9/4th_edition/papers/venti/>.
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 44]
-
-Internet-Draft                    FLIC                     November 2024
-
 
 Appendix A.  Building Trees
 
@@ -2499,25 +2461,7 @@ Appendix A.  Building Trees
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 45]
+Tschudin, et al.           Expires 17 May 2025                 [Page 44]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2573,7 +2517,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 17 May 2025                 [Page 46]
+Tschudin, et al.           Expires 17 May 2025                 [Page 45]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2629,7 +2573,7 @@ Authors' Addresses
 
 
 
-Tschudin, et al.           Expires 17 May 2025                 [Page 47]
+Tschudin, et al.           Expires 17 May 2025                 [Page 46]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2685,4 +2629,4 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 17 May 2025                 [Page 48]
+Tschudin, et al.           Expires 17 May 2025                 [Page 47]
