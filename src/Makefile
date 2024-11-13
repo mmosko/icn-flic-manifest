@@ -1,7 +1,7 @@
 
 .PHONY: all reqs
 
-VER=05
+VER=07
 BASE=draft-irtf-icnrg-flic
 VERSIONED=$(BASE)-$(VER)
 OUTPUT=$(VERSIONED).txt $(VERSIONED).html $(VERSIONED).pdf
