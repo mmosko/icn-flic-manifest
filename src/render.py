@@ -69,6 +69,7 @@ if __name__ == "__main__":
         response = sess.post(api_text, files=files)
         if not response.ok:
             print(f"status = {response.status_code}, reason = {response.reason}")
+            print(response.content.decode('utf-8'))
             exit(-1)
         output = response.json()
         print_logs(output)

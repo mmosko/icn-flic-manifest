@@ -149,7 +149,8 @@
 
       <t>FLIC has encodings for <xref target="CCNxEncoding" format="default">CCNx</xref> as per
           <xref target="RFC8609" format="default">RFC 8609</xref> and for <xref target="NDNEncoding"
-          format="default">NDN</xref>.</t>
+          format="default">NDN</xref>.  For the implementor, the section <xref target="CCNxTlvs"/> 
+          succintly defines the CCNx TLV structures and the format of each TLV value.</t>
 
       <t>An example implementation in Python may be found at <xref target="FLICImplementation"
           format="default"/>.</t>
@@ -517,7 +518,7 @@ LENGTH = 2OCTET / {1,3,5}OCTET ; As per CCNx or NDN TLV
 Manifest = TYPE LENGTH [SecurityCtx] (EncryptedNode / Node) [AuthTag]
 
 SecurityCtx = TYPE LENGTH AlgorithmCtx
-AlgorithmCtx = AEADCtx / RsaKemCtx
+AlgorithmCtx = AEADCtx / RsaWrapCtx
 AuthTag = TYPE LENGTH *OCTET ; e.g. AEAD authentication tag
 EncryptedNode = TYPE LENGTH *OCTET ; Encrypted Node
 
@@ -573,11 +574,13 @@ AEADNonce = TYPE LENGTH 1*OCTET
 AEADMode = TYPE LENGTH (AEAD_AES_128_GCM / AEAD_AES_256_GCM /
            AEAD_AES_128_CCM / AEAD_AES_128_CCM) ; RFC5116 definitions
 
-RsaKemCtx = TYPE LENGTH RsaKemData
-RsaKemData = AEADData [WrappedData]
-WrappedData = KeyId WrappedKey KeyLink ; KeyLink as pre RFC8609
-KeyId = TYPE LENGTH HashValue; ID of Key Encryption Key
-WrappedKey = TYPE LENGTH 4OCTET 1*OCTET  ; 4-byte salt plus AES key
+
+RsaOaepCtx = TYPE LENGTH RsaOaepData
+RsaOaepData = AEADData [RsaOaepWrapper]
+RsaOaepWrapper = KeyId KeyLink HashAlg WrappedKey  ; KeyLink as pre RFC8609
+HashAlg = TYPE LENGTH alg_number        ; alg_number from IANA "CCNx Hash Function Types"
+KeyId = TYPE LENGTH HashValue           ; ID of Key Encryption Key
+WrappedKey = TYPE LENGTH 4OCTET 1*OCTET ; Encrypted 4-byte salt plus AES key
 ]]>
 			</sourcecode>
         </figure>
@@ -701,18 +704,16 @@ D0 D1
         <t>This document specifies two encryption modes. The first is a preshared key mode, where
           the parties are assumed to have the decryption keys already. It uses AES-GCM or AES-CCM.
           This is useful, for example, when using a key agreement protocol such as <xref
-            target="I-D.wood-icnrg-ccnxkeyexchange">CCNxKE</xref>. The second is an RSA key
-          encapsulation mode (<xref target="RFC5990">RsaKem</xref>), which may be used for group
-          keying.</t>
+            target="I-D.wood-icnrg-ccnxkeyexchange">CCNxKE</xref>. 
+            The second is an RSA key
+          wrapping mode using RSA-OAEP, similar to <xref target="RFC8017"/>. This may be used for group
+          keying. </t>
 
-        <t>Additional modes may be defined in subsequent specifications. We expect that an RSA
-          KemDem mode and Elliptic Curve mode should be specified.</t>
+        <t>Additional modes may be defined in subsequent specifications. We expect that an RSA-KEM 
+          mode and Elliptic Curve mode should be specified.</t>
 
-        <t>All encryption modes use standard encryption algorithms and specifications. Where
-          appropriate, we adopt the TLS 1.2 standards for how to use the encryption algorithms. This
-          section specifies how to encode algorithm parameters or ICN-specific data.</t>
-
-        <t>For group key based encryption, we use RsaKem. This specification only details the
+        <t>For group key based encryption, FLIC uses RSA-OAEP to wrap the <tt>WrappedKey</tt> element. 
+          This specification only details the
           pertinent aspects of the encryption. It describes how a consumer locates the appropriate
           keys in the ICN namespace. It does not specify aspects of a key manager which may or may
           not be used as part of key distribution and management, nor does it specify the protocol
@@ -720,8 +721,9 @@ D0 D1
           key manager, in which case there is no extra protocol needed between the publisher and key
           manager.</t>
 
-        <t>While the preshared key algorithm is limited in use, the AES encryption mode described
-          applies to the group key mechanisms too. The group key mechanism facilitates the
+        <t>The manifest is always encrypted with an AEAD algorithm.  The difference between the
+          preshared key mode and the RSA wrapped mode is how the parties communicate the AES 
+          decryption key.  The group key mechanism facilitates the
           distribution of the shared key without an on-line key agreement protocol like (the expired
           draft) <xref target="I-D.wood-icnrg-ccnxkeyexchange">CCNxKE</xref>.</t>
 
@@ -797,26 +799,30 @@ D0 D1
           </ol>
         </section>
 
-        <section anchor="rsaoaep">
+        <section anchor="rsa_wrap">
           <name>RSA-OAEP Key Transport Mode</name>
-          <t>The RSA-OAEP mode uses RSA-OAEP (see <xref target="RFC8017" format="default">RFC8017
-              Sec 7.1</xref> and <xref target="RSAKEM" format="default"/>) to encrypt a symmetric
+          <t>The RSA-OAEP mode uses RSA-OAEP (see <xref target="RFC8017" section="7.1" format="default"/>) to encrypt a symmetric
             key that is used to encrypt the Manifest. We call this RSA key the Key Encryption Key
             (KEK) and each group member has this private key. A separate key distribuiton system is
             responsible for distributing the KEK. For our purposes, it is reasonable to assume that
             the KEK private key is available at a Locator and that group members can decrypt this
             private key.</t>
 
-            <t>The <tt>RsaKemData</tt> includes an <tt>AEADData</tt> that indicates how to use the warpped key to
+            <t><tt>T_RSA_WRAP_CTX</tt> uses <xref target="RFC8017">RSA-OAEP</xref> with mask generation function 
+            <xref target="RFC8017">MGF1</xref> and
+            the specified hash algorithm.  The hash algorithm number is taken from the IANA registry
+            "CCNx Hash Function Types".</t>
+
+            <t>The <tt>RsaOaepData</tt> includes an <tt>AEADData</tt> that indicates how to use the warpped key to
             decrypt the manifest.  It optionally includes the wrapped key itself.  A publisher
-            using <tt>RsaKemCtx</tt> MUST include the optional wrapped key information in the first
+            using <tt>RsaWrapCtx</tt> MUST include the optional wrapped key information in the first
             manifest node that uses it.  The publisher MAY include the wrapped key in other manifest nodes.
             It MUST use distinct KeyNum for distinct <tt>WrappedKey</tt>.</t>
 
             <t>In a typical usage, the publisher would begin encryption at the root manifest.  It must
-              include the full <tt>RsaKemData</tt> here, as it is the first usage of the <tt>KeyNum</tt>.
+              include the full <tt>WrapedData</tt> here, as it is the first usage of the <tt>KeyNum</tt>.
               In subsequent manifests, the publisher may only include the <tt>AEADData</tt> in
-              the <tt>RsaKemData</tt> to save space.</t>
+              the <tt>RsaOaepData</tt> to save space.</t>
 
             <t>The <tt>KeyId</tt> identifies the KEK.  If the consumer already has the key
             corresponding to <tt>KeyId</tt> locally, it does not need to fetch it from the <tt>LocatorPrefixx</tt>.
@@ -836,8 +842,8 @@ D0 D1
             <li>The Locator of the KEK, which is shared under some group key protocol.</li>
           </ul>
 
-          <t>This Manifest specification requires that if a group member fetches the KEK key at
-            Locator it can decrypt the <tt>WrappedKey</tt>
+          <t>This specification requires that if a group member fetches the KEK key at
+            Locator, it can decrypt the <tt>WrappedKey</tt>
             and retrieve the CEK.  The <tt>WrappedKey</tt>
             includes a 4-byte salt plus an AES key.  The 4-byte salt is used by the AEAD algorithm
             as part of the IV, and MUST remain the same for the given <tt>KeyNum</tt>.
@@ -854,7 +860,7 @@ D0 D1
           <t>To create the wrapped key using a Key Encryption Key:</t>
           <ol>
             <li>Obtain the CEK in binary format (e.g. 32 bytes for 256 bits)</li>
-            <li>RSA encrypt the CEK using the KEK public key with OAEP padding, following <xref
+            <li>RSA encrypt the <tt>WrappedKey</tt> value using the KEK public key with OAEP padding, following <xref
                 target="RFC8017">RFC8017 Sec 7.1</xref>. The encryption is not signed because the
               root Manifest must have been signed by the publisher already.  Or the encapsulating
               Content Object (Data Object) is signed via ICN mechanisms.</li>
@@ -862,15 +868,15 @@ D0 D1
 
           <t>To decrypt the wrapped key using a Key Encryption Key:</t>
           <ol>
-            <li>RSA decrypt the WrappedKey using the KEK private key with OAEP padding, following
-                <xref target="RFC8017" format="default">RFC8017 Sec 7.1</xref>.</li>
+            <li>RSA decrypt the <tt>WrappedKey</tt> value using the KEK private key with OAEP padding, following
+                <xref target="RFC8017" section="7.1" format="default"/>.</li>
             <li>Verify the unwrapped key is a valid length for the AEADMode.</li>
           </ol>
 
           <t>To encrypt a Manifest, the publisher:</t>
           <ol>
-            <li>Acquires the set of (CEK, Wrapped_CEK, KeyId, Locator).</li>
-            <li>Generates a 4-byte salt to included in the <tt>WrappedKey</tt></li>
+            <li>Acquires the set of (CEK, salt, WrappedKey, KeyId, Locator).  The publisher may
+              generate these values itself, or acquire them from a key manager.</li>
             <li>Creates a <tt>SecurityCtx</tt> and adds it to the Manifest. The <tt>SecurityCtx</tt>
               includes an <tt>AEADNonce</tt> and <tt>AEADMode</tt>, as per AEAD mode.</li>
             <li>Encrypts the Manifest as per AEAD Mode using the RSA-OAEP SecurityCtx and CEK.</li>
@@ -878,14 +884,14 @@ D0 D1
 
           <t>To decrypt a Manifest, the consumer:</t>
           <ol>
-            <li>Acquires the KEK from the Key Locator. If the consumer already has a cached copy of
-              the KeyId in memory, it may use that cached key.</li>
-            <li>SHOULD verify that it trusts the Manifest publisher to use the provided key
+            <li>Acquires the RSA private key corresponding to <tt>KeyId</tt> via the <tt>KeyLocator</tt>
+            or whatever means the publisher and consumers use to distribute keys.</li>
+            <li>It SHOULD verify that it trusts the Manifest publisher to use the provided key
               Locator.</li>
             <li>Decrypts the <tt>WrappedKey</tt> to get the CEK and salt. If the consumer has already decrypted the
               same exact WrappedKey TLV block, it may use that cached CEK and salt.</li>
             <li>Using the <tt>CEK</tt>, <tt>AEADNonce</tt>, and <tt>AEADMode</tt>, decrypt the
-              Manifest as per AEAD Mode, ignoring the KeyNum steps.</li>
+              Manifest as per AEAD Mode.</li>
           </ol>
         </section>
 
@@ -939,10 +945,13 @@ D0 D1
 
         <section anchor="CCNxEncoding">
           <name>CCNx Encoding</name>
+          <t>The CCNx type values are defined in <xref target="IANA"/>.  The section <xref target="CCNxTlvs"/> goes over
+          every TLV structure.</t>
+
           <t>In CCNx, application data content objects use a PayloadType of T_PAYLOADTYPE_DATA. In
             order to clearly distinguish FLIC Manifests from application data, a different payload
             type is required. Therefore this specification defines a new payload type of
-            T_PAYLOADTYPE_FLIC.</t>
+            T_PAYLOADTYPE_MANIFEST.</t>
 
           <figure anchor="CCNxGrammer">
             <name>CCNx Embedding Grammar</name>
@@ -951,7 +960,7 @@ ManifestContentObject = TYPE LENGTH [Name] [ExpiryTime]
                         PayloadType Payload
 Name = TYPE LENGTH *OCTET ; As per RFC8569
 ExpiryTime = TYPE LENGTH *OCTET ; As per RFC8569
-PayloadType = TYPE LENGTH T_PAYLOADTYPE_FLIC ; Value TBD
+PayloadType = TYPE LENGTH T_PAYLOADTYPE_MANIFEST ; Value TBD
 Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
             </sourcecode>
           </figure>
@@ -1103,6 +1112,196 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
             <t>Manifests and data objects derive their names according to the application's naming
               schema.</t>
           </section>
+
+          <section anchor="CCNxTlvs">
+            <name>CCNx TLV Encodings</name>
+            <t>This section defines each CCNx TLV encoding and the format of the TLV values.</t>
+
+            <t>FLIC uses variable length integer encodings in several places.  We use the term
+              <tt>varint</tt> to be a network byte order unsigned integer of length 1 - 8 octets.</t>
+
+              <t>The CCNx encoding allows for vendor extensions (<tt>T_ORG</tt>) in several places.
+              A parser may skip over any <tt>T_ORG</tt> it does not implement.  Where appropriate,
+              we show an optional <tt>T_ORG</tt> tlv where allowed.</t>
+
+              <t>The CCNx encoding allows for experimental type identifiers (0x1000-0x1FFF) in most
+                TLV contexts.  A parser may skip over any experimental TLV it does not implement.
+                We do not show experimental TLVs in the artwork below.</t>
+
+                <t>There is no required order of TLV blocks withhin a TLV context.  We show the
+                  RECOMMENDED ordering of TLV blocks.  TLV blocks MUST NOT repeat unless
+                  specifically allowed in the <xref target="grammar">grammar</xref>.</t>
+
+      <section anchor="tlv_manifest" title="Manifest TLV">
+        <t>A Manifest has an outer TLV type that identifies type kind of manifest inside a Content Object
+          with a payload type of <tt>T_PAYLOADTYPE_MANIFEST</tt>.  FLIC is defined as type <tt>T_FLIC_MANIFEST</tt>.</t>
+
+          <t>A FLIC Manifest may be plaintext or encrypted.  A plaintext manifest usually only has a Node.
+            But it may also have a Security Context, Node, and Authentication Tag.  This can happen when a manifest
+            is in-place decrypted.  In place decryption operates on the body of the <tt>EncryptedNode</tt> TLV and
+            then changes the type from <tt>T_ENCRYPTED_NODE</tt> to <tt>T_NODE</tt>.</t>
+          <figure>
+            <artwork align="left"><![CDATA[
+                    1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|        T_FLIC_MANIFEST        |             Length            |
++---------------+---------------+---------------+---------------+
+/                       [Security Context]                      /
++---------------+---------------+---------------+---------------+
+/                      Node or EncryptedNode                    /
++---------------+---------------+---------------+---------------+
+/                      [Authentication Tag]                     /
++---------------+---------------+---------------+---------------+
+   ]]></artwork>
+          </figure>
+        </section>
+
+      <section anchor="tlv_security_ctx" title="SecurityCtx TLV">
+        <t>The <tt>SecurityCtx</tt> TLV wraps an <tt>AlgroithmCtx</tt>, which may be either a
+        symmetric key encryption context <tt>AEADCtx</tt> or an assymetric key wrapping
+        of the decryption key, <tt>RsaWrapCtx</tt>.</t>
+          <figure>
+            <artwork align="left"><![CDATA[
+                    1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|        T_SECURITY_CTX         |             Length            |
++---------------+---------------+---------------+---------------+
+/                      AEADCtx or RsaWrapCtx                    /
++---------------+---------------+---------------+---------------+
+   ]]></artwork>
+          </figure>
+        </section>
+
+
+      <section anchor="tlv_aead_ctx" title="AEAD Context TLV">
+        <t>The <tt>AEADCtx</tt> identifies a symmetric key shared by the publisher and consumer.
+        It is identified by a <tt>KeyNum</tt>, which may be an small integer (e.g. within a
+        TLS-like session) or a longer integer.  CCNx uses upto a 64-bit integer.</t>
+        <t>The <tt>AEADNonce</tt> is used to generate the encryption IV, as descbribed
+        in <xref target="aead"/>.  It is an octet string.</t>
+        <t>The <tt>AEADMode</tt> is an integer that identifes the encryption algorithm.
+        All defined values fit within 1 octet.  The IANA registry "AEAD Algorithms"
+        allows for up to 2 octets.</t>
+          <figure>
+            <artwork align="left"><![CDATA[
+                    1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|           T_AEAD_CTX          |             Length            |
++---------------+---------------+---------------+---------------+
+|           T_KEY_NUM           |             Length            | 
++---------------+---------------+---------------+---------------+
+/                           <varint>                            /
++---------------+---------------+---------------+---------------+
+|           T_NONCE             |             Length            | 
++---------------+---------------+---------------+---------------+
+/                           1*OCTET                             /
++---------------+---------------+---------------+---------------+
+|          T_AEAD_MODE          |             Length            | 
++---------------+---------------+---------------+---------------+
+/                           <varint>                            /
++---------------+---------------+---------------+---------------+
+   ]]></artwork>
+          </figure>
+        </section>
+
+      <section anchor="tlv_rsa_wrap_ctx" title="RSA-OAEP Context TLV">
+        <t>The <tt>RsaOaepData</tt> has a mandatory <tt>AEADData</tt>
+        section plus optional <tt>RsaOaepData</tt>.  Note that
+        in the grammar, those are not TLV containers, but simply
+        data records.  The figure below shows an <tt>RsaOaepCtx</tt>
+        with all parameters.</t>
+
+        <t>The HashAlg value is an unsigned 16-bit integer in
+          network byte order.</t>
+
+        <t>The wrapped key value is the RSA-OAEP cyphertext of
+          the <tt>WrappedKey</tt> record.</t>
+
+          <figure>
+            <artwork align="left"><![CDATA[
+                    1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|         T_RSAOAEP_CTX         |             Length            |
++---------------+---------------+---------------+---------------+
+|           T_KEY_NUM           |             Length            | 
++---------------+---------------+---------------+---------------+
+/                           <varint>                            /
++---------------+---------------+---------------+---------------+
+|           T_NONCE             |             Length            | 
++---------------+---------------+---------------+---------------+
+/                           1*OCTET                             /
++---------------+---------------+---------------+---------------+
+|          T_AEAD_MODE          |             Length            | 
++---------------+---------------+---------------+---------------+
+/                           <varint>                            /
++---------------+---------------+---------------+---------------+
+|            T_KEYID            |             Length            |
++---------------+---------------+---------------+---------------+
+/                            1*OCTET                            /
++---------------+---------------+---------------+---------------+
+|            T_KEYLINK          |             Length            |
++---------------+---------------+---------------+---------------+
+/                          <ccnx link>                          /
++---------------+---------------+---------------+---------------+
+|           T_HASH_ALG          |               2               |
++---------------+---------------+---------------+---------------+
+|           16-bit int          |
++---------------+---------------+---------------+---------------+
+|         T_WRAPPED_KEY         |             Length            |
++---------------+---------------+---------------+---------------+
+/                  <RSA-OAEP encrypted octets>                  /
++---------------+---------------+---------------+---------------+
+
+   ]]></artwork>
+          </figure>
+        </section>
+
+      <section anchor="tlv_node" title="Node TLV">
+        <t>The <tt>Node</tt> contains the manifest information.  It has an
+        optional NodeData, plus one or more hash groups.</t>
+        <t>Hash groups may be <tt>Ptrs</tt> or <tt>AnnotatedPointers</tt>.</t>
+
+          <figure>
+            <artwork align="left"><![CDATA[
+                    1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|            T_NODE             |             Length            |
++---------------+---------------+---------------+---------------+
+/                           [NodeData]                          /
++---------------+---------------+---------------+---------------+
+/                      1*[Ptrs or AnnotatedPtrs]                /
++---------------+---------------+---------------+---------------+
+   ]]></artwork>
+          </figure>
+        </section>
+
+      <section anchor="tlv_node_data" title="Node Data TLV">
+        <t>The <tt>Node</tt> contains the manifest information.  It has an
+        optional NodeData, plus one or more hash groups.</t>
+        <t>Hash groups may be <tt>Ptrs</tt> or <tt>AnnotatedPointers</tt>.</t>
+
+          <figure>
+            <artwork align="left"><![CDATA[
+                    1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++---------------+---------------+---------------+---------------+
+|            T_NODE             |             Length            |
++---------------+---------------+---------------+---------------+
+/                           [NodeData]                          /
++---------------+---------------+---------------+---------------+
+/                      1*[Ptrs or AnnotatedPtrs]                /
++---------------+---------------+---------------+---------------+
+   ]]></artwork>
+          </figure>
+        </section>
+
+
+        </section>
         </section>
 
         <section anchor="NDNEncoding">
@@ -1525,7 +1724,9 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
 
     <section anchor="IANA"><name>IANA Considerations</name>
       <t>FLIC adds two values to existing registries and defines a new registry in the 
-        "Content-Centric Networking (CCNx)" group.</t>
+        "Content-Centric Networking (CCNx)" group.  The first table defines FLIC as
+        manifest type 0x0000.  Other manifest types could be defined in the future.
+        The remaining sub-registries define values specific to FLIC.</t>
 
         <t>The FLIC registries follow the CCNx convention of reserving the namespace 0x1000 - 0x1FFF
           for experimental use.  It also uses the T_ORG (0x0FFF) definition for organizational
@@ -1546,7 +1747,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
         </ul>
 
         <table>
-          <name>FLIC Manifest</name>
+          <name>Manifest Type</name>
           <thead>
             <tr>
               <th align="center">Type</th>
@@ -1560,35 +1761,58 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
               <td align="center">T_FLIC_MANIFEST</td>
               <td align="center"></td>
             </tr>
-
             <tr>
-              <td align="center">0x0001</td>
+              <td align="center">0x0001-0x0FFF</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x1000-0x1FFF</td>
+              <td align="center">Reserved for experimental use</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x2000-0xFFFF</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>          
+          </tbody>
+        </table>
+
+
+        <table>
+          <name>FLIC Manifest</name>
+          <thead>
+            <tr>
+              <th align="center">Type</th>
+              <th align="center">Name</th>
+              <th align="center">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td align="center">0x0000</td>
               <td align="center">T_SECURITY_CTX</td>
               <td align="center"></td>
             </tr>
 
+            <tr>
+              <td align="center">0x0001</td>
+              <td align="center">T_NODE</td>
+              <td align="center"></td>
+            </tr>
             <tr>
               <td align="center">0x0002</td>
               <td align="center">T_ENCRYPTED_NODE</td>
               <td align="center"></td>
             </tr>
             <tr>
-              <td align="center">0x0003</td>
-              <td align="center">T_NODE</td>
-              <td align="center"></td>
-            </tr>
-            <tr>
               <td align="center">0x0004</td>
-              <td align="center">T_ENCRYPTED_NODE</td>
-              <td align="center"></td>
-            </tr>
-            <tr>
-              <td align="center">0x0005</td>
               <td align="center">T_AUTH_TAG</td>
               <td align="center"></td>
             </tr>
             <tr>
-              <td align="center">0x0006-0x0FFF</td>
+              <td align="center">0x0005-0x0FFF</td>
               <td align="center">Unassigned</td>
               <td align="center"></td>
             </tr>
@@ -1606,7 +1830,6 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
         </table>
 
         
-
         <table>          
           <name>FLIC Manifest (SecurityCtx)</name>
           <thead>
@@ -1619,12 +1842,12 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
           <tbody>
             <tr>
               <td align="center">0x0000</td>
-              <td align="center">T_AeadCtx</td>
+              <td align="center">T_AEAD_CTX</td>
               <td align="center"></td>
             </tr>
             <tr>
               <td align="center">0x0001</td>
-              <td align="center">T_RsaKemCtx</td>
+              <td align="center">T_RSAOAEP_CTX</td>
               <td align="center"></td>
             </tr>
             <tr>
@@ -1710,9 +1933,8 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
               <td align="center">T_PTR</td>
               <td align="center">Value is in CCNx Hash Format <xref target="RFC8609" section="3.3.3"/></td>
             </tr>
-
             <tr>
-              <td align="center">0x0007-0x000F</td>
+              <td align="center">0x000B-0x000F</td>
               <td align="center">Unassigned</td>
               <td align="center"></td>
             </tr>
@@ -1732,12 +1954,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
               <td align="center"></td>
             </tr>          
             <tr>
-              <td align="center">0x0013-0x00FF</td>
-              <td align="center">Unassigned (for new schema types)</td>
-              <td align="center"></td>
-            </tr>
-            <tr>
-              <td align="center">0x0100-0x0FFE</td>
+              <td align="center">0x0013-0x0FFE</td>
               <td align="center">Unassigned</td>
               <td align="center"></td>
             </tr>
@@ -1871,7 +2088,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
 
 
         <table>          
-          <name>FLIC Manifest (AEADCtx)</name>
+          <name>FLIC Manifest (SecurityCtx Parameters)</name>
           <thead>
             <tr>
               <th align="center">Type</th>
@@ -1887,7 +2104,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
             </tr>
             <tr>
               <td align="center">0x0001</td>
-              <td align="center">T_Nonce</td>
+              <td align="center">T_NONCE</td>
               <td align="center"></td>
             </tr>
             <tr>
@@ -1895,8 +2112,39 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
               <td align="center">T_AEADMode</td>
               <td align="center"></td>
             </tr>
+
             <tr>
-              <td align="center">0x0003-0x0FFF</td>
+              <td align="center">0x0003</td>
+              <td align="center">T_HASH_ALG</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0004</td>
+              <td align="center">T_WRAPPED_KEY</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0005-0x0008</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0009</td>
+              <td align="center">T_KEYID</td>
+              <td align="center">As per <xref target="RFC8609" section="3.6.4.1.4"/></td>
+            </tr>
+            <tr>
+              <td align="center">0x000A-0x000D</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x000E</td>
+              <td align="center">T_KEYLINK</td>
+              <td align="center">As per <xref target="RFC8609" section="3.6.4.1.4"/></td>
+            </tr>
+            <tr>
+              <td align="center">0x000F-0x0FFF</td>
               <td align="center">Unassigned</td>
               <td align="center"></td>
             </tr>
@@ -1913,6 +2161,8 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
           </tbody>
         </table>
 
+        <aside><t>Do we need to reproduce this here, or is it sufficent to refer to the IANA AEAD table?</t></aside>
+        
         <table><name>FLIC Manifest (AEADMode Values)</name>
           <thead>
           <tr>
@@ -1944,51 +2194,6 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
             </tr>
           </tbody>
         </table>
-
-
-        <table>          
-          <name>FLIC Manifest (RsaKemCtx)</name>
-          <thead>
-            <tr>
-              <th align="center">Type</th>
-              <th align="center">Name</th>
-              <th align="center">Reference</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td align="center">0x0000</td>
-              <td align="center">T_WRAPPED_KEY</td>
-              <td align="center"></td>
-            </tr>
-            <tr>
-              <td align="center">0x0001-0x0008</td>
-              <td align="center">Unassigned</td>
-              <td align="center"></td>
-            </tr>
-            <tr>
-              <td align="center">0x0009</td>
-              <td align="center">T_KEYID</td>
-              <td align="center">As per <xref target="RFC8609" section="3.6.4.1.4.1"/></td>
-            </tr>
-            <tr>
-              <td align="center">0x000A-0x0FFF</td>
-              <td align="center">Unassigned</td>
-              <td align="center"></td>
-            </tr>
-            <tr>
-              <td align="center">0x1000-0x1FFF</td>
-              <td align="center">Reserved for experimental use</td>
-              <td align="center"></td>
-            </tr>
-            <tr>
-              <td align="center">0x2000-0xFFFF</td>
-              <td align="center">Unassigned</td>
-              <td align="center"></td>
-            </tr>          
-          </tbody>
-        </table>
-
 
         <table>          
           <name>FLIC Manifest (Annotation)</name>

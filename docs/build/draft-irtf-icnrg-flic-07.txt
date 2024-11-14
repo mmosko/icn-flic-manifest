@@ -5,12 +5,12 @@
 ICNRG                                                        C. Tschudin
 Internet-Draft                                       University of Basel
 Intended status: Experimental                                  C.A. Wood
-Expires: 17 May 2025                                          Cloudflare
+Expires: 18 May 2025                                          Cloudflare
                                                               M.E. Mosko
                                                                         
                                                             D. Oran, Ed.
                                        Network Systems Research & Design
-                                                        13 November 2024
+                                                        14 November 2024
 
 
                     File-Like ICN Collections (FLIC)
@@ -42,7 +42,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 17 May 2025.
+   This Internet-Draft will expire on 18 May 2025.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Tschudin, et al.           Expires 17 May 2025                  [Page 1]
+Tschudin, et al.           Expires 18 May 2025                  [Page 1]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -78,50 +78,51 @@ Table of Contents
      3.5.  Pointer Annotations . . . . . . . . . . . . . . . . . . .  12
      3.6.  Manifest Grammar (ABNF) . . . . . . . . . . . . . . . . .  12
      3.7.  Manifest Trees  . . . . . . . . . . . . . . . . . . . . .  15
-       3.7.1.  Traversal . . . . . . . . . . . . . . . . . . . . . .  15
-     3.8.  Manifest Encryption Modes . . . . . . . . . . . . . . . .  16
+       3.7.1.  Traversal . . . . . . . . . . . . . . . . . . . . . .  16
+     3.8.  Manifest Encryption Modes . . . . . . . . . . . . . . . .  17
        3.8.1.  AEAD Mode . . . . . . . . . . . . . . . . . . . . . .  17
        3.8.2.  RSA-OAEP Key Transport Mode . . . . . . . . . . . . .  19
      3.9.  Protocol Encodings  . . . . . . . . . . . . . . . . . . .  21
        3.9.1.  CCNx Encoding . . . . . . . . . . . . . . . . . . . .  21
          3.9.1.1.  CCNx Hash Naming Strategy . . . . . . . . . . . .  22
-         3.9.1.2.  CCNx Single Prefix Strategy . . . . . . . . . . .  22
+         3.9.1.2.  CCNx Single Prefix Strategy . . . . . . . . . . .  23
          3.9.1.3.  CCNx Segmented Prefix Strategy  . . . . . . . . .  23
          3.9.1.4.  CCNx Hybrid Strategy  . . . . . . . . . . . . . .  25
-       3.9.2.  NDN Encoding  . . . . . . . . . . . . . . . . . . . .  25
-         3.9.2.1.  NDN Hash Naming . . . . . . . . . . . . . . . . .  25
-         3.9.2.2.  NDN Single Prefix . . . . . . . . . . . . . . . .  26
-         3.9.2.3.  NDN Segmented Prefix  . . . . . . . . . . . . . .  26
-         3.9.2.4.  NDN Hybrid Schema . . . . . . . . . . . . . . . .  27
-       3.9.3.  Segmented Schema Details  . . . . . . . . . . . . . .  28
-     3.10. Example Structures  . . . . . . . . . . . . . . . . . . .  29
-       3.10.1.  Leaf-only data . . . . . . . . . . . . . . . . . . .  29
-       3.10.2.  Linear . . . . . . . . . . . . . . . . . . . . . . .  29
-   4.  Experimenting with FLIC . . . . . . . . . . . . . . . . . . .  30
-   5.  Usage Examples  . . . . . . . . . . . . . . . . . . . . . . .  30
-     5.1.  Locating FLIC leaf and manifest nodes . . . . . . . . . .  30
-     5.2.  Seeking . . . . . . . . . . . . . . . . . . . . . . . . .  31
-     5.3.  Block-level de-duplication  . . . . . . . . . . . . . . .  32
-     5.4.  Growing ICN collections . . . . . . . . . . . . . . . . .  33
-     5.5.  Re-publishing a FLIC under a new name . . . . . . . . . .  33
-   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  34
-   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  39
+         3.9.1.5.  CCNx TLV Encodings  . . . . . . . . . . . . . . .  25
+       3.9.2.  NDN Encoding  . . . . . . . . . . . . . . . . . . . .  29
+         3.9.2.1.  NDN Hash Naming . . . . . . . . . . . . . . . . .  30
+         3.9.2.2.  NDN Single Prefix . . . . . . . . . . . . . . . .  30
+         3.9.2.3.  NDN Segmented Prefix  . . . . . . . . . . . . . .  31
+         3.9.2.4.  NDN Hybrid Schema . . . . . . . . . . . . . . . .  32
+       3.9.3.  Segmented Schema Details  . . . . . . . . . . . . . .  32
+     3.10. Example Structures  . . . . . . . . . . . . . . . . . . .  33
+       3.10.1.  Leaf-only data . . . . . . . . . . . . . . . . . . .  33
+       3.10.2.  Linear . . . . . . . . . . . . . . . . . . . . . . .  34
+   4.  Experimenting with FLIC . . . . . . . . . . . . . . . . . . .  34
+   5.  Usage Examples  . . . . . . . . . . . . . . . . . . . . . . .  34
+     5.1.  Locating FLIC leaf and manifest nodes . . . . . . . . . .  35
+     5.2.  Seeking . . . . . . . . . . . . . . . . . . . . . . . . .  36
+     5.3.  Block-level de-duplication  . . . . . . . . . . . . . . .  37
+     5.4.  Growing ICN collections . . . . . . . . . . . . . . . . .  37
+     5.5.  Re-publishing a FLIC under a new name . . . . . . . . . .  38
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  39
 
 
 
-Tschudin, et al.           Expires 17 May 2025                  [Page 2]
+Tschudin, et al.           Expires 18 May 2025                  [Page 2]
 
 Internet-Draft                    FLIC                     November 2024
 
 
-     7.1.  Integrity and Origin Authentication of FLIC Manifests . .  40
-     7.2.  Confidentiality of Manifest Data  . . . . . . . . . . . .  41
-     7.3.  Privacy of names and linkability of access patterns . . .  42
-   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  42
-     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  42
-     8.2.  Informative References  . . . . . . . . . . . . . . . . .  43
-   Appendix A.  Building Trees . . . . . . . . . . . . . . . . . . .  44
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  46
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  45
+     7.1.  Integrity and Origin Authentication of FLIC Manifests . .  46
+     7.2.  Confidentiality of Manifest Data  . . . . . . . . . . . .  46
+     7.3.  Privacy of names and linkability of access patterns . . .  47
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  47
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  47
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .  48
+   Appendix A.  Building Trees . . . . . . . . . . . . . . . . . . .  50
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  52
 
 1.  Introduction
 
@@ -154,6 +155,21 @@ Internet-Draft                    FLIC                     November 2024
    of hashes, it is by definition non-circular because one cannot hash
    the manifest before filling it in.
 
+
+
+
+
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                  [Page 3]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    Structurally, this relationship between manifests and content objects
    is reminiscent of the UNIX inode concept with index tables and memory
    pointers.  In this document, we specify a simple, yet extensible,
@@ -162,13 +178,6 @@ Internet-Draft                    FLIC                     November 2024
    describe the FLIC design, grammar, and various use cases, e.g.,
    ordered fetch, seeking, de-duplication, extension, and variable-sized
    encoding.  We also include FLIC encoding examples for CCNx and NDN.
-
-
-
-Tschudin, et al.           Expires 17 May 2025                  [Page 3]
-
-Internet-Draft                    FLIC                     November 2024
-
 
    The purpose of a manifest is to concisely name, and hence point to,
    the constiuent pieces of a larger object.  A FLIC manifest does this
@@ -209,6 +218,14 @@ Internet-Draft                    FLIC                     November 2024
    subsidiary manifests.  The Name Constructors allow interest
    construction using a well-known, application-independent set of
    rules.  Some name constructor forms are tailored towards specific ICN
+
+
+
+Tschudin, et al.           Expires 18 May 2025                  [Page 4]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    protocols, such as CCNx or NDN; some are more general and could work
    with many protocols.  We describe the allowed Name Constructor
    methods in Section 3.3.  There are also particulars of how to encode
@@ -216,15 +233,9 @@ Internet-Draft                    FLIC                     November 2024
    Section 3.9.
 
    FLIC has encodings for CCNx (Section 3.9.1) as per RFC 8609 [RFC8609]
-   and for NDN (Section 3.9.2).
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                  [Page 4]
-
-Internet-Draft                    FLIC                     November 2024
-
+   and for NDN (Section 3.9.2).  For the implementor, the section
+   Section 3.9.1.5 succintly defines the CCNx TLV structures and the
+   format of each TLV value.
 
    An example implementation in Python may be found at
    [FLICImplementation].
@@ -261,6 +272,16 @@ Internet-Draft                    FLIC                     November 2024
    Content Objects analogous to the function block numbers play in UNIX
    inodes.
 
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                  [Page 5]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    Because FLIC uses hash-based pointers as names, FLIC graphs are
    inherently acyclic.  Both CCNx and NDN support hash-based naming,
    though the details differ (see Section 3.9.1 and Section 3.9.2).
@@ -272,15 +293,6 @@ Internet-Draft                    FLIC                     November 2024
    places in the tree.  As another example, there could be a common sub-
    collection of objects organized in a Manifest, and that sub-manifest
    could be included in multiple places.
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                  [Page 5]
-
-Internet-Draft                    FLIC                     November 2024
-
 
    In FLIC terms, a direct pointer links to application-level data,
    which is a Content Object with application data in the Payload.  An
@@ -319,6 +331,13 @@ Internet-Draft                    FLIC                     November 2024
    mechanisms.  The byte layout allows for in-place encryption and
    decryption.
 
+
+
+Tschudin, et al.           Expires 18 May 2025                  [Page 6]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    A limitation of this approach is that one cannot construct a hash-
    based name for a child until one knows the payload of that child.  In
    practical terms, this means that one must have the complete
@@ -329,14 +348,6 @@ Internet-Draft                    FLIC                     November 2024
    has two extensibility mechanisms that allow for more sophisticated
    uses: manifest metadata, and pointer annotations.  These are
    described in Section 3.4 and Section 3.5 respectively.
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                  [Page 6]
-
-Internet-Draft                    FLIC                     November 2024
-
 
    FLIC goes to considerable lengths to allow creation and parsing by
    application-independent library code.  Therefore, any options used by
@@ -375,6 +386,14 @@ Internet-Draft                    FLIC                     November 2024
 
    Leaf Manifest:  all pointers are direct pointers.
 
+
+
+
+Tschudin, et al.           Expires 18 May 2025                  [Page 7]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    Locator:  A routing hint in an Interest used by forwarding to get the
       Interest to where it can be matched based on its Name Constructor-
       derived name.
@@ -386,14 +405,6 @@ Internet-Draft                    FLIC                     November 2024
       the manifest specifically as a FLIC manifest.
 
    Manifest Waste:  a metric used to measure the amount of waste in a
-
-
-
-Tschudin, et al.           Expires 17 May 2025                  [Page 7]
-
-Internet-Draft                    FLIC                     November 2024
-
-
       manifest tree.  Waste is the number of unused pointers.  For
       example, a leaf manifest might be able to hold 40 direct pointers,
       but only 30 of them are used, so the waste of this node is 10.
@@ -431,6 +442,14 @@ Internet-Draft                    FLIC                     November 2024
    Locator is the only available routing information.  Locators exist in
    both CCNx and NDN, though the specific protocol mechanisms differ.  A
    FLIC manifest represents locators in the same way for both ICN
+
+
+
+Tschudin, et al.           Expires 18 May 2025                  [Page 8]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    protocols inside Name Constructors (Section 3.3), though they are
    encoded differently in the underlying protocol.  See Section 3.9 for
    encoding differences.
@@ -442,14 +461,6 @@ Internet-Draft                    FLIC                     November 2024
    that can be used in the construction of Interests from the pointers
    in the manifest.  The Locators are inherited when walking a manifest
    tree, so they do not need to be defined everywhere.  It is
-
-
-
-Tschudin, et al.           Expires 17 May 2025                  [Page 8]
-
-Internet-Draft                    FLIC                     November 2024
-
-
    RECOMMENDED that only the Root manifest contain Locators so that a
    single operation can update the locators.  One use case when storing
    application payloads at different replicas is to replace the Root
@@ -487,6 +498,14 @@ Internet-Draft                    FLIC                     November 2024
    It is RECOMMENDED that only the root or similar top-level manifest
    define NCDs and they not be re-defined in subsequent manifests.
 
+
+
+
+Tschudin, et al.           Expires 18 May 2025                  [Page 9]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    We expect that an application constructing a Manifest will take one
    of three approaches to name constructors.  The advantage of using, or
    re-defining, the default name constructor is that any hash groups
@@ -497,14 +516,6 @@ Internet-Draft                    FLIC                     November 2024
       mix subsequent Manifest and Data objects under that same
       namespace.  The manifest only needs to use one Hash Group and can
       freely mix Manifest and Data pointers.
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                  [Page 9]
-
-Internet-Draft                    FLIC                     November 2024
-
 
    *  A manifest might define (or use) a default name constructor for
       subsequent Manifests and define a second NCD for the application
@@ -540,6 +551,17 @@ Internet-Draft                    FLIC                     November 2024
       value.
 
    Type 2 (Prefix List):  The NCD specifies a name, which will appear in
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 10]
+
+Internet-Draft                    FLIC                     November 2024
+
+
       every content object for that name constructor.  The comsumer uses
       it in an interest with the appropriate hash.  The NCD may specify
       locators, which NDN uses as ForwardingHints.  They are not used by
@@ -552,15 +574,6 @@ Internet-Draft                    FLIC                     November 2024
       the traversal order.  The publisher MAY include a StartSegmentId
       field in the group data to indicate the index of the first hash
       pointer of the group.
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 10]
-
-Internet-Draft                    FLIC                     November 2024
-
 
    In Type 0, the consumer uses some name N to fetch a manifest.  When
    the consumer receives the Manifest back, it begins issuing interests
@@ -593,6 +606,18 @@ Internet-Draft                    FLIC                     November 2024
    [RFC8609] for vendor-specific annotations that require no
    standardization process.
 
+
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 11]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    For example, some applications may find it useful to allow
    specialized consumers such as _repositories_ (for example
    [repository]) or enhanced forwarder caches to pre-place, or
@@ -605,18 +630,6 @@ Internet-Draft                    FLIC                     November 2024
       |  used, hence giving a network element like a cache or repository
       |  access to the Manifest data does not as a side effect reveal
       |  the contents of the application data itself.
-
-
-
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 11]
-
-Internet-Draft                    FLIC                     November 2024
-
 
 3.5.  Pointer Annotations
 
@@ -652,6 +665,15 @@ Internet-Draft                    FLIC                     November 2024
    (from Link Object) defines Link for NDN.  Section 3.9 below specifies
    these differences.
 
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 12]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    The basic structure of a FLIC manifest comprises a security context,
    a node, and an authentication tag.  The security context and
    authentication tag are not needed if the node is unencrypted.  A node
@@ -666,14 +688,6 @@ Internet-Draft                    FLIC                     November 2024
    application data, one needs at least two hash groups.  For a manifest
    structure of "MMMDDD," (where M means manifest (indirect pointer) and
    D means data (direct pointer)) for example, one would have a first
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 12]
-
-Internet-Draft                    FLIC                     November 2024
-
-
    HashGroup for the child manifests with its namespace and a second
    HashGroup for the data pointers with the other namespace.  If one
    used a structure like "MMMDDDMMM," then one would need three hash
@@ -685,7 +699,7 @@ Internet-Draft                    FLIC                     November 2024
    Manifest = TYPE LENGTH [SecurityCtx] (EncryptedNode / Node) [AuthTag]
 
    SecurityCtx = TYPE LENGTH AlgorithmCtx
-   AlgorithmCtx = AEADCtx / RsaKemCtx
+   AlgorithmCtx = AEADCtx / RsaWrapCtx
    AuthTag = TYPE LENGTH *OCTET ; e.g. AEAD authentication tag
    EncryptedNode = TYPE LENGTH *OCTET ; Encrypted Node
 
@@ -708,6 +722,14 @@ Internet-Draft                    FLIC                     November 2024
    SuffixComponentType = TYPE LENGTH 1*OCTET
    HashSchema = TYPE LENGTH Locators [ProtocolFlags]
 
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 13]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    Locators = TYPE LENGTH 1*Link
    HashValue = TYPE LENGTH *OCTET ; As per ICN Protocol
    Link = TYPE LENGTH *OCTET ; As per ICN protocol
@@ -722,14 +744,6 @@ Internet-Draft                    FLIC                     November 2024
    Ptr = TYPE LENGTH HashValue
 
    Annotation = SizeAnnotation / SegmentIdAnnotation / Vendor
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 13]
-
-Internet-Draft                    FLIC                     November 2024
-
-
    SizeAnnotation = TYPE LENGTH Integer
    SegmentIdAnnotation = TYPE LENGTH Integer
    Vendor = TYPE LENGTH PEN *OCTET
@@ -749,11 +763,13 @@ Internet-Draft                    FLIC                     November 2024
    AEADMode = TYPE LENGTH (AEAD_AES_128_GCM / AEAD_AES_256_GCM /
               AEAD_AES_128_CCM / AEAD_AES_128_CCM) ; RFC5116 definitions
 
-   RsaKemCtx = TYPE LENGTH RsaKemData
-   RsaKemData = AEADData [WrappedData]
-   WrappedData = KeyId WrappedKey KeyLink ; KeyLink as pre RFC8609
-   KeyId = TYPE LENGTH HashValue; ID of Key Encryption Key
-   WrappedKey = TYPE LENGTH 4OCTET 1*OCTET  ; 4-byte salt plus AES key
+
+   RsaOaepCtx = TYPE LENGTH RsaOaepData
+   RsaOaepData = AEADData [RsaOaepWrapper]
+   RsaOaepWrapper = KeyId KeyLink HashAlg WrappedKey  ; KeyLink as pre RFC8609
+   HashAlg = TYPE LENGTH alg_number        ; alg_number from IANA "CCNx Hash Function Types"
+   KeyId = TYPE LENGTH HashValue           ; ID of Key Encryption Key
+   WrappedKey = TYPE LENGTH 4OCTET 1*OCTET ; Encrypted 4-byte salt plus AES key
 
                            Figure 2: FLIC Grammar
 
@@ -761,6 +777,15 @@ Internet-Draft                    FLIC                     November 2024
       structure will depend on the specific encryption algorithm.
 
    AEADMode  "AEAD Algorithms" values from IANA "Authenticated
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 14]
+
+Internet-Draft                    FLIC                     November 2024
+
+
       Encryption with Associated Data (AEAD) Parameters."  FLIC only
       specifies the use of four basic algorithms with full
       authentication tag.
@@ -777,14 +802,6 @@ Internet-Draft                    FLIC                     November 2024
       encryption/decryption.
 
    NodeData:  the metadata about the Manifest node
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 14]
-
-Internet-Draft                    FLIC                     November 2024
-
 
    SubtreeSize:  The size of all application data at and below the Node
       or Group
@@ -817,6 +834,14 @@ Internet-Draft                    FLIC                     November 2024
 
 3.7.  Manifest Trees
 
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 15]
+
+Internet-Draft                    FLIC                     November 2024
+
+
 3.7.1.  Traversal
 
    FLIC manifests use a pre-order traversal.  This means they are read
@@ -828,19 +853,6 @@ Internet-Draft                    FLIC                     November 2024
 
    If using Annotated Pointers, an annotation could influence the
    traversal order.
-
-
-
-
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 15]
-
-Internet-Draft                    FLIC                     November 2024
-
 
     preorder(node)
        if (node = null)
@@ -875,9 +887,16 @@ Internet-Draft                    FLIC                     November 2024
 
                           Figure 4: Node Expansion
 
-   Using the example manifest tree shown in Figure 6, the in-order
+   Using the example manifest tree shown in Figure 12, the in-order
    traversal would be: Root, M0, M1, D0, D1, D2, M2, D3, D4, D5, M3, D6,
    D7, D8.
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 16]
+
+Internet-Draft                    FLIC                     November 2024
+
 
 3.8.  Manifest Encryption Modes
 
@@ -886,41 +905,29 @@ Internet-Draft                    FLIC                     November 2024
    decryption keys already.  It uses AES-GCM or AES-CCM.  This is
    useful, for example, when using a key agreement protocol such as
    CCNxKE [I-D.wood-icnrg-ccnxkeyexchange].  The second is an RSA key
-   encapsulation mode (RsaKem [RFC5990]), which may be used for group
-   keying.
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 16]
-
-Internet-Draft                    FLIC                     November 2024
-
+   wrapping mode using RSA-OAEP, similar to [RFC8017].  This may be used
+   for group keying.
 
    Additional modes may be defined in subsequent specifications.  We
-   expect that an RSA KemDem mode and Elliptic Curve mode should be
+   expect that an RSA-KEM mode and Elliptic Curve mode should be
    specified.
 
-   All encryption modes use standard encryption algorithms and
-   specifications.  Where appropriate, we adopt the TLS 1.2 standards
-   for how to use the encryption algorithms.  This section specifies how
-   to encode algorithm parameters or ICN-specific data.
+   For group key based encryption, FLIC uses RSA-OAEP to wrap the
+   WrappedKey element.  This specification only details the pertinent
+   aspects of the encryption.  It describes how a consumer locates the
+   appropriate keys in the ICN namespace.  It does not specify aspects
+   of a key manager which may or may not be used as part of key
+   distribution and management, nor does it specify the protocol between
+   a key manager and a publisher.  In its simpliest form, the publisher
+   could be the key manager, in which case there is no extra protocol
+   needed between the publisher and key manager.
 
-   For group key based encryption, we use RsaKem.  This specification
-   only details the pertinent aspects of the encryption.  It describes
-   how a consumer locates the appropriate keys in the ICN namespace.  It
-   does not specify aspects of a key manager which may or may not be
-   used as part of key distribution and management, nor does it specify
-   the protocol between a key manager and a publisher.  In its simpliest
-   form, the publisher could be the key manager, in which case there is
-   no extra protocol needed between the publisher and key manager.
-
-   While the preshared key algorithm is limited in use, the AES
-   encryption mode described applies to the group key mechanisms too.
-   The group key mechanism facilitates the distribution of the shared
-   key without an on-line key agreement protocol like (the expired
-   draft) CCNxKE [I-D.wood-icnrg-ccnxkeyexchange].
+   The manifest is always encrypted with an AEAD algorithm.  The
+   difference between the preshared key mode and the RSA wrapped mode is
+   how the parties communicate the AES decryption key.  The group key
+   mechanism facilitates the distribution of the shared key without an
+   on-line key agreement protocol like (the expired draft) CCNxKE
+   [I-D.wood-icnrg-ccnxkeyexchange].
 
 3.8.1.  AEAD Mode
 
@@ -933,6 +940,20 @@ Internet-Draft                    FLIC                     November 2024
    also establish a salt.  This results in a 4-byte salt and 8-byte
    nonce.  If no salt exists, the AEADNonce may be the entire IV.
 
+
+
+
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 17]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    As these references specify, it is essential that the publisher
    creating a Manifest never use a Nonce more than once for the same
    key.  For keys exchanged via a session protocol, such as CCNx, the
@@ -944,15 +965,6 @@ Internet-Draft                    FLIC                     November 2024
    The AEAD Mode uses [RFC5116] defined symbols AEAD_AES_128_CCM,
    AEAD_AES_128_GCM, AEAD_AES_256_CCM and AEAH_AES_256_GCM to specify
    the key length and algorithm.
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 17]
-
-Internet-Draft                    FLIC                     November 2024
-
 
    The KeyNum identifies a key on the receiver.  The key MUST be exactly
    of the length specific by the Mode.  Many receivers may have the same
@@ -990,6 +1002,14 @@ Internet-Draft                    FLIC                     November 2024
    4.  Treats the body of the Node to the end of the Manifest as
        encrypted data.
 
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 18]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    5.  Appends the AEAD AuthTag to the end of the Manifest, increasing
        the Manifest's length
 
@@ -1002,13 +1022,6 @@ Internet-Draft                    FLIC                     November 2024
 
    2.  Saves the AuthTag and removes it from the Manifest, decreasing
        the Manifest length.
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 18]
-
-Internet-Draft                    FLIC                     November 2024
-
 
    3.  Changes the EncryptedNode type to Node.
 
@@ -1027,25 +1040,36 @@ Internet-Draft                    FLIC                     November 2024
 
 3.8.2.  RSA-OAEP Key Transport Mode
 
-   The RSA-OAEP mode uses RSA-OAEP (see RFC8017 Sec 7.1 [RFC8017] and
-   [RSAKEM]) to encrypt a symmetric key that is used to encrypt the
-   Manifest.  We call this RSA key the Key Encryption Key (KEK) and each
-   group member has this private key.  A separate key distribuiton
-   system is responsible for distributing the KEK.  For our purposes, it
-   is reasonable to assume that the KEK private key is available at a
+   The RSA-OAEP mode uses RSA-OAEP (see Section 7.1 of [RFC8017]) to
+   encrypt a symmetric key that is used to encrypt the Manifest.  We
+   call this RSA key the Key Encryption Key (KEK) and each group member
+   has this private key.  A separate key distribuiton system is
+   responsible for distributing the KEK.  For our purposes, it is
+   reasonable to assume that the KEK private key is available at a
    Locator and that group members can decrypt this private key.
 
-   The RsaKemData includes an AEADData that indicates how to use the
+   T_RSA_WRAP_CTX uses RSA-OAEP [RFC8017] with mask generation function
+   MGF1 [RFC8017] and the specified hash algorithm.  The hash algorithm
+   number is taken from the IANA registry "CCNx Hash Function Types".
+
+   The RsaOaepData includes an AEADData that indicates how to use the
    warpped key to decrypt the manifest.  It optionally includes the
-   wrapped key itself.  A publisher using RsaKemCtx MUST include the
+   wrapped key itself.  A publisher using RsaWrapCtx MUST include the
    optional wrapped key information in the first manifest node that uses
    it.  The publisher MAY include the wrapped key in other manifest
    nodes.  It MUST use distinct KeyNum for distinct WrappedKey.
 
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 19]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    In a typical usage, the publisher would begin encryption at the root
-   manifest.  It must include the full RsaKemData here, as it is the
+   manifest.  It must include the full WrapedData here, as it is the
    first usage of the KeyNum.  In subsequent manifests, the publisher
-   may only include the AEADData in the RsaKemData to save space.
+   may only include the AEADData in the RsaOaepData to save space.
 
    The KeyId identifies the KEK.  If the consumer already has the key
    corresponding to KeyId locally, it does not need to fetch it from the
@@ -1056,15 +1080,6 @@ Internet-Draft                    FLIC                     November 2024
    i.e. a 128-bit or 256-bit random number.  Further, the symmetric key
    MUST fit in the OAEP envelope (which will be true for normal-sized
    keys).
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 19]
-
-Internet-Draft                    FLIC                     November 2024
-
 
    Any group key protocol and system needed are outside the scope of
    this document.  We assume there is a Key Manager (KM) and a Publisher
@@ -1080,11 +1095,11 @@ Internet-Draft                    FLIC                     November 2024
    *  The Locator of the KEK, which is shared under some group key
       protocol.
 
-   This Manifest specification requires that if a group member fetches
-   the KEK key at Locator it can decrypt the WrappedKey and retrieve the
-   CEK.  The WrappedKey includes a 4-byte salt plus an AES key.  The
-   4-byte salt is used by the AEAD algorithm as part of the IV, and MUST
-   remain the same for the given KeyNum.
+   This specification requires that if a group member fetches the KEK
+   key at Locator, it can decrypt the WrappedKey and retrieve the CEK.
+   The WrappedKey includes a 4-byte salt plus an AES key.  The 4-byte
+   salt is used by the AEAD algorithm as part of the IV, and MUST remain
+   the same for the given KeyNum.
 
    In one example, a publisher could request a key for a group and the
    Key Manager could securely communicate (CEK, Wapped_CEK, KeyId,
@@ -1099,46 +1114,46 @@ Internet-Draft                    FLIC                     November 2024
 
    1.  Obtain the CEK in binary format (e.g. 32 bytes for 256 bits)
 
-   2.  RSA encrypt the CEK using the KEK public key with OAEP padding,
-       following RFC8017 Sec 7.1 [RFC8017].  The encryption is not
-       signed because the root Manifest must have been signed by the
-       publisher already.  Or the encapsulating Content Object (Data
-       Object) is signed via ICN mechanisms.
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 20]
+
+Internet-Draft                    FLIC                     November 2024
+
+
+   2.  RSA encrypt the WrappedKey value using the KEK public key with
+       OAEP padding, following RFC8017 Sec 7.1 [RFC8017].  The
+       encryption is not signed because the root Manifest must have been
+       signed by the publisher already.  Or the encapsulating Content
+       Object (Data Object) is signed via ICN mechanisms.
 
    To decrypt the wrapped key using a Key Encryption Key:
 
-   1.  RSA decrypt the WrappedKey using the KEK private key with OAEP
-       padding, following RFC8017 Sec 7.1 [RFC8017].
+   1.  RSA decrypt the WrappedKey value using the KEK private key with
+       OAEP padding, following Section 7.1 of [RFC8017].
 
    2.  Verify the unwrapped key is a valid length for the AEADMode.
 
    To encrypt a Manifest, the publisher:
 
+   1.  Acquires the set of (CEK, salt, WrappedKey, KeyId, Locator).  The
+       publisher may generate these values itself, or acquire them from
+       a key manager.
 
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 20]
-
-Internet-Draft                    FLIC                     November 2024
-
-
-   1.  Acquires the set of (CEK, Wrapped_CEK, KeyId, Locator).
-
-   2.  Generates a 4-byte salt to included in the WrappedKey
-
-   3.  Creates a SecurityCtx and adds it to the Manifest.  The
+   2.  Creates a SecurityCtx and adds it to the Manifest.  The
        SecurityCtx includes an AEADNonce and AEADMode, as per AEAD mode.
 
-   4.  Encrypts the Manifest as per AEAD Mode using the RSA-OAEP
+   3.  Encrypts the Manifest as per AEAD Mode using the RSA-OAEP
        SecurityCtx and CEK.
 
    To decrypt a Manifest, the consumer:
 
-   1.  Acquires the KEK from the Key Locator.  If the consumer already
-       has a cached copy of the KeyId in memory, it may use that cached
-       key.
+   1.  Acquires the RSA private key corresponding to KeyId via the
+       KeyLocator or whatever means the publisher and consumers use to
+       distribute keys.
 
-   2.  SHOULD verify that it trusts the Manifest publisher to use the
+   2.  It SHOULD verify that it trusts the Manifest publisher to use the
        provided key Locator.
 
    3.  Decrypts the WrappedKey to get the CEK and salt.  If the consumer
@@ -1146,37 +1161,37 @@ Internet-Draft                    FLIC                     November 2024
        use that cached CEK and salt.
 
    4.  Using the CEK, AEADNonce, and AEADMode, decrypt the Manifest as
-       per AEAD Mode, ignoring the KeyNum steps.
+       per AEAD Mode.
 
 3.9.  Protocol Encodings
 
 3.9.1.  CCNx Encoding
 
+   The CCNx type values are defined in Section 6.  The section
+   Section 3.9.1.5 goes over every TLV structure.
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 21]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    In CCNx, application data content objects use a PayloadType of
    T_PAYLOADTYPE_DATA.  In order to clearly distinguish FLIC Manifests
    from application data, a different payload type is required.
    Therefore this specification defines a new payload type of
-   T_PAYLOADTYPE_FLIC.
+   T_PAYLOADTYPE_MANIFEST.
 
    ManifestContentObject = TYPE LENGTH [Name] [ExpiryTime]
                            PayloadType Payload
    Name = TYPE LENGTH *OCTET ; As per RFC8569
    ExpiryTime = TYPE LENGTH *OCTET ; As per RFC8569
-   PayloadType = TYPE LENGTH T_PAYLOADTYPE_FLIC ; Value TBD
+   PayloadType = TYPE LENGTH T_PAYLOADTYPE_MANIFEST ; Value TBD
    Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 
                       Figure 5: CCNx Embedding Grammar
-
-
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 21]
-
-Internet-Draft                    FLIC                     November 2024
-
 
 3.9.1.1.  CCNx Hash Naming Strategy
 
@@ -1212,6 +1227,13 @@ Internet-Draft                    FLIC                     November 2024
       from one of the Locators and put the pointer HashValue into the
       ContentObjectHashRestriction.
 
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 22]
+
+Internet-Draft                    FLIC                     November 2024
+
+
 3.9.1.2.  CCNx Single Prefix Strategy
 
    The Single Prefix strategy uses a named Root manifest and then all
@@ -1226,14 +1248,6 @@ Internet-Draft                    FLIC                     November 2024
    *  The Root Manifest content object has a name used to fetch the
       manifest.  It is signed by the publisher.  It has a single Locator
       used to fetch the remainder of the manifest using the commong
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 22]
-
-Internet-Draft                    FLIC                     November 2024
-
-
       Single Prefix name.  It has a single HashPointer that points to
       the Top Manifest.  It may also have cache control directives, such
       as ExpiryTime.
@@ -1268,6 +1282,14 @@ Internet-Draft                    FLIC                     November 2024
    content object.  This name component will be of type
    SuffixComponentType.  In CCNx, this would be a ChunkId or ManifestId
    type (ManifestId is defined in this document), though one may specify
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 23]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    different types.  The reason for specifying the SuffixComponentType
    in the name definition is that application data would typically use
    chunked names with sequential identifiers and the FLIC manifest tree
@@ -1282,14 +1304,6 @@ Internet-Draft                    FLIC                     November 2024
    is an annotation for each pointer, which reduces the number possible
    pointers in a given MTU.  The start segment id is a compact integer
    per hash group that indicates the beginning ID for the pointer array.
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 23]
-
-Internet-Draft                    FLIC                     November 2024
-
-
    The consumer calculates each pointer's name suffix from the start
    segment ID plus pointer offset, and then wraps it in a name component
    of type SuffixComponentType.
@@ -1323,6 +1337,15 @@ Internet-Draft                    FLIC                     November 2024
       number.  It may have cache control directies.  It's GroupData
       elements must have an NsId that references the NsDef.
 
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 24]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    *  An Internal or Leaf manifest has the name SegmentedPrefixName plus
       chunk number, possibly with cache control directives.  Its
       GroupData elements must have an NsId that references the NsDef.
@@ -1335,16 +1358,6 @@ Internet-Draft                    FLIC                     November 2024
       pointer HashValue into the ContentObjectHashRestriction.  A
       consumer must track the chunk number in traversal order for each
       SegmentedPrefixSchema NsId.
-
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 24]
-
-Internet-Draft                    FLIC                     November 2024
-
 
 3.9.1.4.  CCNx Hybrid Strategy
 
@@ -1365,10 +1378,253 @@ Internet-Draft                    FLIC                     November 2024
    Manifests and data objects derive their names according to the
    application's naming schema.
 
+3.9.1.5.  CCNx TLV Encodings
+
+   This section defines each CCNx TLV encoding and the format of the TLV
+   values.
+
+   FLIC uses variable length integer encodings in several places.  We
+   use the term varint to be a network byte order unsigned integer of
+   length 1 - 8 octets.
+
+   The CCNx encoding allows for vendor extensions (T_ORG) in several
+   places.  A parser may skip over any T_ORG it does not implement.
+   Where appropriate, we show an optional T_ORG tlv where allowed.
+
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 25]
+
+Internet-Draft                    FLIC                     November 2024
+
+
+   The CCNx encoding allows for experimental type identifiers
+   (0x1000-0x1FFF) in most TLV contexts.  A parser may skip over any
+   experimental TLV it does not implement.  We do not show experimental
+   TLVs in the artwork below.
+
+   There is no required order of TLV blocks withhin a TLV context.  We
+   show the RECOMMENDED ordering of TLV blocks.  TLV blocks MUST NOT
+   repeat unless specifically allowed in the grammar (Section 3.6).
+
+3.9.1.5.1.  Manifest TLV
+
+   A Manifest has an outer TLV type that identifies type kind of
+   manifest inside a Content Object with a payload type of
+   T_PAYLOADTYPE_MANIFEST.  FLIC is defined as type T_FLIC_MANIFEST.
+
+   A FLIC Manifest may be plaintext or encrypted.  A plaintext manifest
+   usually only has a Node.  But it may also have a Security Context,
+   Node, and Authentication Tag.  This can happen when a manifest is in-
+   place decrypted.  In place decryption operates on the body of the
+   EncryptedNode TLV and then changes the type from T_ENCRYPTED_NODE to
+   T_NODE.
+
+                       1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +---------------+---------------+---------------+---------------+
+   |        T_FLIC_MANIFEST        |             Length            |
+   +---------------+---------------+---------------+---------------+
+   /                       [Security Context]                      /
+   +---------------+---------------+---------------+---------------+
+   /                      Node or EncryptedNode                    /
+   +---------------+---------------+---------------+---------------+
+   /                      [Authentication Tag]                     /
+   +---------------+---------------+---------------+---------------+
+
+                                  Figure 6
+
+3.9.1.5.2.  SecurityCtx TLV
+
+   The SecurityCtx TLV wraps an AlgroithmCtx, which may be either a
+   symmetric key encryption context AEADCtx or an assymetric key
+   wrapping of the decryption key, RsaWrapCtx.
+
+
+
+
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 26]
+
+Internet-Draft                    FLIC                     November 2024
+
+
+                       1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +---------------+---------------+---------------+---------------+
+   |        T_SECURITY_CTX         |             Length            |
+   +---------------+---------------+---------------+---------------+
+   /                       AEADCtx or RsaWrapCtx                    /
+   +---------------+---------------+---------------+---------------+
+
+                                  Figure 7
+
+3.9.1.5.3.  AEAD Context TLV
+
+   The AEADCtx identifies a symmetric key shared by the publisher and
+   consumer.  It is identified by a KeyNum, which may be an small
+   integer (e.g. within a TLS-like session) or a longer integer.  CCNx
+   uses upto a 64-bit integer.
+
+   The AEADNonce is used to generate the encryption IV, as descbribed in
+   Section 3.8.1.  It is an octet string.
+
+   The AEADMode is an integer that identifes the encryption algorithm.
+   All defined values fit within 1 octet.  The IANA registry "AEAD
+   Algorithms" allows for up to 2 octets.
+
+                       1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +---------------+---------------+---------------+---------------+
+   |           T_AEAD_CTX          |             Length            |
+   +---------------+---------------+---------------+---------------+
+   |           T_KEY_NUM           |             Length            |
+   +---------------+---------------+---------------+---------------+
+   /                           <varint>                            /
+   +---------------+---------------+---------------+---------------+
+   |           T_NONCE             |             Length            |
+   +---------------+---------------+---------------+---------------+
+   /                           1*OCTET                             /
+   +---------------+---------------+---------------+---------------+
+   |          T_AEAD_MODE          |             Length            |
+   +---------------+---------------+---------------+---------------+
+   /                           <varint>                            /
+   +---------------+---------------+---------------+---------------+
+
+                                  Figure 8
+
+
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 27]
+
+Internet-Draft                    FLIC                     November 2024
+
+
+3.9.1.5.4.  RSA-OAEP Context TLV
+
+   The RsaOaepData has a mandatory AEADData section plus optional
+   RsaOaepData.  Note that in the grammar, those are not TLV containers,
+   but simply data records.  The figure below shows an RsaOaepCtx with
+   all parameters.
+
+   The HashAlg value is an unsigned 16-bit integer in network byte
+   order.
+
+   The wrapped key value is the RSA-OAEP cyphertext of the WrappedKey
+   record.
+
+                       1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +---------------+---------------+---------------+---------------+
+   |         T_RSAOAEP_CTX         |             Length            |
+   +---------------+---------------+---------------+---------------+
+   |           T_KEY_NUM           |             Length            |
+   +---------------+---------------+---------------+---------------+
+   /                           <varint>                            /
+   +---------------+---------------+---------------+---------------+
+   |           T_NONCE             |             Length            |
+   +---------------+---------------+---------------+---------------+
+   /                           1*OCTET                             /
+   +---------------+---------------+---------------+---------------+
+   |          T_AEAD_MODE          |             Length            |
+   +---------------+---------------+---------------+---------------+
+   /                           <varint>                            /
+   +---------------+---------------+---------------+---------------+
+   |            T_KEYID            |             Length            |
+   +---------------+---------------+---------------+---------------+
+   /                            1*OCTET                            /
+   +---------------+---------------+---------------+---------------+
+   |            T_KEYLINK          |             Length            |
+   +---------------+---------------+---------------+---------------+
+   /                          <ccnx link>                          /
+   +---------------+---------------+---------------+---------------+
+   |           T_HASH_ALG          |               2               |
+   +---------------+---------------+---------------+---------------+
+   |           16-bit int          |
+   +---------------+---------------+---------------+---------------+
+   |         T_WRAPPED_KEY         |             Length            |
+   +---------------+---------------+---------------+---------------+
+   /                  <RSA-OAEP encrypted octets>                  /
+   +---------------+---------------+---------------+---------------+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 28]
+
+Internet-Draft                    FLIC                     November 2024
+
+
+                                  Figure 9
+
+3.9.1.5.5.  Node TLV
+
+   The Node contains the manifest information.  It has an optional
+   NodeData, plus one or more hash groups.
+
+   Hash groups may be Ptrs or AnnotatedPointers.
+
+                       1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +---------------+---------------+---------------+---------------+
+   |            T_NODE             |             Length            |
+   +---------------+---------------+---------------+---------------+
+   /                           [NodeData]                          /
+   +---------------+---------------+---------------+---------------+
+   /                      1*[Ptrs or AnnotatedPtrs]                /
+   +---------------+---------------+---------------+---------------+
+
+                                 Figure 10
+
+3.9.1.5.6.  Node Data TLV
+
+   The Node contains the manifest information.  It has an optional
+   NodeData, plus one or more hash groups.
+
+   Hash groups may be Ptrs or AnnotatedPointers.
+
+                       1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +---------------+---------------+---------------+---------------+
+   |            T_NODE             |             Length            |
+   +---------------+---------------+---------------+---------------+
+   /                           [NodeData]                          /
+   +---------------+---------------+---------------+---------------+
+   /                      1*[Ptrs or AnnotatedPtrs]                /
+   +---------------+---------------+---------------+---------------+
+
+                                 Figure 11
+
 3.9.2.  NDN Encoding
 
    In NDN, all Manifest Data objects use a ContentType of FLIC (1024),
    while all application data content objects use a PayloadType of Blob.
+
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 29]
+
+Internet-Draft                    FLIC                     November 2024
+
 
 3.9.2.1.  NDN Hash Naming
 
@@ -1395,13 +1651,6 @@ Internet-Draft                    FLIC                     November 2024
    *  Internal and Leaf manifests has a 0-length Name, possibly with
       cache control directives.
 
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 25]
-
-Internet-Draft                    FLIC                     November 2024
-
-
    *  The application Data use a 0-length name, possibly with cache
       control directives.
 
@@ -1424,6 +1673,14 @@ Internet-Draft                    FLIC                     November 2024
       Locators used to fetch the remainder of the manifest.  It has a
       single HashPointer that points to the Top Manifest.  It may also
       have cache control directives.
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 30]
+
+Internet-Draft                    FLIC                     November 2024
+
 
    *  The Root Manifest has an NsDef that specifies SinglePrefix and the
       SinglePrefixSchema element specifies the SinglePrefixName.
@@ -1451,13 +1708,6 @@ Internet-Draft                    FLIC                     November 2024
    name before the implicit digest.  This means the consumer must
    maintain a counter for each SegmentedPrefix namespace.
 
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 26]
-
-Internet-Draft                    FLIC                     November 2024
-
-
       |  *Optional*: Use AnnotatedPointers to indicate the segment
       |  number of each hash pointer to avoid needing to infer the
       |  segment numbers.
@@ -1477,6 +1727,16 @@ Internet-Draft                    FLIC                     November 2024
    *  The Root Manifest has an NsDef that specifies SegmentedPrefix and
       the SegmentedPrefixSchema element specifies the
       SegmentedPrefixName.
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 31]
+
+Internet-Draft                    FLIC                     November 2024
+
 
    *  The publisher tracks the segment number of each Data object within
       a SegmentedPrefix NsId.  Data is numbered in traversal order.
@@ -1506,14 +1766,6 @@ Internet-Draft                    FLIC                     November 2024
    payload in data content objects might use SegmentedPrefix while the
    manifest content objects might use HashNaming.
 
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 27]
-
-Internet-Draft                    FLIC                     November 2024
-
-
    The Root Manifest should specify an NsDef with a first NsId (say 1)
    as the HashNaming schema and a second NsDef with a second NsId (say
    2) as the SegmentedPrefix schema along with the SegmentedPrefixName.
@@ -1532,6 +1784,15 @@ Internet-Draft                    FLIC                     November 2024
    When using CCNx Segmented Prefix Strategy or NDN Segmented Prefix
    strategy, the consumer must determine the segment number to use in
    the name.  There are two methods.
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 32]
+
+Internet-Draft                    FLIC                     November 2024
+
 
    *  If fetching a pointer with a SegmentIdAnnotation, the consumer
       MUST use that segment number for the pointer.  A pointer with
@@ -1560,16 +1821,6 @@ Internet-Draft                    FLIC                     November 2024
    fetched, and fetch in the right order.  Segments, when fetched in the
    *manifest order* reconstruct the original data.
 
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 28]
-
-Internet-Draft                    FLIC                     November 2024
-
-
    Let us make this clear, the original data is constructed by the in-
    order manifest retrieval, not the segment number order.  We recommend
    that the manifest in-order sequence SHOULD correspond to the segment
@@ -1589,6 +1840,16 @@ Internet-Draft                    FLIC                     November 2024
 
 3.10.1.  Leaf-only data
 
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 33]
+
+Internet-Draft                    FLIC                     November 2024
+
+
                                    Root
                                     |
                              ______ M0 _____
@@ -1597,7 +1858,7 @@ Internet-Draft                    FLIC                     November 2024
                          / | \    / | \    / | \
                         D0 D1 D2 D3 D4 D5 D6 D7 D8
 
-                     Figure 6: Leaf-only manifest tree
+                     Figure 12: Leaf-only manifest tree
 
 3.10.2.  Linear
 
@@ -1610,21 +1871,6 @@ Internet-Draft                    FLIC                     November 2024
 
    Root -> M0 ----> M1 ----> ...
    |->DDDD  |->DDDD
-
-
-
-
-
-
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 29]
-
-Internet-Draft                    FLIC                     November 2024
-
 
 4.  Experimenting with FLIC
 
@@ -1650,6 +1896,16 @@ Internet-Draft                    FLIC                     November 2024
 
 5.  Usage Examples
 
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 34]
+
+Internet-Draft                    FLIC                     November 2024
+
+
 5.1.  Locating FLIC leaf and manifest nodes
 
    The names of manifest and data objects are often missing or not
@@ -1667,26 +1923,18 @@ Internet-Draft                    FLIC                     November 2024
    Query for the manifest:
    interest(name=/a/b/c, implicitDigest=h0)
 
-                        Figure 7: Data Organization
+                        Figure 13: Data Organization
 
    After obtaining the manifest, the client fetches the contents.  In
    this first instance, the manifest does not provide any Locators data
    structure, so the client must continue using the name it used for the
    manifest.
 
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 30]
-
-Internet-Draft                    FLIC                     November 2024
-
-
    interest(name=/a/b/c, implicitDigest=h1)
    ...
    interest(name=/a/b/c, implicitDigest=hN)
 
-                          Figure 8: Data Interests
+                         Figure 14: Data Interests
 
    Using the locator metadata entry, this behavior can be changed:
 
@@ -1702,7 +1950,17 @@ Internet-Draft                    FLIC                     November 2024
    interest(name=/x/y/z, implicitDigest=h1)
    interest(name=/a/b/c, implicitDigest=h2)
 
-                          Figure 9: Using Locators
+                         Figure 15: Using Locators
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 35]
+
+Internet-Draft                    FLIC                     November 2024
+
 
 5.2.  Seeking
 
@@ -1726,17 +1984,7 @@ Internet-Draft                    FLIC                     November 2024
       offset += P_i.size
    return out-of-range
 
-                        Figure 10: Seeking Algorithm
-
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 31]
-
-Internet-Draft                    FLIC                     November 2024
-
+                        Figure 16: Seeking Algorithm
 
    Seeking in a BlockHashGroup is different since offsets can be quickly
    computed.  This is because the size of each pointer P_i except the
@@ -1753,6 +2001,23 @@ Internet-Draft                    FLIC                     November 2024
    Using these, the seeking algorithm can be thus simplified to the
    following:
 
+
+
+
+
+
+
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 36]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    Input: seek_pos P, a FLIC manifest with a hash group having
                       OverallByteCount S and SizePerPointer L.
    Output: pointer index i and byte offset o, or out-of-range error
@@ -1765,7 +2030,7 @@ Internet-Draft                    FLIC                     November 2024
    o = P mod L
    return (i, o)
 
-                        Figure 11: Seeking Algorithm
+                        Figure 17: Seeking Algorithm
 
       |  *Note*: In both cases, if the pointer at position i is a
       |  manifest pointer, this algorithm has to be called once more,
@@ -1786,15 +2051,7 @@ Internet-Draft                    FLIC                     November 2024
                     \- > h3 --> oldData3              /
                      \ > h4 --> oldData4  <-- h4 < - /
 
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 32]
-
-Internet-Draft                    FLIC                     November 2024
-
-
-                         Figure 12: De-duplication
+                         Figure 18: De-duplication
 
 5.4.  Growing ICN collections
 
@@ -1806,6 +2063,17 @@ Internet-Draft                    FLIC                     November 2024
 
       |  *Note* that this tree will not be skewed (anymore).
 
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 37]
+
+Internet-Draft                    FLIC                     November 2024
+
+
            old data < -  -  -  mfst_old <-- h_old -  - mfst_new
                                                        /
            new data1 <-- h_1 -  -  -  -  -  -  -  -  -/
@@ -1813,7 +2081,7 @@ Internet-Draft                    FLIC                     November 2024
            ...                                      /
            new dataN <-- h_N -  -  -  -  -  -  -  -/
 
-                      Figure 13: Growing A Collection
+                      Figure 19: Growing A Collection
 
 5.5.  Re-publishing a FLIC under a new name
 
@@ -1843,17 +2111,24 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
                                 < - mfst(/com/example/west/old/the/flic)
                                 < - mfst(/internet/archive/flic234)
 
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 33]
-
-Internet-Draft                    FLIC                     November 2024
-
-
-                  Figure 14: Relocating A Collection
+                  Figure 20: Relocating A Collection
 
       |  Note that the hash computation (of h) only requires reading the
       |  nameless root manifest, not the entire FLIC.
+
+
+
+
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 38]
+
+Internet-Draft                    FLIC                     November 2024
+
 
    This example points out the problem of HashGroups having their own
    locator metadata elements: A retriever would be urged to follow these
@@ -1867,7 +2142,10 @@ Internet-Draft                    FLIC                     November 2024
 6.  IANA Considerations
 
    FLIC adds two values to existing registries and defines a new
-   registry in the "Content-Centric Networking (CCNx)" group.
+   registry in the "Content-Centric Networking (CCNx)" group.  The first
+   table defines FLIC as manifest type 0x0000.  Other manifest types
+   could be defined in the future.  The remaining sub-registries define
+   values specific to FLIC.
 
    The FLIC registries follow the CCNx convention of reserving the
    namespace 0x1000 - 0x1FFF for experimental use.  It also uses the
@@ -1901,7 +2179,9 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 17 May 2025                 [Page 34]
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 39]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1911,31 +2191,63 @@ Internet-Draft                    FLIC                     November 2024
        +===============+===============================+===========+
        |     0x0000    |        T_FLIC_MANIFEST        |           |
        +---------------+-------------------------------+-----------+
-       |     0x0001    |         T_SECURITY_CTX        |           |
-       +---------------+-------------------------------+-----------+
-       |     0x0002    |        T_ENCRYPTED_NODE       |           |
-       +---------------+-------------------------------+-----------+
-       |     0x0003    |             T_NODE            |           |
-       +---------------+-------------------------------+-----------+
-       |     0x0004    |        T_ENCRYPTED_NODE       |           |
-       +---------------+-------------------------------+-----------+
-       |     0x0005    |           T_AUTH_TAG          |           |
-       +---------------+-------------------------------+-----------+
-       | 0x0006-0x0FFF |           Unassigned          |           |
+       | 0x0001-0x0FFF |           Unassigned          |           |
        +---------------+-------------------------------+-----------+
        | 0x1000-0x1FFF | Reserved for experimental use |           |
        +---------------+-------------------------------+-----------+
        | 0x2000-0xFFFF |           Unassigned          |           |
        +---------------+-------------------------------+-----------+
 
-                           Table 1: FLIC Manifest
+                           Table 1: Manifest Type
 
        +===============+===============================+===========+
        |      Type     |              Name             | Reference |
        +===============+===============================+===========+
-       |     0x0000    |           T_AeadCtx           |           |
+       |     0x0000    |         T_SECURITY_CTX        |           |
        +---------------+-------------------------------+-----------+
-       |     0x0001    |          T_RsaKemCtx          |           |
+       |     0x0001    |             T_NODE            |           |
+       +---------------+-------------------------------+-----------+
+       |     0x0002    |        T_ENCRYPTED_NODE       |           |
+       +---------------+-------------------------------+-----------+
+       |     0x0004    |           T_AUTH_TAG          |           |
+       +---------------+-------------------------------+-----------+
+       | 0x0005-0x0FFF |           Unassigned          |           |
+       +---------------+-------------------------------+-----------+
+       | 0x1000-0x1FFF | Reserved for experimental use |           |
+       +---------------+-------------------------------+-----------+
+       | 0x2000-0xFFFF |           Unassigned          |           |
+       +---------------+-------------------------------+-----------+
+
+                           Table 2: FLIC Manifest
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 40]
+
+Internet-Draft                    FLIC                     November 2024
+
+
+       +===============+===============================+===========+
+       |      Type     |              Name             | Reference |
+       +===============+===============================+===========+
+       |     0x0000    |           T_AEAD_CTX          |           |
+       +---------------+-------------------------------+-----------+
+       |     0x0001    |         T_RSAOAEP_CTX         |           |
        +---------------+-------------------------------+-----------+
        | 0x0007-0x0FFF |           Unassigned          |           |
        +---------------+-------------------------------+-----------+
@@ -1944,7 +2256,7 @@ Internet-Draft                    FLIC                     November 2024
        | 0x2000-0xFFFF |           Unassigned          |           |
        +---------------+-------------------------------+-----------+
 
-                    Table 2: FLIC Manifest (SecurityCtx)
+                    Table 3: FLIC Manifest (SecurityCtx)
 
    +===============+===================+==============================+
    |      Type     |        Name       |          Reference           |
@@ -1954,14 +2266,6 @@ Internet-Draft                    FLIC                     November 2024
    |     0x0001    |    T_HASH_GROUP   |                              |
    +---------------+-------------------+------------------------------+
    |     0x0002    |   T_SUBTREE_SIZE  |                              |
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 35]
-
-Internet-Draft                    FLIC                     November 2024
-
-
    +---------------+-------------------+------------------------------+
    |     0x0003    |  T_SUBTREE_DIGEST | Value is in CCNx Hash Format |
    |               |                   |  Section 3.3.3 of [RFC8609]  |
@@ -1986,6 +2290,14 @@ Internet-Draft                    FLIC                     November 2024
    | 0x0007-0x000F |     Unassigned    |                              |
    +---------------+-------------------+------------------------------+
    |     0x0010    |    T_HashSchema   |                              |
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 41]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    +---------------+-------------------+------------------------------+
    |     0x0011    |   T_PrefixSchema  |                              |
    +---------------+-------------------+------------------------------+
@@ -2004,19 +2316,7 @@ Internet-Draft                    FLIC                     November 2024
    | 0x2000-0xFFFF |     Unassigned    |                              |
    +---------------+-------------------+------------------------------+
 
-                      Table 3: FLIC Manifest (Node)
-
-
-
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 36]
-
-Internet-Draft                    FLIC                     November 2024
-
+                      Table 4: FLIC Manifest (Node)
 
      +===============+==================+============================+
      |      Type     |       Name       |         Reference          |
@@ -2042,7 +2342,17 @@ Internet-Draft                    FLIC                     November 2024
      | 0x2000-0xFFFF |    Unassigned    |                            |
      +---------------+------------------+----------------------------+
 
-                     Table 4: FLIC Manifest (NcSchema)
+                     Table 5: FLIC Manifest (NcSchema)
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 42]
+
+Internet-Draft                    FLIC                     November 2024
+
 
    +===============+====================+=============================+
    |      Type     |        Name        |          Reference          |
@@ -2064,33 +2374,74 @@ Internet-Draft                    FLIC                     November 2024
    | 0x2000-0xFFFF |     Unassigned     |                             |
    +---------------+--------------------+-----------------------------+
 
-                    Table 5: FLIC Manifest (GroupData)
+                    Table 6: FLIC Manifest (GroupData)
 
 
 
 
-Tschudin, et al.           Expires 17 May 2025                 [Page 37]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 43]
 
 Internet-Draft                    FLIC                     November 2024
 
 
-       +===============+===============================+===========+
-       |      Type     |              Name             | Reference |
-       +===============+===============================+===========+
-       |     0x0000    |            T_KEYNUM           |           |
-       +---------------+-------------------------------+-----------+
-       |     0x0001    |            T_Nonce            |           |
-       +---------------+-------------------------------+-----------+
-       |     0x0002    |           T_AEADMode          |           |
-       +---------------+-------------------------------+-----------+
-       | 0x0003-0x0FFF |           Unassigned          |           |
-       +---------------+-------------------------------+-----------+
-       | 0x1000-0x1FFF | Reserved for experimental use |           |
-       +---------------+-------------------------------+-----------+
-       | 0x2000-0xFFFF |           Unassigned          |           |
-       +---------------+-------------------------------+-----------+
+      +===============+==================+==========================+
+      |      Type     |       Name       |        Reference         |
+      +===============+==================+==========================+
+      |     0x0000    |     T_KEYNUM     |                          |
+      +---------------+------------------+--------------------------+
+      |     0x0001    |     T_NONCE      |                          |
+      +---------------+------------------+--------------------------+
+      |     0x0002    |    T_AEADMode    |                          |
+      +---------------+------------------+--------------------------+
+      |     0x0003    |    T_HASH_ALG    |                          |
+      +---------------+------------------+--------------------------+
+      |     0x0004    |  T_WRAPPED_KEY   |                          |
+      +---------------+------------------+--------------------------+
+      | 0x0005-0x0008 |    Unassigned    |                          |
+      +---------------+------------------+--------------------------+
+      |     0x0009    |     T_KEYID      | As per Section 3.6.4.1.4 |
+      |               |                  |       of [RFC8609]       |
+      +---------------+------------------+--------------------------+
+      | 0x000A-0x000D |    Unassigned    |                          |
+      +---------------+------------------+--------------------------+
+      |     0x000E    |    T_KEYLINK     | As per Section 3.6.4.1.4 |
+      |               |                  |       of [RFC8609]       |
+      +---------------+------------------+--------------------------+
+      | 0x000F-0x0FFF |    Unassigned    |                          |
+      +---------------+------------------+--------------------------+
+      | 0x1000-0x1FFF |   Reserved for   |                          |
+      |               | experimental use |                          |
+      +---------------+------------------+--------------------------+
+      | 0x2000-0xFFFF |    Unassigned    |                          |
+      +---------------+------------------+--------------------------+
 
-                      Table 6: FLIC Manifest (AEADCtx)
+              Table 7: FLIC Manifest (SecurityCtx Parameters)
 
                +============+==================+===========+
                | Numeric ID |       Name       | Reference |
@@ -2104,51 +2455,16 @@ Internet-Draft                    FLIC                     November 2024
                |     4      | AEAD_AES_256_CCM | [RFC5116] |
                +------------+------------------+-----------+
 
-                  Table 7: FLIC Manifest (AEADMode Values)
+                  Table 8: FLIC Manifest (AEADMode Values)
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 38]
+Tschudin, et al.           Expires 18 May 2025                 [Page 44]
 
 Internet-Draft                    FLIC                     November 2024
 
-
-     +===============+==================+============================+
-     |      Type     |       Name       |         Reference          |
-     +===============+==================+============================+
-     |     0x0000    |  T_WRAPPED_KEY   |                            |
-     +---------------+------------------+----------------------------+
-     | 0x0001-0x0008 |    Unassigned    |                            |
-     +---------------+------------------+----------------------------+
-     |     0x0009    |     T_KEYID      | As per Section 3.6.4.1.4.1 |
-     |               |                  |        of [RFC8609]        |
-     +---------------+------------------+----------------------------+
-     | 0x000A-0x0FFF |    Unassigned    |                            |
-     +---------------+------------------+----------------------------+
-     | 0x1000-0x1FFF |   Reserved for   |                            |
-     |               | experimental use |                            |
-     +---------------+------------------+----------------------------+
-     | 0x2000-0xFFFF |    Unassigned    |                            |
-     +---------------+------------------+----------------------------+
-
-                     Table 8: FLIC Manifest (RsaKemCtx)
 
      +===============+==================+============================+
      |      Type     |       Name       |         Reference          |
@@ -2178,14 +2494,6 @@ Internet-Draft                    FLIC                     November 2024
 
    TODO Need a discussion on:
 
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 39]
-
-Internet-Draft                    FLIC                     November 2024
-
-
    *  signing and hash chaining security. (*Note: Did I cover this
       adequately below?*)
 
@@ -2204,6 +2512,15 @@ Internet-Draft                    FLIC                     November 2024
       really use some help here*.
 
    *Anything else?????*.
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 45]
+
+Internet-Draft                    FLIC                     November 2024
+
 
 7.1.  Integrity and Origin Authentication of FLIC Manifests
 
@@ -2235,13 +2552,6 @@ Internet-Draft                    FLIC                     November 2024
       the signed binding of the name to the content described in the
       Manifest
 
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 40]
-
-Internet-Draft                    FLIC                     November 2024
-
-
    A FLIC Manifest therefore gets integrity of its individual pieces
    through the existing secure hashing procedures of the underlying
    protocols.  Origin authentication of the entire Manifest is achieved
@@ -2260,6 +2570,14 @@ Internet-Draft                    FLIC                     November 2024
    Therefore, since FLIC is an application-level construct in both NDN
    and CCNx, it is incumbent on this specification for FLIC to provide
    the desired confidentiality properties using encryption.  One could
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 46]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    leave the specification of Manifest encryption entirely in the hands
    of the individual application utilizing FLIC, but this would be
    undesirable for a number of reasons:
@@ -2289,15 +2607,6 @@ Internet-Draft                    FLIC                     November 2024
    additional encryption capabilities may be needed and hence we expect
    the encryption aspects of this specification to evolve over time.
 
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 41]
-
-Internet-Draft                    FLIC                     November 2024
-
-
 7.3.  Privacy of names and linkability of access patterns
 
    What to say here, if anything?
@@ -2315,6 +2624,15 @@ Internet-Draft                    FLIC                     November 2024
               Protocol (HTTP) Digest Authentication Using Authentication
               and Key Agreement (AKA)", RFC 3310, DOI 10.17487/RFC3310,
               September 2002, <https://www.rfc-editor.org/info/rfc3310>.
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 47]
+
+Internet-Draft                    FLIC                     November 2024
+
 
    [RFC5116]  McGrew, D., "An Interface and Algorithms for Authenticated
               Encryption", RFC 5116, DOI 10.17487/RFC5116, January 2008,
@@ -2346,14 +2664,6 @@ Internet-Draft                    FLIC                     November 2024
               DOI 10.17487/RFC8569, July 2019,
               <https://www.rfc-editor.org/info/rfc8569>.
 
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 42]
-
-Internet-Draft                    FLIC                     November 2024
-
-
    [RFC8609]  Mosko, M., Solis, I., and C. Wood, "Content-Centric
               Networking (CCNx) Messages in TLV Format", RFC 8609,
               DOI 10.17487/RFC8609, July 2019,
@@ -2369,6 +2679,16 @@ Internet-Draft                    FLIC                     November 2024
    [FLICImplementation]
               Mosko, M., "FLIC Implementation in Python", various,
               <https://github.com/mmosko/ccnpy>.
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 48]
+
+Internet-Draft                    FLIC                     November 2024
+
 
    [I-D.wood-icnrg-ccnxkeyexchange]
               Mosko, M., Uzun, E., and C. A. Wood, "CCNx Key Exchange
@@ -2399,17 +2719,6 @@ Internet-Draft                    FLIC                     November 2024
               Challenges", RFC 7927, DOI 10.17487/RFC7927, July 2016,
               <https://www.rfc-editor.org/info/rfc7927>.
 
-
-
-
-
-
-
-Tschudin, et al.           Expires 17 May 2025                 [Page 43]
-
-Internet-Draft                    FLIC                     November 2024
-
-
    [RSAKEM]   Barker, E., Chen, L., Roginsky, A., Vassilev, A., Davis,
               R., and S. Simon, "Recommendation for Pair-Wise Key-
               Establishment Using Integer Factorization Cryptography",
@@ -2427,6 +2736,15 @@ Internet-Draft                    FLIC                     November 2024
    [venti]    "Venti: a new approach to archival storage", Bell Labs
               Document Archive /sts/doc, 2002,
               <http://doc.cat-v.org/plan_9/4th_edition/papers/venti/>.
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 49]
+
+Internet-Draft                    FLIC                     November 2024
+
 
 Appendix A.  Building Trees
 
@@ -2461,7 +2779,25 @@ Appendix A.  Building Trees
 
 
 
-Tschudin, et al.           Expires 17 May 2025                 [Page 44]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Tschudin, et al.           Expires 18 May 2025                 [Page 50]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2517,7 +2853,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 17 May 2025                 [Page 45]
+Tschudin, et al.           Expires 18 May 2025                 [Page 51]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2573,7 +2909,7 @@ Authors' Addresses
 
 
 
-Tschudin, et al.           Expires 17 May 2025                 [Page 46]
+Tschudin, et al.           Expires 18 May 2025                 [Page 52]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2629,4 +2965,4 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 17 May 2025                 [Page 47]
+Tschudin, et al.           Expires 18 May 2025                 [Page 53]
