@@ -471,7 +471,7 @@
         <t>FLIC allows each manifest pointer to be annotated with extra data. Annotations allow
           applications to exploit metadata about each Data Object pointed to without having to first
           fetch the corresponding Content Object. This specification defines three annotations:
-          <tt>SizeAnnotation</tt>, <tt>SegmentIdAnnotation</tt>, and <tt>NameAnnotation</tt>.</t>
+          <tt>SizeAnnotation</tt>, <tt>SegmentIdAnnotation</tt>, and <tt>LinkAnnotation</tt>.</t>
 
 
           <t>The <em>SizeAnnotation</em> specifies the number of application layer octets covered by
@@ -481,9 +481,14 @@
           the Seegmented Schema name constructor.  Use annotations allows non-sequential segment IDs, which
           could happen if manifest trees are named in the traversal order.</t>
 
-          <t>The <em>NameAnnotation</em> is a full name of the pointer (less the pointer itself).
+          <t>The <em>LinkAnnotation</em> is a link to be used to name the pointer (less the pointer itself).
           For NDN, the poitner would be appended to the name for a complete name.  In CCNx, the name would
-          be used in the Interest along with the pointer in the ContentObjectHashRestriction field.</t>
+          be used in the Interest along with the pointer in the ContentObjectHashRestriction field.  The
+          link may include a KeyId restriction.</t>
+
+          <aside><t>One may include a KeyId restriction in the generated interest by also using the
+            <tt>ProtocolFlags</tt> option of a name constructor.  This would be much more space efficient
+            than using annotated pointers.</t></aside>
 
         <t>Other annotation may, for example, give hints about a desirable traversal order for fetching
           the data, or an importance/precedence indication to aid applications that do not require
@@ -524,74 +529,75 @@
 TYPE = 2OCTET / {1,3,5}OCTET ; As per CCNx or NDN TLV
 LENGTH = 2OCTET / {1,3,5}OCTET ; As per CCNx or NDN TLV
 
-Manifest = TYPE LENGTH [SecurityCtx] (EncryptedNode / Node) [AuthTag]
+Manifest = T_FLIC_MANIFEST LENGTH [SecurityCtx] (EncryptedNode / Node) [AuthTag]
 
-SecurityCtx = TYPE LENGTH AlgorithmCtx
+SecurityCtx = T_SECURITY_CTX LENGTH AlgorithmCtx
 AlgorithmCtx = AEADCtx / RsaWrapCtx
-AuthTag = TYPE LENGTH *OCTET ; e.g. AEAD authentication tag
-EncryptedNode = TYPE LENGTH *OCTET ; Encrypted Node
+AuthTag = T_AUTH_TAG LENGTH *OCTET ; e.g. AEAD authentication tag
+EncryptedNode = T_ENCRYPTED_NODE LENGTH *OCTET ; Encrypted Node
 
-Node = TYPE LENGTH [NodeData] 1*HashGroup
-NodeData = TYPE LENGTH [SubtreeSize] [SubtreeDigest] [Locators]
+Node = T_NODE LENGTH [NodeData] 1*HashGroup
+NodeData = T_NODE_DATA LENGTH [SubtreeSize] [SubtreeDigest] [Locators]
            0*Vendor 0*NcDef
-SubtreeSize = TYPE LENGTH INTEGER
-SubtreeDigest = TYPE LENGTH HashValue
+SubtreeSize = T_SUBTREE_SIZE LENGTH INTEGER
+SubtreeDigest = T_SUBTREE_DIGEST LENGTH HashValue
 
-NcDef = TYPE LENGTH NcId NcSchema
-NcId = TYPE LENGTH INTEGER
+NcDef = T_NCDEF LENGTH NcId NcSchema
+NcId = T_NCID LENGTH INTEGER
 NcSchema = InterestDerivedSchema / DataDerivedSchema /
            PrefixSchema / SegmentedSchema / HashSchema
 
 InterestDerivedSchema = TYPE LENGTH [ProtocolFlags]
 DataDerivedSchema = TYPE LENGTH [ProtocolFlags]
 
-PrefixSchema = TYPE LENGTH Name [Locators] [ProtocolFlags]
-SegmentedSchema = TYPE LENGTH Name SuffixComponentType [Locators] [ProtocolFlags]
-SuffixComponentType = TYPE LENGTH 1*OCTET
-HashSchema = TYPE LENGTH Locators [ProtocolFlags]
+PrefixSchema = T_PrefixSchema LENGTH Name [Locators] [ProtocolFlags]
+SegmentedSchema = T_SegmentedSchema LENGTH Name SuffixComponentType [Locators] [ProtocolFlags]
+SuffixComponentType = T_SUFFIX_TYPE LENGTH 1*OCTET
+HashSchema = T_HashSchema LENGTH Locators [ProtocolFlags]
 
-Locators = TYPE LENGTH 1*Locator
+Locators = T_LOCATORS LENGTH 1*Locator
 HashValue = TYPE LENGTH *OCTET ; As per ICN Protocol
 Locator = TYPE LENGTH Link ; Link As per ICN protocol
 
-ProtocolFlags = TYPE LENGTH *OCTET
+ProtocolFlags = T_PROTOCOL_FLAGS LENGTH *OCTET
                 ; ICN-specific flags, e.g. must be fresh
 
-HashGroup = TYPE LENGTH [GroupData] (Ptrs / AnnotatedPtrs)
-Ptrs = TYPE LENGTH *HashValue
-AnnotatedPtrs = TYPE LENGTH *PointerBlock
-PointerBlock = TYPE LENGTH *Annotation Ptr
-Ptr = TYPE LENGTH HashValue
+HashGroup = T_HASH_GROUP LENGTH [GroupData] (Ptrs / AnnotatedPtrs)
+Ptrs = T_PTRS LENGTH *HashValue
+AnnotatedPtrs = T_ANNOTATED_PTRS LENGTH *PointerBlock
+PointerBlock = T_PTR_BLOCK LENGTH *Annotation Ptr
+Ptr = T_PTR LENGTH HashValue
 
 Annotation = SizeAnnotation / SegmentIdAnnotation / 
-             NameAnnotation / Vendor
-SizeAnnotation = TYPE LENGTH Integer
-SegmentIdAnnotation = TYPE LENGTH Integer
-NameAnnotation = TYPE LENGTH Name
-Vendor = TYPE LENGTH PEN *OCTET
+             LinkAnnotation / Vendor
+SizeAnnotation = T_ANN_SIZE LENGTH Integer
+SegmentIdAnnotation = T_ANN_SEGMENT_ID LENGTH Integer
+LinkAnnotation = T_LINK LENGTH Link
+Vendor = T_ORG LENGTH PEN *OCTET
 PEN = 3OCTET ; IANA Private Enterprise Number
 
 GroupData = TYPE LENGTH [NcId] [LeafSize] [LeafDigest]
             [SubtreeSize] [SubtreeDigest] [StartSegmentId]
             0*Vendor
-LeafSize = TYPE LENGTH INTEGER
-LeafDigest = TYPE LENGTH HashValue
-StartSegmentId = TYPE LENGTH Integer
+LeafSize = T_LEAF_SIZE LENGTH INTEGER
+LeafDigest = T_LEAF_DIGEST LENGTH HashValue
+StartSegmentId = T_START_SEGMENT_ID LENGTH Integer
 
-AEADCtx = TYPE LENGTH AEADData
+AEADCtx = T_AEAD_CTX LENGTH AEADData
 AEADData = KeyNum AEADNonce AEADMode
-KeyNum = TYPE LENGTH INTEGER
-AEADNonce = TYPE LENGTH 1*OCTET
-AEADMode = TYPE LENGTH (AEAD_AES_128_GCM / AEAD_AES_256_GCM /
+KeyNum = T_KEYNUM LENGTH INTEGER
+AEADNonce = T_NONCE LENGTH 1*OCTET
+AEADMode = T_AEADMode LENGTH (AEAD_AES_128_GCM / AEAD_AES_256_GCM /
            AEAD_AES_128_CCM / AEAD_AES_128_CCM) ; RFC5116 definitions
 
 
-RsaOaepCtx = TYPE LENGTH RsaOaepData
+RsaOaepCtx = T_RSAOAEP_CTX LENGTH RsaOaepData
 RsaOaepData = AEADData [RsaOaepWrapper]
-RsaOaepWrapper = KeyId KeyLink HashAlg WrappedKey  ; KeyLink as pre RFC8609
-HashAlg = TYPE LENGTH alg_number        ; alg_number from IANA "CCNx Hash Function Types"
-KeyId = TYPE LENGTH HashValue           ; ID of Key Encryption Key
-WrappedKey = TYPE LENGTH 4OCTET 1*OCTET ; Encrypted 4-byte salt plus AES key
+RsaOaepWrapper = KeyId KeyLink HashAlg WrappedKey  
+    ; KeyId as pre RFC8609 for CCNx
+    ; KeyLink as pre RFC8609 for CCNx
+HashAlg = T_HASH_ALG LENGTH alg_number        ; alg_number from IANA "CCNx Hash Function Types"
+WrappedKey = T_WRAPPED_KEY LENGTH 4OCTET 1*OCTET ; Encrypted 4-byte salt plus AES key
 ]]>
 			</sourcecode>
         </figure>
@@ -872,7 +878,7 @@ D0 D1
           <ol>
             <li>Obtain the CEK in binary format (e.g. 32 bytes for 256 bits)</li>
             <li>RSA encrypt the <tt>WrappedKey</tt> value using the KEK public key with OAEP padding, following <xref
-                target="RFC8017">RFC8017 Sec 7.1</xref>. The encryption is not signed because the
+                target="RFC8017" section="7.1"/>. The encryption is not signed because the
               root Manifest must have been signed by the publisher already.  Or the encapsulating
               Content Object (Data Object) is signed via ICN mechanisms.</li>
           </ol>
@@ -1541,7 +1547,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
         Each pointer block is one pointer plus zero or more annotations.</t>
         <t>Annotations should not repeat in the same pointer block, unless specifically
           allowed by the annotation.</t>
-        <t>The defined annotations (SizeAnnotation, SegmentIdAnnotation, and NameAnnotation)
+        <t>The defined annotations (SizeAnnotation, SegmentIdAnnotation, and LinkAnnotation)
           all use previously defined encodings (INTEGER or Name) and are not shown here.</t>
           <figure>
               <name>FLIC Annotated Pointers TLV container</name>
@@ -1997,10 +2003,8 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
     </section>
 
     <section anchor="IANA"><name>IANA Considerations</name>
-      <t>FLIC adds two values to existing registries and defines a new registry in the 
-        "Content-Centric Networking (CCNx)" group.  The first table defines FLIC as
-        manifest type 0x0000.  Other manifest types could be defined in the future.
-        The remaining sub-registries define values specific to FLIC.</t>
+      <t>FLIC adds two values to existing registries and defines two new registry in the 
+        "Content-Centric Networking (CCNx)" group.</t>
 
         <t>The FLIC registries follow the CCNx convention of reserving the namespace 0x1000 - 0x1FFF
           for experimental use.  It also uses the T_ORG (0x0FFF) definition for organizational
@@ -2010,17 +2014,19 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
 
       <t>IANA will assign value "0x0003" to "T_PAYLOADTYPE_MANIFEST" in the "CCNx Payload Types" registry.</t>
 
-      <t>IANA will add the following new registry and sub-registries to the 
+
+
+      <t>IANA will add the following new registry to the 
         "Content-Centric Networking (CCNx)" registry group at https://www.iana.org/assignments/ccnx):
       </t>
 
-        <ul spacing="normal">
-          <li>Registry Name: FLIC Manifest</li>
+        <ul spacing="compact">
+          <li>Registry Name: CCNx Manifest Type</li>
           <li>Registration Procedure: Specification Required</li>
-          <li>The Type value (when used in CCNx) is 2 octets with a range of 0x0000 - 0xFFFF.</li>
+          <li>This defines the TLV type of a Manifest inside a CCNx Payload.</li>
         </ul>
 
-        <table>
+        <table align="left">
           <name>Manifest Type</name>
           <thead>
             <tr>
@@ -2054,7 +2060,16 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
         </table>
 
 
-        <table>
+      <t>IANA will add the following new registry and sub-registries to the 
+        "Content-Centric Networking (CCNx)" registry group at https://www.iana.org/assignments/ccnx):
+      </t>
+
+        <ul spacing="compact">
+          <li>Registry Name: FLIC Manifest</li>
+          <li>Registration Procedure: Specification Required</li>
+        </ul>
+
+        <table align="left">
           <name>FLIC Manifest</name>
           <thead>
             <tr>
@@ -2103,8 +2118,12 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
           </tbody>
         </table>
 
+        <ul spacing="compact">
+          <li>Sub-registry Name: FLIC Manifest (SecurityCtx)</li>
+          <li>Registration Procedure: Specification Required</li>
+        </ul>
         
-        <table>          
+        <table align="left">          
           <name>FLIC Manifest (SecurityCtx)</name>
           <thead>
             <tr>
@@ -2142,7 +2161,12 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
           </tbody>
         </table>
 
-        <table>          
+        <ul spacing="compact">
+          <li>Sub-registry Name: FLIC Manifest (Node)</li>
+          <li>Registration Procedure: Specification Required</li>
+        </ul>
+
+        <table align="left">          
           <name>FLIC Manifest (Node)</name>
           <thead>
             <tr>
@@ -2199,7 +2223,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
             </tr>
             <tr>
               <td align="center">0x0009</td>
-              <td align="center">T_POINTER_BLOCK</td>
+              <td align="center">T_PTR_BLOCK</td>
               <td align="center"></td>
             </tr>
             <tr>
@@ -2252,8 +2276,12 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
 
         </table>
 
+        <ul spacing="compact">
+          <li>Sub-registry Name: FLIC Manifest (NcSchema)</li>
+          <li>Registration Procedure: Specification Required</li>
+        </ul>
 
-        <table>          
+        <table align="left">          
           <name>FLIC Manifest (NcSchema)</name>
           <thead>
             <tr>
@@ -2311,8 +2339,13 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
           </tbody>
         </table>
 
-        <table>          
-          <name>FLIC Manifest (GroupData)</name>
+        <ul spacing="compact">
+          <li>Sub-registry Name: FLIC Manifest (Group Data)</li>
+          <li>Registration Procedure: Expert Review</li>
+        </ul>
+
+        <table align="left">          
+          <name>FLIC Manifest (Group Data)</name>
           <thead>
             <tr>
               <th align="center">Type</th>
@@ -2370,8 +2403,12 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
           </tbody>
         </table>
 
+        <ul spacing="compact">
+          <li>Sub-registry Name: FLIC Manifest (SecurityCtx Parameters)</li>
+          <li>Registration Procedure: Expert Review</li>
+        </ul>
 
-        <table>          
+        <table align="left">          
           <name>FLIC Manifest (SecurityCtx Parameters)</name>
           <thead>
             <tr>
@@ -2447,7 +2484,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
 
         <aside><t>Do we need to reproduce this here, or is it sufficent to refer to the IANA AEAD table?</t></aside>
 
-        <table><name>FLIC Manifest (AEADMode Values)</name>
+        <table align="left"><name>FLIC Manifest (AEADMode Values)</name>
           <thead>
           <tr>
             <th align='center'>Numeric ID</th>
@@ -2479,7 +2516,13 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
           </tbody>
         </table>
 
-        <table>          
+        <ul spacing="compact">
+          <li>Sub-registry Name: FLIC Manifest (Annotation)</li>
+          <li>Registration Procedure: Expert Review</li>
+        </ul>
+
+
+        <table align="left">          
           <name>FLIC Manifest (Annotation)</name>
           <thead>
             <tr>
@@ -2500,7 +2543,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
               <td align="center"></td>
             </tr>  
             <tr>
-              <td align="center">0x0002-0x000C</td>
+              <td align="center">0x0003-0x000C</td>
               <td align="center">Unassigned</td>
               <td align="center"></td>
             </tr>
