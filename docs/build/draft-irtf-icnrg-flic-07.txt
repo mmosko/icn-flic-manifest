@@ -5,12 +5,12 @@
 ICNRG                                                        C. Tschudin
 Internet-Draft                                       University of Basel
 Intended status: Experimental                                  C.A. Wood
-Expires: 18 May 2025                                          Cloudflare
+Expires: 19 May 2025                                          Cloudflare
                                                               M.E. Mosko
                                                                         
                                                             D. Oran, Ed.
                                        Network Systems Research & Design
-                                                        14 November 2024
+                                                        15 November 2024
 
 
                     File-Like ICN Collections (FLIC)
@@ -42,7 +42,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 18 May 2025.
+   This Internet-Draft will expire on 19 May 2025.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Tschudin, et al.           Expires 18 May 2025                  [Page 1]
+Tschudin, et al.           Expires 19 May 2025                  [Page 1]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -109,20 +109,20 @@ Table of Contents
 
 
 
-Tschudin, et al.           Expires 18 May 2025                  [Page 2]
+Tschudin, et al.           Expires 19 May 2025                  [Page 2]
 
 Internet-Draft                    FLIC                     November 2024
 
 
-   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  50
-     7.1.  Integrity and Origin Authentication of FLIC Manifests . .  51
-     7.2.  Confidentiality of Manifest Data  . . . . . . . . . . . .  52
-     7.3.  Privacy of names and linkability of access patterns . . .  53
-   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  53
-     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  53
-     8.2.  Informative References  . . . . . . . . . . . . . . . . .  54
-   Appendix A.  Building Trees . . . . . . . . . . . . . . . . . . .  55
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  57
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  51
+     7.1.  Integrity and Origin Authentication of FLIC Manifests . .  52
+     7.2.  Confidentiality of Manifest Data  . . . . . . . . . . . .  53
+     7.3.  Privacy of names and linkability of access patterns . . .  54
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  54
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  54
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .  55
+   Appendix A.  Building Trees . . . . . . . . . . . . . . . . . . .  56
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  58
 
 1.  Introduction
 
@@ -165,7 +165,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                  [Page 3]
+Tschudin, et al.           Expires 19 May 2025                  [Page 3]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -221,7 +221,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                  [Page 4]
+Tschudin, et al.           Expires 19 May 2025                  [Page 4]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -277,7 +277,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                  [Page 5]
+Tschudin, et al.           Expires 19 May 2025                  [Page 5]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -333,7 +333,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                  [Page 6]
+Tschudin, et al.           Expires 19 May 2025                  [Page 6]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -389,7 +389,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                  [Page 7]
+Tschudin, et al.           Expires 19 May 2025                  [Page 7]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -445,7 +445,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                  [Page 8]
+Tschudin, et al.           Expires 19 May 2025                  [Page 8]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -501,7 +501,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                  [Page 9]
+Tschudin, et al.           Expires 19 May 2025                  [Page 9]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -557,7 +557,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 10]
+Tschudin, et al.           Expires 19 May 2025                 [Page 10]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -613,7 +613,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 11]
+Tschudin, et al.           Expires 19 May 2025                 [Page 11]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -669,7 +669,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 12]
+Tschudin, et al.           Expires 19 May 2025                 [Page 12]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -725,7 +725,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 13]
+Tschudin, et al.           Expires 19 May 2025                 [Page 13]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -781,22 +781,24 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 14]
+Tschudin, et al.           Expires 19 May 2025                 [Page 14]
 
 Internet-Draft                    FLIC                     November 2024
 
 
    AEADMode = T_AEADMode LENGTH (AEAD_AES_128_GCM / AEAD_AES_256_GCM /
-              AEAD_AES_128_CCM / AEAD_AES_128_CCM) ; RFC5116 definitions
-
+              AEAD_AES_128_CCM / AEAD_AES_128_CCM)
+              ; RFC5116 definitions
 
    RsaOaepCtx = T_RSAOAEP_CTX LENGTH RsaOaepData
    RsaOaepData = AEADData [RsaOaepWrapper]
    RsaOaepWrapper = KeyId KeyLink HashAlg WrappedKey
        ; KeyId as pre RFC8609 for CCNx
        ; KeyLink as pre RFC8609 for CCNx
-   HashAlg = T_HASH_ALG LENGTH alg_number        ; alg_number from IANA "CCNx Hash Function Types"
-   WrappedKey = T_WRAPPED_KEY LENGTH 4OCTET 1*OCTET ; Encrypted 4-byte salt plus AES key
+   HashAlg = T_HASH_ALG LENGTH alg_number
+       ; alg_number from IANA "CCNx Hash Function Types"
+   WrappedKey = T_WRAPPED_KEY LENGTH 4OCTET 1*OCTET
+       ; Encrypted 4-byte salt plus AES key
 
                            Figure 2: FLIC Grammar
 
@@ -833,14 +835,14 @@ Internet-Draft                    FLIC                     November 2024
 
    Ptrs:  A list of one or more Hash Values
 
-   GroupData:  Metadata that applies to a HashGroup
 
 
-
-Tschudin, et al.           Expires 18 May 2025                 [Page 15]
+Tschudin, et al.           Expires 19 May 2025                 [Page 15]
 
 Internet-Draft                    FLIC                     November 2024
 
+
+   GroupData:  Metadata that applies to a HashGroup
 
    LeafSize:  Size of all application data immediately under the Group
       (i.e. via direct pointers)
@@ -891,9 +893,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-
-
-Tschudin, et al.           Expires 18 May 2025                 [Page 16]
+Tschudin, et al.           Expires 19 May 2025                 [Page 16]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -949,7 +949,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 17]
+Tschudin, et al.           Expires 19 May 2025                 [Page 17]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1005,7 +1005,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 18]
+Tschudin, et al.           Expires 19 May 2025                 [Page 18]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1061,7 +1061,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 19]
+Tschudin, et al.           Expires 19 May 2025                 [Page 19]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1117,7 +1117,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 20]
+Tschudin, et al.           Expires 19 May 2025                 [Page 20]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1173,7 +1173,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 21]
+Tschudin, et al.           Expires 19 May 2025                 [Page 21]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1229,7 +1229,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 22]
+Tschudin, et al.           Expires 19 May 2025                 [Page 22]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1285,7 +1285,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 23]
+Tschudin, et al.           Expires 19 May 2025                 [Page 23]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1341,7 +1341,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 24]
+Tschudin, et al.           Expires 19 May 2025                 [Page 24]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1397,7 +1397,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 25]
+Tschudin, et al.           Expires 19 May 2025                 [Page 25]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1453,7 +1453,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 26]
+Tschudin, et al.           Expires 19 May 2025                 [Page 26]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1509,7 +1509,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 27]
+Tschudin, et al.           Expires 19 May 2025                 [Page 27]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1565,7 +1565,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 28]
+Tschudin, et al.           Expires 19 May 2025                 [Page 28]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1621,7 +1621,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 29]
+Tschudin, et al.           Expires 19 May 2025                 [Page 29]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1677,7 +1677,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 30]
+Tschudin, et al.           Expires 19 May 2025                 [Page 30]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1733,7 +1733,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 31]
+Tschudin, et al.           Expires 19 May 2025                 [Page 31]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1789,7 +1789,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 32]
+Tschudin, et al.           Expires 19 May 2025                 [Page 32]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1845,7 +1845,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 33]
+Tschudin, et al.           Expires 19 May 2025                 [Page 33]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1901,7 +1901,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 34]
+Tschudin, et al.           Expires 19 May 2025                 [Page 34]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -1957,7 +1957,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 35]
+Tschudin, et al.           Expires 19 May 2025                 [Page 35]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2013,7 +2013,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 36]
+Tschudin, et al.           Expires 19 May 2025                 [Page 36]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2069,7 +2069,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 37]
+Tschudin, et al.           Expires 19 May 2025                 [Page 37]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2125,7 +2125,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 38]
+Tschudin, et al.           Expires 19 May 2025                 [Page 38]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2181,7 +2181,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 39]
+Tschudin, et al.           Expires 19 May 2025                 [Page 39]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2237,7 +2237,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 40]
+Tschudin, et al.           Expires 19 May 2025                 [Page 40]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2293,7 +2293,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 41]
+Tschudin, et al.           Expires 19 May 2025                 [Page 41]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2349,7 +2349,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 42]
+Tschudin, et al.           Expires 19 May 2025                 [Page 42]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2405,7 +2405,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 43]
+Tschudin, et al.           Expires 19 May 2025                 [Page 43]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2461,7 +2461,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 44]
+Tschudin, et al.           Expires 19 May 2025                 [Page 44]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2496,9 +2496,9 @@ Internet-Draft                    FLIC                     November 2024
    +---------------+-------------------------------+-----------+
    |     0x0002    |        T_ENCRYPTED_NODE       |           |
    +---------------+-------------------------------+-----------+
-   |     0x0004    |           T_AUTH_TAG          |           |
+   |     0x0003    |           T_AUTH_TAG          |           |
    +---------------+-------------------------------+-----------+
-   | 0x0005-0x0FFF |           Unassigned          |           |
+   | 0x0004-0x0FFF |           Unassigned          |           |
    +---------------+-------------------------------+-----------+
    | 0x1000-0x1FFF | Reserved for experimental use |           |
    +---------------+-------------------------------+-----------+
@@ -2517,7 +2517,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 45]
+Tschudin, et al.           Expires 19 May 2025                 [Page 45]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2573,12 +2573,14 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 46]
+Tschudin, et al.           Expires 19 May 2025                 [Page 46]
 
 Internet-Draft                    FLIC                     November 2024
 
 
-   | 0x000B-0x000F |     Unassigned    |                              |
+   |     0x000B    |    T_GROUP_DATA   |                              |
+   +---------------+-------------------+------------------------------+
+   | 0x000C-0x000F |     Unassigned    |                              |
    +---------------+-------------------+------------------------------+
    |     0x0010    |    T_HashSchema   |                              |
    +---------------+-------------------+------------------------------+
@@ -2601,18 +2603,51 @@ Internet-Draft                    FLIC                     November 2024
    *  Sub-registry Name: FLIC Manifest (NcSchema)
    *  Registration Procedure: Specification Required
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Tschudin, et al.           Expires 19 May 2025                 [Page 47]
+
+Internet-Draft                    FLIC                     November 2024
+
+
    +===============+==================+============================+
    |      Type     |       Name       |         Reference          |
    +===============+==================+============================+
    |     0x0000    |      T_NAME      |         [RFC8609]          |
    +---------------+------------------+----------------------------+
-   |     0x0001    |    T_LOCATORS    |                            |
+   |     0x0001    | T_PROTOCOL_FLAGS |                            |
    +---------------+------------------+----------------------------+
-   |     0x0002    | T_PROTOCOL_FLAGS |                            |
+   |     0x0002    |  T_SUFFIX_TYPE   |                            |
    +---------------+------------------+----------------------------+
-   |     0x0003    |  T_SUFFIX_TYPE   |                            |
+   | 0x0003-0x0005 |    Unassigned    |                            |
    +---------------+------------------+----------------------------+
-   | 0x0004-0x000C |    Unassigned    |                            |
+   |     0x0006    |    T_LOCATORS    |                            |
+   +---------------+------------------+----------------------------+
+   | 0x0007-0x000C |    Unassigned    |                            |
    +---------------+------------------+----------------------------+
    |     0x000D    |      T_LINK      |      Value is a Link       |
    |               |                  | Section 3.3.4 of [RFC8609] |
@@ -2627,15 +2662,33 @@ Internet-Draft                    FLIC                     November 2024
 
                    Table 5: FLIC Manifest (NcSchema)
 
+   *  Sub-registry Name: FLIC Manifest (Group Data)
+   *  Registration Procedure: Expert Review
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 47]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Tschudin, et al.           Expires 19 May 2025                 [Page 48]
 
 Internet-Draft                    FLIC                     November 2024
 
-
-   *  Sub-registry Name: FLIC Manifest (Group Data)
-   *  Registration Procedure: Expert Review
 
    +===============+====================+==============================+
    |      Type     |        Name        |          Reference           |
@@ -2685,7 +2738,10 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 48]
+
+
+
+Tschudin, et al.           Expires 19 May 2025                 [Page 49]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2741,7 +2797,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 49]
+Tschudin, et al.           Expires 19 May 2025                 [Page 50]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2797,7 +2853,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 50]
+Tschudin, et al.           Expires 19 May 2025                 [Page 51]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2853,7 +2909,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 51]
+Tschudin, et al.           Expires 19 May 2025                 [Page 52]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2909,7 +2965,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 52]
+Tschudin, et al.           Expires 19 May 2025                 [Page 53]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -2965,7 +3021,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 53]
+Tschudin, et al.           Expires 19 May 2025                 [Page 54]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -3021,7 +3077,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 54]
+Tschudin, et al.           Expires 19 May 2025                 [Page 55]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -3077,7 +3133,7 @@ Appendix A.  Building Trees
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 55]
+Tschudin, et al.           Expires 19 May 2025                 [Page 56]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -3133,7 +3189,7 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 56]
+Tschudin, et al.           Expires 19 May 2025                 [Page 57]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -3189,7 +3245,7 @@ Authors' Addresses
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 57]
+Tschudin, et al.           Expires 19 May 2025                 [Page 58]
 
 Internet-Draft                    FLIC                     November 2024
 
@@ -3245,4 +3301,4 @@ Internet-Draft                    FLIC                     November 2024
 
 
 
-Tschudin, et al.           Expires 18 May 2025                 [Page 58]
+Tschudin, et al.           Expires 19 May 2025                 [Page 59]

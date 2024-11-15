@@ -588,16 +588,18 @@ AEADData = KeyNum AEADNonce AEADMode
 KeyNum = T_KEYNUM LENGTH INTEGER
 AEADNonce = T_NONCE LENGTH 1*OCTET
 AEADMode = T_AEADMode LENGTH (AEAD_AES_128_GCM / AEAD_AES_256_GCM /
-           AEAD_AES_128_CCM / AEAD_AES_128_CCM) ; RFC5116 definitions
-
+           AEAD_AES_128_CCM / AEAD_AES_128_CCM) 
+           ; RFC5116 definitions
 
 RsaOaepCtx = T_RSAOAEP_CTX LENGTH RsaOaepData
 RsaOaepData = AEADData [RsaOaepWrapper]
 RsaOaepWrapper = KeyId KeyLink HashAlg WrappedKey  
     ; KeyId as pre RFC8609 for CCNx
     ; KeyLink as pre RFC8609 for CCNx
-HashAlg = T_HASH_ALG LENGTH alg_number        ; alg_number from IANA "CCNx Hash Function Types"
-WrappedKey = T_WRAPPED_KEY LENGTH 4OCTET 1*OCTET ; Encrypted 4-byte salt plus AES key
+HashAlg = T_HASH_ALG LENGTH alg_number        
+    ; alg_number from IANA "CCNx Hash Function Types"
+WrappedKey = T_WRAPPED_KEY LENGTH 4OCTET 1*OCTET 
+    ; Encrypted 4-byte salt plus AES key
 ]]>
 			</sourcecode>
         </figure>
@@ -2096,12 +2098,12 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
               <td align="center"></td>
             </tr>
             <tr>
-              <td align="center">0x0004</td>
+              <td align="center">0x0003</td>
               <td align="center">T_AUTH_TAG</td>
               <td align="center"></td>
             </tr>
             <tr>
-              <td align="center">0x0005-0x0FFF</td>
+              <td align="center">0x0004-0x0FFF</td>
               <td align="center">Unassigned</td>
               <td align="center"></td>
             </tr>
@@ -2232,7 +2234,13 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
               <td align="center">Value is in CCNx Hash Format <xref target="RFC8609" section="3.3.3"/></td>
             </tr>
             <tr>
-              <td align="center">0x000B-0x000F</td>
+              <td align="center">0x000B</td>
+              <td align="center">T_GROUP_DATA</td>
+              <td align="center"></td>
+            </tr>
+
+            <tr>
+              <td align="center">0x000C-0x000F</td>
               <td align="center">Unassigned</td>
               <td align="center"></td>
             </tr>
@@ -2298,21 +2306,26 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
             </tr>
             <tr>
               <td align="center">0x0001</td>
-              <td align="center">T_LOCATORS</td>
-              <td align="center"></td>
-            </tr>
-            <tr>
-              <td align="center">0x0002</td>
               <td align="center">T_PROTOCOL_FLAGS</td>
               <td align="center"></td>
             </tr>
             <tr>
-              <td align="center">0x0003</td>
+              <td align="center">0x0002</td>
               <td align="center">T_SUFFIX_TYPE</td>
               <td align="center"></td>
             </tr>
             <tr>
-              <td align="center">0x0004-0x000C</td>
+              <td align="center">0x0003-0x0005</td>
+              <td align="center">Unassigned</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0006</td>
+              <td align="center">T_LOCATORS</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0007-0x000C</td>
               <td align="center">Unassigned</td>
               <td align="center"></td>
             </tr>
