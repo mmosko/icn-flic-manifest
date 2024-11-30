@@ -17,11 +17,11 @@
         table with pointers, each pointer being a hash value pointing to either a final data block
         or another index table node. 
     " name="description">
-<meta content="xml2rfc 3.24.0" name="generator">
+<meta content="xml2rfc 3.25.0" name="generator">
 <meta content="Information Centric Networking" name="keyword">
 <meta content="draft-irtf-icnrg-flic-07" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.24.0
+  xml2rfc 3.25.0
     Python 3.10.12
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
@@ -33,11 +33,11 @@
     pydyf 0.9.0
     PyYAML 6.0.2
     requests 2.32.3
-    setuptools 75.3.0
+    setuptools 75.6.0
     wcwidth 0.2.13
     weasyprint 61.2
 -->
-<link href="/usr/src/app/tmp/1af9d5e8-54b0-425f-a99d-e029b5d1e891/draft-irtf-icnrg-flic-07.xml" rel="alternate" type="application/rfc+xml">
+<link href="/usr/src/app/tmp/3dc072ba-88f5-4074-8eae-18fbcfac7c57/draft-irtf-icnrg-flic-07.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">/*
 
@@ -1224,7 +1224,7 @@ li > p:last-of-type:only-child {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Tschudin, et al.</td>
-<td class="center">Expires 19 May 2025</td>
+<td class="center">Expires 3 June 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1237,12 +1237,12 @@ li > p:last-of-type:only-child {
 <dd class="internet-draft">draft-irtf-icnrg-flic-07</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-11-15" class="published">15 November 2024</time>
+<time datetime="2024-11-30" class="published">30 November 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-05-19">19 May 2025</time></dd>
+<dd class="expires"><time datetime="2025-06-03">3 June 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1293,7 +1293,7 @@ li > p:last-of-type:only-child {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 19 May 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 3 June 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1468,6 +1468,9 @@ li > p:last-of-type:only-child {
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3">
                 <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-privacy-of-names-and-linkab" class="internal xref">Privacy of names and linkability of access patterns</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.4">
+                <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-symmetric-key-lifespan-scop" class="internal xref">Symmetric key lifespan, scope, and use</a></p>
 </li>
             </ul>
 </li>
@@ -2021,21 +2024,26 @@ LeafDigest = T_LEAF_DIGEST LENGTH HashValue
 StartSegmentId = T_START_SEGMENT_ID LENGTH Integer
 
 AEADCtx = T_AEAD_CTX LENGTH AEADData
-AEADData = KeyNum AEADNonce AEADMode
+AEADData = KeyNum AEADNonce AEADMode [KDFData]
 KeyNum = T_KEYNUM LENGTH INTEGER
 AEADNonce = T_NONCE LENGTH 1*OCTET
 AEADMode = T_AEADMode LENGTH (AEAD_AES_128_GCM / AEAD_AES_256_GCM /
            AEAD_AES_128_CCM / AEAD_AES_128_CCM)
            ; RFC5116 definitions
+KDFData = T_KDF_DATA LENGTH KDFAlg [KDFInfo]
+KDFAlg = T_KDF_ALG LENGTH INTEGER
+    ; IANA "HPKE KDF Identifiers" [RFC9180]
+KDFInfo = T_KDF_INFO LENGTH 1*OCTET
+    ; Passed to the KDF Info
 
 RsaOaepCtx = T_RSAOAEP_CTX LENGTH RsaOaepData
 RsaOaepData = AEADData [RsaOaepWrapper]
-RsaOaepWrapper = KeyId KeyLink HashAlg WrappedKey
+RsaOaepWrapper = KeyId [KeyLink] HashAlg WrappedKey
     ; KeyId as pre RFC8609 for CCNx
     ; KeyLink as pre RFC8609 for CCNx
 HashAlg = T_HASH_ALG LENGTH alg_number
     ; alg_number from IANA "CCNx Hash Function Types"
-WrappedKey = T_WRAPPED_KEY LENGTH 4OCTET 1*OCTET
+WrappedKey = T_WRAPPED_KEY LENGTH RsaOaepEnc{4OCTET 1*OCTET}
     ; Encrypted 4-byte salt plus AES key
 
 </pre>
@@ -2222,71 +2230,120 @@ D0 D1
             SHOULD use the mechanisms in <span>[<a href="#RFC6655" class="cite xref">RFC6655</a>]</span> for AES-CCM IV generation and
             <span>[<a href="#RFC5288" class="cite xref">RFC5288</a>]</span>
             for AES-GCM IV generation.<a href="#section-3.8.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.8.1-2">When the publisher and consumer establish the KeyNum, they SHOULD also establish a salt.
+<p id="section-3.8.1-2">When the publisher and consumer establish the <code>KeyNum</code>, they SHOULD also establish a salt.
             This results in a 4-byte salt and 8-byte nonce.  If no salt exists, the AEADNonce
             may be the entire IV.<a href="#section-3.8.1-2" class="pilcrow">¶</a></p>
-<p id="section-3.8.1-3">As these references specify, it is essential that the publisher creating a Manifest
+<p id="section-3.8.1-3">The scope of the <code>KeyNum</code> is upto the publisher and consumer agreement.  It may be
+          for a specific manifest, or a specific session (e.g. a CCNxKE session), or some longer period.
+          FLIC does not specify how the publisher and consumer agree on shared keys, their lifespan,
+          or scope.  See the <a href="#Security" class="auto internal xref">Section 7</a> section for a discussion.<a href="#section-3.8.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.8.1-4">As these references specify, it is essential that the publisher creating a Manifest
             never use a Nonce more than once for the same key. For keys exchanged via a session
             protocol, such as CCNx, the publisher MUST use unique nonces on each Manifest for that
             session. If the key is derived via a group key mechanism, the publisher MUST ensure that
-            the same Nonce is not used more than once for the same Content Encryption Key.<a href="#section-3.8.1-3" class="pilcrow">¶</a></p>
-<p id="section-3.8.1-4">The AEAD Mode uses <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> defined symbols AEAD_AES_128_CCM,
+            the same Nonce is not used more than once for the same Content Encryption Key.<a href="#section-3.8.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.8.1-5">The AEAD Mode uses <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> defined symbols AEAD_AES_128_CCM,
             AEAD_AES_128_GCM, AEAD_AES_256_CCM and AEAH_AES_256_GCM to specify the key length and
-            algorithm.<a href="#section-3.8.1-4" class="pilcrow">¶</a></p>
-<p id="section-3.8.1-5"> The <code>KeyNum</code> identifies a key on the receiver. The key MUST be exactly of the
+            algorithm.<a href="#section-3.8.1-5" class="pilcrow">¶</a></p>
+<p id="section-3.8.1-6"> The <code>KeyNum</code> identifies a key on the receiver. The key MUST be exactly of the
             length specific by the Mode. Many receivers may have the same key with the same
-              <code>KeyNum</code>.<a href="#section-3.8.1-5" class="pilcrow">¶</a></p>
-<p id="section-3.8.1-6">When a Consumer reads a manifest that specifies a <code>KeyNum</code>, the consumer SHOULD
+              <code>KeyNum</code>.<a href="#section-3.8.1-6" class="pilcrow">¶</a></p>
+<p id="section-3.8.1-7">The publisher MAY use a KDF for the manifest.  If <code>KDFData</code> is present,
+          the consumer MUST derive a manifest-specific key from the shared key identified by
+          <code>KeyNum</code>.  The <code>KDFAlg</code> is taken from the IANA registry for <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>.
+          If <code>KDFInfo</code> is present, the consumer uses that string
+          as in the KDF's <code>info</code> parameter.  If the <code>KDFInfo</code> is not present, then
+          the consumer must use the <code>Name</code> TLV of the enclosing Content Object.  This option is
+          only possible for <code>Segmented Schema</code> name constructors, where each maniest
+          has a unique name.  If the publisher and consumer have agreed on a salt to be
+          associated with the key for use in the AEAD algorithm, this salt should not be used
+          in the KDF.  The publisher and consumer may agree on a seaparte random salt as
+          part of their key agreement on the <code>KeyNum</code> for use in the KDF.<a href="#section-3.8.1-7" class="pilcrow">¶</a></p>
+<p id="section-3.8.1-8">Within a single manifest tree, a publisher MAY use the same <code>KDFData</code>
+          and <code>KDFInfo</code> over multiple manifests, so long as it uses unique <code>Nonce</code>.
+          This allows a consumer to cache a single derived key based on the <code>(KeyNum, KDFInfo)</code>
+          pair.  This is the normal use of the KDF mode: the publisher only needs to track a single
+          unique value for each manifest using <code>KeyNum</code>, not all the individual Nonces used
+          with in a manifest tree.  If the publisher uses a sequence number or timestamp, it does
+          not even need to record previous <code>KDFInfo</code>, so long as they are unique.<a href="#section-3.8.1-8" class="pilcrow">¶</a></p>
+<p id="section-3.8.1-9">When a Consumer reads a manifest that specifies a <code>KeyNum</code>, the consumer SHOULD
             verify that the Manifest's publisher is an expected one for the KeyNum's usage. This
             trust mechanism employed to ascertain whether the publisher is expected is beyond the
             scope of this document, but we provide an outline of one such possible trust mechanism.
             When a consumer learns a shared key and <code>KeyNum</code>, it associates that
               <code>KeyNum</code> with the publisher ID used in a public key signature. When the
             consumer receives a signed manifest (e.g. the root manifest of a manifest tree), the
-            consumer matches the KeyNum's publisher with the Manifest's publisher.<a href="#section-3.8.1-6" class="pilcrow">¶</a></p>
-<p id="section-3.8.1-7"> Each encrypted manifest node has a full security context (<code>KeyNum, Nonce,
+            consumer matches the KeyNum's publisher with the Manifest's publisher.<a href="#section-3.8.1-9" class="pilcrow">¶</a></p>
+<p id="section-3.8.1-10"> Each encrypted manifest node has a full security context (<code>KeyNum, Nonce,
             Mode</code>). The AEAD decryption is independent for each manifest so Manifest objects can
             be fetched and decrypted in any order. This design also ensures that if a manifest tree
             points to the same subtree repeatedly, such as for deduplication, the decryptions are
-            all idempotent.<a href="#section-3.8.1-7" class="pilcrow">¶</a></p>
-<p id="section-3.8.1-8">To encrypt a Manifest, the publisher:<a href="#section-3.8.1-8" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-3.8.1-9">
-            <li id="section-3.8.1-9.1">Removes any <code>SecurityCtx</code> or <code>AuthTag</code> from the Manifest.<a href="#section-3.8.1-9.1" class="pilcrow">¶</a>
+            all idempotent.<a href="#section-3.8.1-10" class="pilcrow">¶</a></p>
+<p id="section-3.8.1-11">If <code>KDFData</code> is present, one derives a manifest-specific key as:<a href="#section-3.8.1-11" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.8.1-12">
+            <li id="section-3.8.1-12.1">If <code>KDFInfo</code> is present, the TLV (not just the value) is used as the <code>Label</code> below.  
+            Otherwise, the Content Object <code>Name</code> TLV (including type type and length fields) 
+            is used as the <code>Label</code>.  If the content object does not have a name, it is an error.<a href="#section-3.8.1-12.1" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.1-9.2">Creates a <code>SecurityCtx</code> and adds it to the Manifest.<a href="#section-3.8.1-9.2" class="pilcrow">¶</a>
+            <li id="section-3.8.1-12.2">
+              <code>FixedInfo = "FLIC" || KeyNum || AEADMode || Label</code>, where <code>KeyNum</code> 
+            and <code>AEADMode</code> are the respecitve TLVs (including type and length).<a href="#section-3.8.1-12.2" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.1-9.3">Treats the Manifest TLV through the end of the Node TLV Length as unencrypted
-              authenticated Header. That includes anything from the start of the Manifest up to but
-              not including the start of the Node's body.<a href="#section-3.8.1-9.3" class="pilcrow">¶</a>
+            <li id="section-3.8.1-12.3">If the publisher and consumer have agreed on a KDF-specific salt, it is used
+              as the <code>Salt</code>.  Otherwise, the KDF's default salt is used.<a href="#section-3.8.1-12.3" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.1-9.4">Treats the body of the Node to the end of the Manifest as encrypted data.<a href="#section-3.8.1-9.4" class="pilcrow">¶</a>
+            <li id="section-3.8.1-12.4">The derived key will use the left <code>bits</code> of the KDF output to satisfy the
+            <code>AEADMode</code> key length (typically 128 or 256 bits).<a href="#section-3.8.1-12.4" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.1-9.5">Appends the AEAD <code>AuthTag</code> to the end of the Manifest, increasing the
-              Manifest's length<a href="#section-3.8.1-9.5" class="pilcrow">¶</a>
-</li>
-            <li id="section-3.8.1-9.6">Changes the TLV type of the Node to <code>EncryptedNode</code>.<a href="#section-3.8.1-9.6" class="pilcrow">¶</a>
+            <li id="section-3.8.1-12.5">DerivedKey = LEFT(KDF(Shared Key, FixedInfo, Salt), bits).<a href="#section-3.8.1-12.5" class="pilcrow">¶</a>
 </li>
           </ol>
-<p id="section-3.8.1-10">To decrypt a Manifest, the consumer:<a href="#section-3.8.1-10" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-3.8.1-11">
-            <li id="section-3.8.1-11.1">Verifies that the <code>KeyNum</code> exists and the publisher is trusted for that
-                <code>KeyNum</code>.<a href="#section-3.8.1-11.1" class="pilcrow">¶</a>
+<p id="section-3.8.1-13">To encrypt a Manifest, the publisher:<a href="#section-3.8.1-13" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.8.1-14">
+            <li id="section-3.8.1-14.1">Removes any <code>SecurityCtx</code> or <code>AuthTag</code> from the Manifest.<a href="#section-3.8.1-14.1" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.1-11.2">Saves the <code>AuthTag</code> and removes it from the Manifest, decreasing the Manifest
-              length.<a href="#section-3.8.1-11.2" class="pilcrow">¶</a>
+            <li id="section-3.8.1-14.2">Creates a <code>SecurityCtx</code> and adds it to the Manifest.<a href="#section-3.8.1-14.2" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.1-11.3">Changes the <code>EncryptedNode</code> type to <code>Node</code>.<a href="#section-3.8.1-11.3" class="pilcrow">¶</a>
+            <li id="section-3.8.1-14.3">If <code>KDFData</code> is present, derives a key as above.<a href="#section-3.8.1-14.3" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.1-11.4">Treats everything from the Manifest TLV through the end of the Node Length as
+            <li id="section-3.8.1-14.4">If the publisher and consumer shared a salt, it is used in the encyrption.<a href="#section-3.8.1-14.4" class="pilcrow">¶</a>
+</li>
+            <li id="section-3.8.1-14.5">Treats the Manifest TLV through the end of the Node TLV Length as unencrypted
+              authenticated Header. That includes anything from the start of the Manifest up to but
+              not including the start of the Node's body.<a href="#section-3.8.1-14.5" class="pilcrow">¶</a>
+</li>
+            <li id="section-3.8.1-14.6">Treats the body of the Node to the end of the Manifest as encrypted data.<a href="#section-3.8.1-14.6" class="pilcrow">¶</a>
+</li>
+            <li id="section-3.8.1-14.7">Appends the AEAD <code>AuthTag</code> to the end of the Manifest, increasing the
+              Manifest's length<a href="#section-3.8.1-14.7" class="pilcrow">¶</a>
+</li>
+            <li id="section-3.8.1-14.8">Changes the TLV type of the Node to <code>EncryptedNode</code>.<a href="#section-3.8.1-14.8" class="pilcrow">¶</a>
+</li>
+          </ol>
+<p id="section-3.8.1-15">To decrypt a Manifest, the consumer:<a href="#section-3.8.1-15" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.8.1-16">
+            <li id="section-3.8.1-16.1">Verifies that the <code>KeyNum</code> exists and the publisher is trusted for that
+                <code>KeyNum</code>.<a href="#section-3.8.1-16.1" class="pilcrow">¶</a>
+</li>
+            <li id="section-3.8.1-16.2">Saves the <code>AuthTag</code> and removes it from the Manifest, decreasing the Manifest
+              length.<a href="#section-3.8.1-16.2" class="pilcrow">¶</a>
+</li>
+            <li id="section-3.8.1-16.3">Changes the <code>EncryptedNode</code> type to <code>Node</code>.<a href="#section-3.8.1-16.3" class="pilcrow">¶</a>
+</li>
+            <li id="section-3.8.1-16.4">Treats everything from the Manifest TLV through the end of the Node Length as
               unencrypted authenticated Header. That is, all bytes from the start of the Manifest up
-              to but not including the start of the Node's body.<a href="#section-3.8.1-11.4" class="pilcrow">¶</a>
+              to but not including the start of the Node's body.<a href="#section-3.8.1-16.4" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.1-11.5">Treats the body of the Node to the end of the Manifest as encrypted data.<a href="#section-3.8.1-11.5" class="pilcrow">¶</a>
+            <li id="section-3.8.1-16.5">Treats the body of the Node to the end of the Manifest as encrypted data.<a href="#section-3.8.1-16.5" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.1-11.6">Verifies and decrypts the data using the key and saved <code>AuthTag</code>.<a href="#section-3.8.1-11.6" class="pilcrow">¶</a>
+            <li id="section-3.8.1-16.6">If <code>KDFData</code> is present, derives a key as above.<a href="#section-3.8.1-16.6" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.1-11.7">If the decryption fails, the consumer SHOULD notify the user and stop further
-              processing of the manifest.<a href="#section-3.8.1-11.7" class="pilcrow">¶</a>
+            <li id="section-3.8.1-16.7">If the publisher and consumer shared a salt, it is used in the decryption.<a href="#section-3.8.1-16.7" class="pilcrow">¶</a>
+</li>
+            <li id="section-3.8.1-16.8">Verifies and decrypts the data using the key and saved <code>AuthTag</code>.<a href="#section-3.8.1-16.8" class="pilcrow">¶</a>
+</li>
+            <li id="section-3.8.1-16.9">If the decryption fails, the consumer SHOULD notify the user and stop further
+              processing of the manifest.<a href="#section-3.8.1-16.9" class="pilcrow">¶</a>
 </li>
           </ol>
 </section>
@@ -2310,83 +2367,88 @@ D0 D1
             decrypt the manifest.  It optionally includes the wrapped key itself.  A publisher
             using <code>RsaWrapCtx</code> MUST include the optional wrapped key information in the first
             manifest node that uses it.  The publisher MAY include the wrapped key in other manifest nodes.
-            It MUST use distinct KeyNum for distinct <code>WrappedKey</code>.<a href="#section-3.8.2-3" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-4">In a typical usage, the publisher would begin encryption at the root manifest.  It must
+            It MUST use distinct <code>KeyNum</code> for distinct <code>WrappedKey</code>.<a href="#section-3.8.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-4">The RSA-OAEP <code>KeyNum</code> is only significant within a given manifest.<a href="#section-3.8.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-5">The <code>AEADData</code> MAY include a <code>KDFData</code> element, in which case it is used the
+            same was as with AEAD Mode.<a href="#section-3.8.2-5" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-6">In a typical usage, the publisher would begin encryption at the root manifest.  It must
               include the full <code>WrapedData</code> here, as it is the first usage of the <code>KeyNum</code>.
               In subsequent manifests, the publisher may only include the <code>AEADData</code> in
-              the <code>RsaOaepData</code> to save space.<a href="#section-3.8.2-4" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-5">The <code>KeyId</code> identifies the KEK.  If the consumer already has the key
+              the <code>RsaOaepData</code> to save space.<a href="#section-3.8.2-6" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-7">The <code>KeyId</code> identifies the KEK.  If the consumer already has the key
             corresponding to <code>KeyId</code> locally, it does not need to fetch it from the <code>LocatorPrefixx</code>.
-            The <code>KeyId</code> is similar to the Content Object KeyId field <span>[<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>.<a href="#section-3.8.2-5" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-6">The symmetric key MUST be one that is compatible with the AEAD Mode, i.e. a 128-bit or
-            256-bit random number. Further, the symmetric key MUST fit in the OAEP envelope (which
-            will be true for normal-sized keys).<a href="#section-3.8.2-6" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-7">Any group key protocol and system needed are outside the scope of this document. We
+            The <code>KeyId</code> is similar to the Content Object KeyId field <span>[<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>.<a href="#section-3.8.2-7" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-8">The symmetric key MUST be one that is compatible with the AEAD Mode, i.e. a 128-bit or
+            256-bit random number. Further, the symmetric key MUST fit in the OAEP envelope.  Note that for
+            a 128-bit key (16 bytes) plus a 4-byte salt requires a minimum 688-bit RSA key and a 256-bit key
+            requires a minimum 816-bit RSA key.  So in practical terms, a 1024-bit RSA key is the miniminum
+            for the RSA-OAEP encryption with a SHA-256 hash algoirithm.<a href="#section-3.8.2-8" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-9">Any group key protocol and system needed are outside the scope of this document. We
             assume there is a Key Manager (KM) and a Publisher (P) and a set of group members.
-            Through some means, the Publisher therefore has at its disposal:<a href="#section-3.8.2-7" class="pilcrow">¶</a></p>
+            Through some means, the Publisher therefore has at its disposal:<a href="#section-3.8.2-9" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3.8.2-8.1">A Content Encryption Key (CEK), i.e. the symmetric key.<a href="#section-3.8.2-8.1" class="pilcrow">¶</a>
+<li class="normal" id="section-3.8.2-10.1">A Content Encryption Key (CEK), i.e. the symmetric key.<a href="#section-3.8.2-10.1" class="pilcrow">¶</a>
 </li>
-            <li class="normal" id="section-3.8.2-8.2">The RSA-OAEP wrapped CEK.<a href="#section-3.8.2-8.2" class="pilcrow">¶</a>
+            <li class="normal" id="section-3.8.2-10.2">The RSA-OAEP wrapped CEK.<a href="#section-3.8.2-10.2" class="pilcrow">¶</a>
 </li>
-            <li class="normal" id="section-3.8.2-8.3">The KeyId of the KEK used to wrap the CEK.<a href="#section-3.8.2-8.3" class="pilcrow">¶</a>
+            <li class="normal" id="section-3.8.2-10.3">The KeyId of the KEK used to wrap the CEK.<a href="#section-3.8.2-10.3" class="pilcrow">¶</a>
 </li>
-            <li class="normal" id="section-3.8.2-8.4">The Locator of the KEK, which is shared under some group key protocol.<a href="#section-3.8.2-8.4" class="pilcrow">¶</a>
+            <li class="normal" id="section-3.8.2-10.4">The Locator of the KEK, which is shared under some group key protocol.<a href="#section-3.8.2-10.4" class="pilcrow">¶</a>
 </li>
           </ul>
-<p id="section-3.8.2-9">This specification requires that if a group member fetches the KEK key at
+<p id="section-3.8.2-11">This specification requires that if a group member fetches the KEK key at
             Locator, it can decrypt the <code>WrappedKey</code>
             and retrieve the CEK.  The <code>WrappedKey</code>
             includes a 4-byte salt plus an AES key.  The 4-byte salt is used by the AEAD algorithm
-            as part of the IV, and MUST remain the same for the given <code>KeyNum</code>.<a href="#section-3.8.2-9" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-10">In one example, a publisher could request a key for a group and the Key Manager could
+            as part of the IV, and MUST remain the same for the given <code>KeyNum</code>.<a href="#section-3.8.2-11" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-12">In one example, a publisher could request a key for a group and the Key Manager could
             securely communicate (<code>CEK, Wapped_CEK, KeyId, Locator</code>) back to the publisher.
             The Key Manager is responsible for publishing the Locator. In another example, the
             publisher could be a group member and have a group private key in which case the
             publisher can create their own key encryption key, publish it under the Locator and
             proceed. The publisher generates <code>CEK, Wrapped_CEK, KeyId</code>, and a Locator on its
-            own.<a href="#section-3.8.2-10" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-11">To create the wrapped key using a Key Encryption Key:<a href="#section-3.8.2-11" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-3.8.2-12">
-            <li id="section-3.8.2-12.1">Obtain the CEK in binary format (e.g. 32 bytes for 256 bits)<a href="#section-3.8.2-12.1" class="pilcrow">¶</a>
-</li>
-            <li id="section-3.8.2-12.2">RSA encrypt the <code>WrappedKey</code> value using the KEK public key with OAEP padding, following <span><a href="https://rfc-editor.org/rfc/rfc8017#section-7.1" class="relref">Section 7.1</a> of [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span>. The encryption is not signed because the
-              root Manifest must have been signed by the publisher already.  Or the encapsulating
-              Content Object (Data Object) is signed via ICN mechanisms.<a href="#section-3.8.2-12.2" class="pilcrow">¶</a>
-</li>
-          </ol>
-<p id="section-3.8.2-13">To decrypt the wrapped key using a Key Encryption Key:<a href="#section-3.8.2-13" class="pilcrow">¶</a></p>
+            own.<a href="#section-3.8.2-12" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-13">To create the wrapped key using a Key Encryption Key:<a href="#section-3.8.2-13" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-3.8.2-14">
-            <li id="section-3.8.2-14.1">RSA decrypt the <code>WrappedKey</code> value using the KEK private key with OAEP padding, following
-                <span><a href="https://rfc-editor.org/rfc/rfc8017#section-7.1" class="relref">Section 7.1</a> of [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span>.<a href="#section-3.8.2-14.1" class="pilcrow">¶</a>
+            <li id="section-3.8.2-14.1">Obtain the CEK in binary format (e.g. 32 bytes for 256 bits)<a href="#section-3.8.2-14.1" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.2-14.2">Verify the unwrapped key is a valid length for the AEADMode.<a href="#section-3.8.2-14.2" class="pilcrow">¶</a>
+            <li id="section-3.8.2-14.2">RSA encrypt the <code>WrappedKey</code> value using the KEK public key with OAEP padding, following <span><a href="https://rfc-editor.org/rfc/rfc8017#section-7.1" class="relref">Section 7.1</a> of [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span>. The encryption is not signed because the
+              root Manifest must have been signed by the publisher already.  Or the encapsulating
+              Content Object (Data Object) is signed via ICN mechanisms.<a href="#section-3.8.2-14.2" class="pilcrow">¶</a>
 </li>
           </ol>
-<p id="section-3.8.2-15">To encrypt a Manifest, the publisher:<a href="#section-3.8.2-15" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-15">To decrypt the wrapped key using a Key Encryption Key:<a href="#section-3.8.2-15" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-3.8.2-16">
-            <li id="section-3.8.2-16.1">Acquires the set of (CEK, salt, WrappedKey, KeyId, Locator).  The publisher may
-              generate these values itself, or acquire them from a key manager.<a href="#section-3.8.2-16.1" class="pilcrow">¶</a>
+            <li id="section-3.8.2-16.1">RSA decrypt the <code>WrappedKey</code> value using the KEK private key with OAEP padding, following
+                <span><a href="https://rfc-editor.org/rfc/rfc8017#section-7.1" class="relref">Section 7.1</a> of [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span>.<a href="#section-3.8.2-16.1" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.2-16.2">Creates a <code>SecurityCtx</code> and adds it to the Manifest. The <code>SecurityCtx</code>
-              includes an <code>AEADNonce</code> and <code>AEADMode</code>, as per AEAD mode.<a href="#section-3.8.2-16.2" class="pilcrow">¶</a>
-</li>
-            <li id="section-3.8.2-16.3">Encrypts the Manifest as per AEAD Mode using the RSA-OAEP SecurityCtx and CEK.<a href="#section-3.8.2-16.3" class="pilcrow">¶</a>
+            <li id="section-3.8.2-16.2">Verify the unwrapped key is a valid length for the AEADMode.<a href="#section-3.8.2-16.2" class="pilcrow">¶</a>
 </li>
           </ol>
-<p id="section-3.8.2-17">To decrypt a Manifest, the consumer:<a href="#section-3.8.2-17" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-17">To encrypt a Manifest, the publisher:<a href="#section-3.8.2-17" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-3.8.2-18">
-            <li id="section-3.8.2-18.1">Acquires the RSA private key corresponding to <code>KeyId</code> via the <code>KeyLocator</code>
-            or whatever means the publisher and consumers use to distribute keys.<a href="#section-3.8.2-18.1" class="pilcrow">¶</a>
+            <li id="section-3.8.2-18.1">Acquires the set of (CEK, salt, WrappedKey, KeyId, Locator).  The publisher may
+              generate these values itself, or acquire them from a key manager.<a href="#section-3.8.2-18.1" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.2-18.2">It SHOULD verify that it trusts the Manifest publisher to use the provided key
-              Locator.<a href="#section-3.8.2-18.2" class="pilcrow">¶</a>
+            <li id="section-3.8.2-18.2">Creates a <code>SecurityCtx</code> and adds it to the Manifest. The <code>SecurityCtx</code>
+              includes an <code>AEADNonce</code> and <code>AEADMode</code>, as per AEAD mode.<a href="#section-3.8.2-18.2" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.2-18.3">Decrypts the <code>WrappedKey</code> to get the CEK and salt. If the consumer has already decrypted the
-              same exact WrappedKey TLV block, it may use that cached CEK and salt.<a href="#section-3.8.2-18.3" class="pilcrow">¶</a>
+            <li id="section-3.8.2-18.3">Encrypts the Manifest as per AEAD Mode using the RSA-OAEP SecurityCtx and CEK.<a href="#section-3.8.2-18.3" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.2-18.4">Using the <code>CEK</code>, <code>AEADNonce</code>, and <code>AEADMode</code>, decrypt the
-              Manifest as per AEAD Mode.<a href="#section-3.8.2-18.4" class="pilcrow">¶</a>
+          </ol>
+<p id="section-3.8.2-19">To decrypt a Manifest, the consumer:<a href="#section-3.8.2-19" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.8.2-20">
+            <li id="section-3.8.2-20.1">Acquires the RSA private key corresponding to <code>KeyId</code> via the <code>KeyLocator</code>
+            or whatever means the publisher and consumers use to distribute keys.<a href="#section-3.8.2-20.1" class="pilcrow">¶</a>
+</li>
+            <li id="section-3.8.2-20.2">It SHOULD verify that it trusts the Manifest publisher to use the provided key
+              Locator.<a href="#section-3.8.2-20.2" class="pilcrow">¶</a>
+</li>
+            <li id="section-3.8.2-20.3">Decrypts the <code>WrappedKey</code> to get the CEK and salt. If the consumer has already decrypted the
+              same exact WrappedKey TLV block, it may use that cached CEK and salt.<a href="#section-3.8.2-20.3" class="pilcrow">¶</a>
+</li>
+            <li id="section-3.8.2-20.4">Using the <code>CEK</code>, <code>AEADNonce</code>, and <code>AEADMode</code>, decrypt the
+              Manifest as per AEAD Mode.<a href="#section-3.8.2-20.4" class="pilcrow">¶</a>
 </li>
           </ol>
 </section>
@@ -2694,6 +2756,8 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 /                           &lt;varint&gt;                            /
 +---------------+---------------+---------------+---------------+
+/                           [KDFData]                           /
++---------------+---------------+---------------+---------------+
 </pre>
 </div>
 <figcaption><a href="#figure-8" class="selfRef">Figure 8</a>:
@@ -2734,6 +2798,10 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 |          T_AEAD_MODE          |             Length            |
 +---------------+---------------+---------------+---------------+
 /                           &lt;varint&gt;                            /
++---------------+---------------+---------------+---------------+
+|          T_KDF_DATA           |             Length            |
++---------------+---------------+---------------+---------------+
+/                       &lt;kdf structure&gt;                         /
 +---------------+---------------+---------------+---------------+
 |            T_KEYID            |             Length            |
 +---------------+---------------+---------------+---------------+
@@ -3781,7 +3849,7 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
             <td class="text-center" rowspan="1" colspan="1"></td>
           </tr>
           <tr>
-            <td class="text-center" rowspan="1" colspan="1">0x0007-0x0FFF</td>
+            <td class="text-center" rowspan="1" colspan="1">0x0002-0x0FFF</td>
             <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
             <td class="text-center" rowspan="1" colspan="1"></td>
           </tr>
@@ -4112,7 +4180,23 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
             <td class="text-center" rowspan="1" colspan="1"></td>
           </tr>
           <tr>
-            <td class="text-center" rowspan="1" colspan="1">0x0005-0x0008</td>
+            <td class="text-center" rowspan="1" colspan="1">0x0005</td>
+            <td class="text-center" rowspan="1" colspan="1">T_KDF_DATA</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0006</td>
+            <td class="text-center" rowspan="1" colspan="1">T_KDF_ALG</td>
+            <td class="text-center" rowspan="1" colspan="1">Value as per IANA "HPKE KDF Identifiers" <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>
+</td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0007</td>
+            <td class="text-center" rowspan="1" colspan="1">T_KDF_INFO</td>
+            <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0008</td>
             <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
             <td class="text-center" rowspan="1" colspan="1"></td>
           </tr>
@@ -4357,6 +4441,34 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
         </h3>
 <p id="section-7.3-1">What to say here, if anything?<a href="#section-7.3-1" class="pilcrow">¶</a></p>
 </section>
+<section id="section-7.4">
+        <h3 id="name-symmetric-key-lifespan-scop">
+<a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-symmetric-key-lifespan-scop" class="section-name selfRef">Symmetric key lifespan, scope, and use</a>
+        </h3>
+<p id="section-7.4-1">The lifespan and scope of symmetric keys, as identified by a <code>KeyNum</code>, is
+        different between an <code>AeadCtx</code> and an <code>RsaOaepCtx</code>.  In the <code>AeadCtx</code>
+        case, the lifespan and scope is agreed to by the publisher and consumer out of band.
+        In the <code>RsaOaepCtx</code> the lifespan and scope is implicitly the curent manifest.
+        We will discuss the <code>RsaOaepCtx</code> case first, as it is the simpler of the two.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
+<p id="section-7.4-2">For <code>RsaOaepCtx</code>, the first manifest in the tree to use RSA-OAEP must include the
+        wrapped key.  The <code>KeyNum</code> is purely local within the manifest.  The only requirement
+        is that the <code>KeyNum</code> have a one-to-one assiciation with a specific wrapped key within
+        the manifest.  That is, a publisher must not reuse a <code>KeyNum</code> within a single manifest tree
+        for two different AES key and salt combinations.  The key lifespan is strictly the 
+        <code>ExpiryTime</code> of the manifest and the scope is that single manifest.<a href="#section-7.4-2" class="pilcrow">¶</a></p>
+<p id="section-7.4-3">A publisher should use new symmetric keys for each manifest encrypted with RSA-OAEP.<a href="#section-7.4-3" class="pilcrow">¶</a></p>
+<p id="section-7.4-4">For <code>AeadCtx</code>, a publisher and one or more consumers agree on a shared
+        symmetric key out-of-band and share it via some means.  The publisher and consumer must
+        agree on both the lifespan of the key and its scope.  The lifespan of such a key should be
+        no shorter than the greatest <code>ExpiryTime</code> of a manifest published with the key.
+        The scope of use should be, at minimum, manifests signed by the publisher's <code>KeyId</code>.
+        The publisher and consumer may also add name prefix limitations to a symmetric key's scope.<a href="#section-7.4-4" class="pilcrow">¶</a></p>
+<p id="section-7.4-5">Because there is no requirement that an <code>AeadCtx</code> <code>KeyNum</code> be globally unique, one should
+        store them based on their scopes, such as <code>(Publisher KeyId, KeyNum)</code> or
+        <code>(Publisher KeyId, Name Prefix, KeyNum)</code>.<a href="#section-7.4-5" class="pilcrow">¶</a></p>
+<p id="section-7.4-6">If a publisher will use a single AES key across multiple manifests, it must ensure that
+          it never re-uses the same nonce.<a href="#section-7.4-6" class="pilcrow">¶</a></p>
+</section>
 </section>
 </div>
 <section id="section-8">
@@ -4401,8 +4513,12 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
 <span class="refAuthor">Mosko, M.</span>, <span class="refAuthor">Solis, I.</span>, and <span class="refAuthor">C. Wood</span>, <span class="refTitle">"Content-Centric Networking (CCNx) Semantics"</span>, <span class="seriesInfo">RFC 8569</span>, <span class="seriesInfo">DOI 10.17487/RFC8569</span>, <time datetime="2019-07" class="refDate">July 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8569">https://www.rfc-editor.org/info/rfc8569</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8609">[RFC8609]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Mosko, M.</span>, <span class="refAuthor">Solis, I.</span>, and <span class="refAuthor">C. Wood</span>, <span class="refTitle">"Content-Centric Networking (CCNx) Messages in TLV Format"</span>, <span class="seriesInfo">RFC 8609</span>, <span class="seriesInfo">DOI 10.17487/RFC8609</span>, <time datetime="2019-07" class="refDate">July 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8609">https://www.rfc-editor.org/info/rfc8609</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9180">[RFC9180]</dt>
+      <dd>
+<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Bhargavan, K.</span>, <span class="refAuthor">Lipp, B.</span>, and <span class="refAuthor">C. Wood</span>, <span class="refTitle">"Hybrid Public Key Encryption"</span>, <span class="seriesInfo">RFC 9180</span>, <span class="seriesInfo">DOI 10.17487/RFC9180</span>, <time datetime="2022-02" class="refDate">February 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9180">https://www.rfc-editor.org/info/rfc9180</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>

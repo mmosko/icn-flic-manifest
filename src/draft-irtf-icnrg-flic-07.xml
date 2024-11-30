@@ -584,21 +584,26 @@ LeafDigest = T_LEAF_DIGEST LENGTH HashValue
 StartSegmentId = T_START_SEGMENT_ID LENGTH Integer
 
 AEADCtx = T_AEAD_CTX LENGTH AEADData
-AEADData = KeyNum AEADNonce AEADMode
+AEADData = KeyNum AEADNonce AEADMode [KDFData]
 KeyNum = T_KEYNUM LENGTH INTEGER
 AEADNonce = T_NONCE LENGTH 1*OCTET
 AEADMode = T_AEADMode LENGTH (AEAD_AES_128_GCM / AEAD_AES_256_GCM /
            AEAD_AES_128_CCM / AEAD_AES_128_CCM) 
            ; RFC5116 definitions
+KDFData = T_KDF_DATA LENGTH KDFAlg [KDFInfo]
+KDFAlg = T_KDF_ALG LENGTH INTEGER
+    ; IANA "HPKE KDF Identifiers" [RFC9180]
+KDFInfo = T_KDF_INFO LENGTH 1*OCTET
+    ; Passed to the KDF Info
 
 RsaOaepCtx = T_RSAOAEP_CTX LENGTH RsaOaepData
 RsaOaepData = AEADData [RsaOaepWrapper]
-RsaOaepWrapper = KeyId KeyLink HashAlg WrappedKey  
+RsaOaepWrapper = KeyId [KeyLink] HashAlg WrappedKey  
     ; KeyId as pre RFC8609 for CCNx
     ; KeyLink as pre RFC8609 for CCNx
 HashAlg = T_HASH_ALG LENGTH alg_number        
     ; alg_number from IANA "CCNx Hash Function Types"
-WrappedKey = T_WRAPPED_KEY LENGTH 4OCTET 1*OCTET 
+WrappedKey = T_WRAPPED_KEY LENGTH RsaOaepEnc{4OCTET 1*OCTET}
     ; Encrypted 4-byte salt plus AES key
 ]]>
 			</sourcecode>
@@ -754,10 +759,15 @@ D0 D1
             <xref target="RFC5288"/>
             for AES-GCM IV generation.</t>
 
-          <t>When the publisher and consumer establish the KeyNum, they SHOULD also establish a salt.
+          <t>When the publisher and consumer establish the <tt>KeyNum</tt>, they SHOULD also establish a salt.
             This results in a 4-byte salt and 8-byte nonce.  If no salt exists, the AEADNonce
             may be the entire IV.
           </t>
+
+          <t>The scope of the <tt>KeyNum</tt> is upto the publisher and consumer agreement.  It may be
+          for a specific manifest, or a specific session (e.g. a CCNxKE session), or some longer period.
+          FLIC does not specify how the publisher and consumer agree on shared keys, their lifespan,
+          or scope.  See the <xref target="Security"/> section for a discussion.</t>
 
           <t>As these references specify, it is essential that the publisher creating a Manifest
             never use a Nonce more than once for the same key. For keys exchanged via a session
@@ -773,6 +783,26 @@ D0 D1
             length specific by the Mode. Many receivers may have the same key with the same
               <tt>KeyNum</tt>.</t>
 
+          <t>The publisher MAY use a KDF for the manifest.  If <tt>KDFData</tt> is present,
+          the consumer MUST derive a manifest-specific key from the shared key identified by
+          <tt>KeyNum</tt>.  The <tt>KDFAlg</tt> is taken from the IANA registry for <xref target="RFC9180"/>.
+          If <tt>KDFInfo</tt> is present, the consumer uses that string
+          as in the KDF's <tt>info</tt> parameter.  If the <tt>KDFInfo</tt> is not present, then
+          the consumer must use the <tt>Name</tt> TLV of the enclosing Content Object.  This option is
+          only possible for <tt>Segmented Schema</tt> name constructors, where each maniest
+          has a unique name.  If the publisher and consumer have agreed on a salt to be
+          associated with the key for use in the AEAD algorithm, this salt should not be used
+          in the KDF.  The publisher and consumer may agree on a seaparte random salt as
+          part of their key agreement on the <tt>KeyNum</tt> for use in the KDF.</t>
+
+          <t>Within a single manifest tree, a publisher MAY use the same <tt>KDFData</tt>
+          and <tt>KDFInfo</tt> over multiple manifests, so long as it uses unique <tt>Nonce</tt>.
+          This allows a consumer to cache a single derived key based on the <tt>(KeyNum, KDFInfo)</tt>
+          pair.  This is the normal use of the KDF mode: the publisher only needs to track a single
+          unique value for each manifest using <tt>KeyNum</tt>, not all the individual Nonces used
+          with in a manifest tree.  If the publisher uses a sequence number or timestamp, it does
+          not even need to record previous <tt>KDFInfo</tt>, so long as they are unique.</t>
+          
           <t>When a Consumer reads a manifest that specifies a <tt>KeyNum</tt>, the consumer SHOULD
             verify that the Manifest's publisher is an expected one for the KeyNum's usage. This
             trust mechanism employed to ascertain whether the publisher is expected is beyond the
@@ -788,10 +818,26 @@ D0 D1
             points to the same subtree repeatedly, such as for deduplication, the decryptions are
             all idempotent.</t>
 
+          <t>If <tt>KDFData</tt> is present, one derives a manifest-specific key as:</t>
+          <ol>
+            <li>If <tt>KDFInfo</tt> is present, the TLV (not just the value) is used as the <tt>Label</tt> below.  
+            Otherwise, the Content Object <tt>Name</tt> TLV (including type type and length fields) 
+            is used as the <tt>Label</tt>.  If the content object does not have a name, it is an error.</li>
+            <li><tt>FixedInfo = "FLIC" || KeyNum || AEADMode || Label</tt>, where <tt>KeyNum</tt> 
+            and <tt>AEADMode</tt> are the respecitve TLVs (including type and length).</li>
+            <li>If the publisher and consumer have agreed on a KDF-specific salt, it is used
+              as the <tt>Salt</tt>.  Otherwise, the KDF's default salt is used. </li>
+            <li>The derived key will use the left <tt>bits</tt> of the KDF output to satisfy the
+            <tt>AEADMode</tt> key length (typically 128 or 256 bits).</li>
+            <li>DerivedKey = LEFT(KDF(Shared Key, FixedInfo, Salt), bits).</li>
+          </ol>              
+
           <t>To encrypt a Manifest, the publisher:</t>
           <ol>
             <li>Removes any <tt>SecurityCtx</tt> or <tt>AuthTag</tt> from the Manifest.</li>
             <li>Creates a <tt>SecurityCtx</tt> and adds it to the Manifest.</li>
+            <li>If <tt>KDFData</tt> is present, derives a key as above.</li>
+            <li>If the publisher and consumer shared a salt, it is used in the encyrption.</li>
             <li>Treats the Manifest TLV through the end of the Node TLV Length as unencrypted
               authenticated Header. That includes anything from the start of the Manifest up to but
               not including the start of the Node's body.</li>
@@ -812,6 +858,8 @@ D0 D1
               unencrypted authenticated Header. That is, all bytes from the start of the Manifest up
               to but not including the start of the Node's body.</li>
             <li>Treats the body of the Node to the end of the Manifest as encrypted data.</li>
+            <li>If <tt>KDFData</tt> is present, derives a key as above.</li>
+            <li>If the publisher and consumer shared a salt, it is used in the decryption.</li>
             <li>Verifies and decrypts the data using the key and saved <tt>AuthTag</tt>.</li>
             <li>If the decryption fails, the consumer SHOULD notify the user and stop further
               processing of the manifest.</li>
@@ -836,7 +884,12 @@ D0 D1
             decrypt the manifest.  It optionally includes the wrapped key itself.  A publisher
             using <tt>RsaWrapCtx</tt> MUST include the optional wrapped key information in the first
             manifest node that uses it.  The publisher MAY include the wrapped key in other manifest nodes.
-            It MUST use distinct KeyNum for distinct <tt>WrappedKey</tt>.</t>
+            It MUST use distinct <tt>KeyNum</tt> for distinct <tt>WrappedKey</tt>.</t>
+
+            <t>The RSA-OAEP <tt>KeyNum</tt> is only significant within a given manifest.</t>
+
+            <t>The <tt>AEADData</tt> MAY include a <tt>KDFData</tt> element, in which case it is used the
+            same was as with AEAD Mode.</t>
 
             <t>In a typical usage, the publisher would begin encryption at the root manifest.  It must
               include the full <tt>WrapedData</tt> here, as it is the first usage of the <tt>KeyNum</tt>.
@@ -848,8 +901,10 @@ D0 D1
             The <tt>KeyId</tt> is similar to the Content Object KeyId field <xref target="RFC8609"/>.</t>
 
           <t>The symmetric key MUST be one that is compatible with the AEAD Mode, i.e. a 128-bit or
-            256-bit random number. Further, the symmetric key MUST fit in the OAEP envelope (which
-            will be true for normal-sized keys).</t>
+            256-bit random number. Further, the symmetric key MUST fit in the OAEP envelope.  Note that for
+            a 128-bit key (16 bytes) plus a 4-byte salt requires a minimum 688-bit RSA key and a 256-bit key
+            requires a minimum 816-bit RSA key.  So in practical terms, a 1024-bit RSA key is the miniminum
+            for the RSA-OAEP encryption with a SHA-256 hash algoirithm.</t>
 
           <t>Any group key protocol and system needed are outside the scope of this document. We
             assume there is a Key Manager (KM) and a Publisher (P) and a set of group members.
@@ -1233,7 +1288,9 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
 +---------------+---------------+---------------+---------------+
 /                           <varint>                            /
 +---------------+---------------+---------------+---------------+
-   ]]></artwork>
+/                           [KDFData]                           /
++---------------+---------------+---------------+---------------+
+]]></artwork>
           </figure>
         </section>
 
@@ -1249,6 +1306,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
 
         <t>The wrapped key value is the RSA-OAEP cyphertext of
           the <tt>WrappedKey</tt> record.</t>
+
 
           <figure>
               <name>FLIC RSA-OAEP TLV container</name>
@@ -1269,6 +1327,10 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
 |          T_AEAD_MODE          |             Length            | 
 +---------------+---------------+---------------+---------------+
 /                           <varint>                            /
++---------------+---------------+---------------+---------------+
+|          T_KDF_DATA           |             Length            | 
++---------------+---------------+---------------+---------------+
+/                       <kdf structure>                         /
 +---------------+---------------+---------------+---------------+
 |            T_KEYID            |             Length            |
 +---------------+---------------+---------------+---------------+
@@ -2146,7 +2208,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
               <td align="center"></td>
             </tr>
             <tr>
-              <td align="center">0x0007-0x0FFF</td>
+              <td align="center">0x0002-0x0FFF</td>
               <td align="center">Unassigned</td>
               <td align="center"></td>
             </tr>
@@ -2458,7 +2520,22 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
               <td align="center"></td>
             </tr>
             <tr>
-              <td align="center">0x0005-0x0008</td>
+              <td align="center">0x0005</td>
+              <td align="center">T_KDF_DATA</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0006</td>
+              <td align="center">T_KDF_ALG</td>
+              <td align="center">Value as per IANA "HPKE KDF Identifiers" <xref target="RFC9180"/></td>
+            </tr>
+            <tr>
+              <td align="center">0x0007</td>
+              <td align="center">T_KDF_INFO</td>
+              <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0008</td>
               <td align="center">Unassigned</td>
               <td align="center"></td>
             </tr>
@@ -2676,6 +2753,38 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
         <t>What to say here, if anything?</t>
       </section>
 
+      <section>
+        <name>Symmetric key lifespan, scope, and use</name>
+        <t>The lifespan and scope of symmetric keys, as identified by a <tt>KeyNum</tt>, is
+        different between an <tt>AeadCtx</tt> and an <tt>RsaOaepCtx</tt>.  In the <tt>AeadCtx</tt>
+        case, the lifespan and scope is agreed to by the publisher and consumer out of band.
+        In the <tt>RsaOaepCtx</tt> the lifespan and scope is implicitly the curent manifest.
+        We will discuss the <tt>RsaOaepCtx</tt> case first, as it is the simpler of the two.</t>
+
+        <t>For <tt>RsaOaepCtx</tt>, the first manifest in the tree to use RSA-OAEP must include the
+        wrapped key.  The <tt>KeyNum</tt> is purely local within the manifest.  The only requirement
+        is that the <tt>KeyNum</tt> have a one-to-one assiciation with a specific wrapped key within
+        the manifest.  That is, a publisher must not reuse a <tt>KeyNum</tt> within a single manifest tree
+        for two different AES key and salt combinations.  The key lifespan is strictly the 
+        <tt>ExpiryTime</tt> of the manifest and the scope is that single manifest.</t>
+
+        <t>A publisher should use new symmetric keys for each manifest encrypted with RSA-OAEP.</t>
+
+        <t>For <tt>AeadCtx</tt>, a publisher and one or more consumers agree on a shared
+        symmetric key out-of-band and share it via some means.  The publisher and consumer must
+        agree on both the lifespan of the key and its scope.  The lifespan of such a key should be
+        no shorter than the greatest <tt>ExpiryTime</tt> of a manifest published with the key.
+        The scope of use should be, at minimum, manifests signed by the publisher's <tt>KeyId</tt>.
+        The publisher and consumer may also add name prefix limitations to a symmetric key's scope.</t>
+
+        <t>Because there is no requirement that an <tt>AeadCtx</tt> <tt>KeyNum</tt> be globally unique, one should
+        store them based on their scopes, such as <tt>(Publisher KeyId, KeyNum)</tt> or
+        <tt>(Publisher KeyId, Name Prefix, KeyNum)</tt>.</t>
+
+        <t>If a publisher will use a single AES key across multiple manifests, it must ensure that
+          it never re-uses the same nonce.</t>
+
+      </section>
     </section>
   </middle>
 
@@ -2692,6 +2801,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
 		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8017.xml"/>
 		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8569.xml"/>
 		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8609.xml"/>
+    <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.9180.xml"/>
       </references>
 
       <references><name>Informative References</name>
