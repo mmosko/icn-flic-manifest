@@ -9,14 +9,18 @@
 <meta content="Christopher A. Wood" name="author">
 <meta content="Marc Mosko" name="author">
 <meta content="David Oran" name="author">
-<meta content="
-       This document describes a simple &quot;index table&quot; data structure and its associated
-        Information Centric Networking (ICN) data objects for organizing a set of primitive ICN data
-        objects into a large, File-Like ICN Collection (FLIC). At the core of this collection is a
-           manifest  which acts as the collection's root node. The manifest contains an index
-        table with pointers, each pointer being a hash value pointing to either a final data block
-        or another index table node. 
-    " name="description">
+<meta content='
+       This document describes how to encode an application data objet into a structured  manifest 
+        using Information Centric Networking (ICN) data objects, creating a File-Like ICN Collection (FLIC).
+        The manifest is an "index table" of objects that make up the manifest itself and the application data.
+        It records the hash value (content object hash) of each item so a consumer using the manifest may
+        request each piece by a complete hash name.  The manifest is hierarchical and may be encoded into
+        realtively small ICN objects to fit within network MTU sizes.  FLIC has several methods to guide
+        a consumer in constructing appropriate Interest names based on the manifest.  It also supports
+        encryption of the manifest data.  FLIC may be used in CCNx or Named Data Networking, or other
+        ICNs.
+       
+    ' name="description">
 <meta content="xml2rfc 3.25.0" name="generator">
 <meta content="Information Centric Networking" name="keyword">
 <meta content="draft-irtf-icnrg-flic-07" name="ietf.draft">
@@ -37,7 +41,7 @@
     wcwidth 0.2.13
     weasyprint 61.2
 -->
-<link href="/usr/src/app/tmp/3dc072ba-88f5-4074-8eae-18fbcfac7c57/draft-irtf-icnrg-flic-07.xml" rel="alternate" type="application/rfc+xml">
+<link href="/usr/src/app/tmp/11326ef6-e8ca-4a52-ade8-b3cf7a215deb/draft-irtf-icnrg-flic-07.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">/*
 
@@ -1220,11 +1224,11 @@ li > p:last-of-type:only-child {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">FLIC</td>
-<td class="right">November 2024</td>
+<td class="right">December 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Tschudin, et al.</td>
-<td class="center">Expires 3 June 2025</td>
+<td class="center">Expires 5 June 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1237,12 +1241,12 @@ li > p:last-of-type:only-child {
 <dd class="internet-draft">draft-irtf-icnrg-flic-07</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-11-30" class="published">30 November 2024</time>
+<time datetime="2024-12-02" class="published">2 December 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-06-03">3 June 2025</time></dd>
+<dd class="expires"><time datetime="2025-06-05">5 June 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1267,12 +1271,15 @@ li > p:last-of-type:only-child {
 <h1 id="title">File-Like ICN Collections (FLIC)</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document describes a simple "index table" data structure and its associated
-        Information Centric Networking (ICN) data objects for organizing a set of primitive ICN data
-        objects into a large, File-Like ICN Collection (FLIC). At the core of this collection is a
-          <em>manifest</em> which acts as the collection's root node. The manifest contains an index
-        table with pointers, each pointer being a hash value pointing to either a final data block
-        or another index table node.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document describes how to encode an application data objet into a structured <em>manifest</em>
+        using Information Centric Networking (ICN) data objects, creating a File-Like ICN Collection (FLIC).
+        The manifest is an "index table" of objects that make up the manifest itself and the application data.
+        It records the hash value (content object hash) of each item so a consumer using the manifest may
+        request each piece by a complete hash name.  The manifest is hierarchical and may be encoded into
+        realtively small ICN objects to fit within network MTU sizes.  FLIC has several methods to guide
+        a consumer in constructing appropriate Interest names based on the manifest.  It also supports
+        encryption of the manifest data.  FLIC may be used in CCNx or Named Data Networking, or other
+        ICNs.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <div id="status-of-memo">
 <section id="section-boilerplate.1">
@@ -1293,7 +1300,7 @@ li > p:last-of-type:only-child {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 3 June 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 5 June 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1425,7 +1432,7 @@ li > p:last-of-type:only-child {
                     <p id="section-toc.1-1.3.2.10.2.1.1"><a href="#section-3.10.1" class="auto internal xref">3.10.1</a>.  <a href="#name-leaf-only-data" class="internal xref">Leaf-only data</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.10.2.2">
-                    <p id="section-toc.1-1.3.2.10.2.2.1"><a href="#section-3.10.2" class="auto internal xref">3.10.2</a>.  <a href="#name-linear" class="internal xref">Linear</a></p>
+                    <p id="section-toc.1-1.3.2.10.2.2.1"><a href="#section-3.10.2" class="auto internal xref">3.10.2</a>.  <a href="#name-linear-chain" class="internal xref">Linear (chain)</a></p>
 </li>
                 </ul>
 </li>
@@ -1503,13 +1510,16 @@ li > p:last-of-type:only-child {
         well suited for static content distribution. Each piece of (possibly immutable) static
         content is assigned a name by its producer. Consumers fetch this content using said name.
         Optionally, consumers may specify the full name of content, which includes its name and a
-        unique (with overwhelming probability) cryptographic digest of said content.<a href="#section-1-1" class="pilcrow">¶</a></p>
+        cryptographic digest of said content, so the reques is self-verifying.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <aside id="section-1-2">
         <p id="section-1-2.1">Note: The reader is assumed to be familiar with general ICN concepts from CCNx or NDN.
           For general ICN terms, this document uses the terminology defined in <span>[<a href="#RFC7927" class="cite xref">RFC7927</a>]</span>. Where more specificity is needed, we utilize <span><a href="#RFC8569" class="internal xref">CCNx</a> [<a href="#RFC8569" class="cite xref">RFC8569</a>]</span> terminology where a Content Object is the
           data structure that holds application payload.
-          
           Terms defined specifically for FLIC are enumerated below in <a href="#Terminology" class="auto internal xref">Section 3.1</a>.<a href="#section-1-2.1" class="pilcrow">¶</a></p>
+<p id="section-1-2.2">
+          In this document, we prefer the CCNx terminology.  We will use the CCNx term
+          Content Object, where NDN would use the term Data packet.  The term Content Objec Hash
+          in CCNx corresponds to the NDN Implicit Digest.<a href="#section-1-2.2" class="pilcrow">¶</a></p>
 </aside>
 <p id="section-1-3">To enable requests with full names, consumers need a priori knowledge of content digests.
         A Manifest, a form of catalog, is a data structures commonly employed to store and transport
@@ -1533,31 +1543,74 @@ li > p:last-of-type:only-child {
         indicate the constituent pieces. This maintains strong security from a single signature. A
         Manifest entry gives one enough information to create an <em>Interest</em> for that entry,
         so it must specify the name, the hash digest, and if needed, the locators.<a href="#section-1-5" class="pilcrow">¶</a></p>
-<p id="section-1-6">FLIC is a distributed data structure illustrated by the following picture.<a href="#section-1-6" class="pilcrow">¶</a></p>
-<span id="name-a-flic-manifest-and-its-dir"></span><figure id="figure-1">
-        <div class="alignCenter art-text artwork" id="section-1-7.1">
-<pre>
-            root manifest
-.------------------------------------.
-| optional name:                     |
-|   /icn/name/of/this/flic           |
-|                                    |
-| HashGroup (HG):                    |
-|   optional metadata:               |
-|     overall digest, locator, etc.  |    .------.
-|   hash-valued data pointer -----------&gt; | data |
-|     ...                            |    `------'  sub manifest
-|   hash-valued manifest pointer ------.     .------------------.
-|                                    |  `--&gt; |                -----&gt;
-| optional additional HashGroups     |       |                -----&gt;
-|                                    |       `------------------'
-| optional signature                 |
-`------------------------------------'
-</pre>
+<p id="section-1-6">
+        FLIC is a distributed data structure illustrated by the following picture.  The FLIC
+        manifest is encoded in the Payload of a Content Object.  A <em>root manifest</em> has
+        a name and a publisher signature.  Subsequent manifests, because they hare in a cryptographic
+        hash tree using SHA256 pointers, do not need to be signed; they have implicit trust.
+        In the figure we call out "data pointer" and "manifest pointer", but in the actual encoding
+        they are all just hash values and the consumer does not necessarily know what it is fetching
+        until it has fetched it.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<span id="name-simplified-flic-content-obj"></span><div id="example_manifest">
+<figure id="figure-1">
+        <div id="section-1-7.1">
+          <div class="alignCenter art-svg artwork" id="section-1-7.1.1">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="80%" viewBox="0 0 672 272" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+              <path d="M 8,16 L 8,256" fill="none" stroke="black"></path>
+              <path d="M 24,80 L 24,224" fill="none" stroke="black"></path>
+              <path d="M 288,80 L 288,136" fill="none" stroke="black"></path>
+              <path d="M 288,184 L 288,224" fill="none" stroke="black"></path>
+              <path d="M 304,16 L 304,136" fill="none" stroke="black"></path>
+              <path d="M 304,184 L 304,256" fill="none" stroke="black"></path>
+              <path d="M 344,128 L 344,160" fill="none" stroke="black"></path>
+              <path d="M 368,176 L 368,224" fill="none" stroke="black"></path>
+              <path d="M 528,128 L 528,160" fill="none" stroke="black"></path>
+              <path d="M 8,16 L 88,16" fill="none" stroke="black"></path>
+              <path d="M 224,16 L 304,16" fill="none" stroke="black"></path>
+              <path d="M 24,80 L 104,80" fill="none" stroke="black"></path>
+              <path d="M 176,80 L 288,80" fill="none" stroke="black"></path>
+              <path d="M 344,128 L 528,128" fill="none" stroke="black"></path>
+              <path d="M 240,144 L 328,144" fill="none" stroke="black"></path>
+              <path d="M 344,160 L 528,160" fill="none" stroke="black"></path>
+              <path d="M 272,176 L 320,176" fill="none" stroke="black"></path>
+              <path d="M 368,176 L 384,176" fill="none" stroke="black"></path>
+              <path d="M 624,176 L 640,176" fill="none" stroke="black"></path>
+              <path d="M 328,192 L 352,192" fill="none" stroke="black"></path>
+              <path d="M 624,192 L 664,192" fill="none" stroke="black"></path>
+              <path d="M 624,208 L 664,208" fill="none" stroke="black"></path>
+              <path d="M 24,224 L 288,224" fill="none" stroke="black"></path>
+              <path d="M 368,224 L 640,224" fill="none" stroke="black"></path>
+              <path d="M 8,256 L 304,256" fill="none" stroke="black"></path>
+              <polygon class="arrowhead" points="672,208 660,202.4 660,213.6" fill="black" transform="rotate(0,664,208)"></polygon>
+              <polygon class="arrowhead" points="672,192 660,186.4 660,197.6" fill="black" transform="rotate(0,664,192)"></polygon>
+              <polygon class="arrowhead" points="360,192 348,186.4 348,197.6" fill="black" transform="rotate(0,352,192)"></polygon>
+              <polygon class="arrowhead" points="336,144 324,138.4 324,149.6" fill="black" transform="rotate(0,328,144)"></polygon>
+              <g class="text">
+                <text x="156" y="20">Content Object</text>
+                <text x="40" y="36">Name:</text>
+                <text x="148" y="36">/icn/manifest/name</text>
+                <text x="104" y="52">Payload Type: Maniest</text>
+                <text x="52" y="68">Payload:</text>
+                <text x="140" y="84">Manifest</text>
+                <text x="96" y="100">HashGroup (HG):</text>
+                <text x="108" y="116">optional metadata:</text>
+                <text x="168" y="132">overall digest, locator, etc.</text>
+                <text x="132" y="148">hash-valued data pointer</text>
+                <text x="432" y="148">data Content Object</text>
+                <text x="64" y="164">...</text>
+                <text x="296" y="164">| |</text>
+                <text x="148" y="180">hash-valued manifest pointer</text>
+                <text x="504" y="180">sub manifest Content Object</text>
+                <text x="156" y="212">optional additional HashGroups</text>
+                <text x="92" y="244">optional signature</text>
+              </g>
+            </svg><a href="#section-1-7.1.1" class="pilcrow">¶</a>
+</div>
 </div>
 <figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
-<a href="#name-a-flic-manifest-and-its-dir" class="selfRef">A FLIC manifest and its directed acyclic graph</a>
+<a href="#name-simplified-flic-content-obj" class="selfRef">Simplified FLIC Content Object and acyclic graph example</a>
         </figcaption></figure>
+</div>
 <p id="section-1-8">A key design decision is how one names the root manifest, the application data, and
         subsidiary manifests. FLIC uses the concept of a Name Constructor. The root
         manifest (in fact, any FLIC manifest) may include a Name Constructor that instructs a
@@ -1568,7 +1621,7 @@ li > p:last-of-type:only-child {
         protocols. We describe the allowed Name Constructor methods in <a href="#nameconstructors" class="auto internal xref">Section 3.3</a>. There are also particulars of how to encode
         the name schema in a given ICN protocol, which we describe in <a href="#encodings" class="auto internal xref">Section 3.9</a>.<a href="#section-1-8" class="pilcrow">¶</a></p>
 <p id="section-1-9">FLIC has encodings for <span><a href="#CCNxEncoding" class="internal xref">CCNx</a> (<a href="#CCNxEncoding" class="auto internal xref">Section 3.9.1</a>)</span> as per
-          <span><a href="#RFC8609" class="internal xref">RFC 8609</a> [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span> and for <span><a href="#NDNEncoding" class="internal xref">NDN</a> (<a href="#NDNEncoding" class="auto internal xref">Section 3.9.2</a>)</span>.  For the implementor, the section <a href="#CCNxTlvs" class="auto internal xref">Section 3.9.1.5</a> 
+          <span>[<a href="#RFC8609" class="cite xref">RFC8609</a>]</span> and for <span><a href="#NDNEncoding" class="internal xref">NDN</a> (<a href="#NDNEncoding" class="auto internal xref">Section 3.9.2</a>)</span>.  For the implementor, the section <a href="#CCNxTlvs" class="auto internal xref">Section 3.9.1.5</a> 
           succintly defines the CCNx TLV structures and the format of each TLV value.<a href="#section-1-9" class="pilcrow">¶</a></p>
 <p id="section-1-10">An example implementation in Python may be found at <span>[<a href="#FLICImplementation" class="cite xref">FLICImplementation</a>]</span>.<a href="#section-1-10" class="pilcrow">¶</a></p>
 <section id="section-1.1">
@@ -2170,23 +2223,35 @@ reverse_preorder(node)
             hash group in order. In each hash group, one follows each pointer in order. <a href="#expansion" class="auto internal xref">Figure 4</a> shows how hash groups inside a manifest expand like virtual
             children in the tree. The in-order traversal is M0, HG1, M1, HG3, D0, D1, D2, HG2, D3,
             D4.<a href="#section-3.7.1-4" class="pilcrow">¶</a></p>
-<span id="name-node-expansion"></span><div id="expansion">
+<span id="name-node-expansio"></span><div id="expansion">
 <figure id="figure-4">
-            <div class="alignLeft art-text artwork" id="section-3.7.1-5.1">
-<pre>
-M0 ____
-|      \
-HG1    HG2
-| \    |  \
-M1 D2  D3  D4
-|
-HG3
-|  \
-D0 D1
-</pre>
+            <div id="section-3.7.1-5.1">
+              <div class="alignCenter art-svg artwork" id="section-3.7.1-5.1.1">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="20%" viewBox="0 0 112 160" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+                  <path d="M 60,24 L 64,32" fill="none" stroke="black"></path>
+                  <path d="M 28,24 L 60,24" fill="none" stroke="black"></path>
+                  <g class="text">
+                    <text x="12" y="20">M0</text>
+                    <text x="8" y="36">|</text>
+                    <text x="16" y="52">HG1</text>
+                    <text x="72" y="52">HG2</text>
+                    <text x="16" y="68">| \</text>
+                    <text x="64" y="68">|</text>
+                    <text x="88" y="68">\</text>
+                    <text x="24" y="84">M1 D2</text>
+                    <text x="68" y="84">D3</text>
+                    <text x="100" y="84">D4</text>
+                    <text x="8" y="100">|</text>
+                    <text x="16" y="116">HG3</text>
+                    <text x="8" y="132">|</text>
+                    <text x="32" y="132">\</text>
+                    <text x="24" y="148">D0 D1</text>
+                  </g>
+                </svg><a href="#section-3.7.1-5.1.1" class="pilcrow">¶</a>
+</div>
 </div>
 <figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
-<a href="#name-node-expansion" class="selfRef">Node Expansion</a>
+<a href="#name-node-expansio" class="selfRef">Node Expansio</a>
             </figcaption></figure>
 </div>
 <p id="section-3.7.1-6">Using the example manifest tree shown in <a href="#leafonly" class="auto internal xref">Figure 23</a>, the in-order
@@ -3342,37 +3407,43 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 <a href="#section-3.9.3" class="section-number selfRef">3.9.3. </a><a href="#name-segmented-schema-details" class="section-name selfRef">Segmented Schema Details</a>
           </h4>
 <p id="section-3.9.3-1">When using CCNx Segmented Prefix Strategy or NDN Segmented Prefix strategy, the
-          consumer must determine the segment number to use in the name.  There are
-          two methods.<a href="#section-3.9.3-1" class="pilcrow">¶</a></p>
+          consumer must determine the segment number to use in the name.  Typically, the
+          application data would use a chunk (segment) ID in the content name, which is a
+          compact sequence number.  These could be computed based on the in-order traversal,
+          assuming one knows which manifests point to data versus other manifests.
+          Manifests, however, may not use a compact sequence number and there is no simple
+          way to predict the names.<a href="#section-3.9.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.9.3-2">There are two methods to guide a consumer in generating segment IDs for
+            hash pointers:<a href="#section-3.9.3-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3.9.3-2.1">If fetching a pointer with a SegmentIdAnnotation, the consumer MUST use that
+<li class="normal" id="section-3.9.3-3.1">If fetching a pointer with a SegmentIdAnnotation, the consumer MUST use that
               segment number for the pointer.  A pointer with SegmentIdAnnotation does not
-              increment the SegmentId used by the GroupData case.<a href="#section-3.9.3-2.1" class="pilcrow">¶</a>
+              increment the SegmentId used by the GroupData case.<a href="#section-3.9.3-3.1" class="pilcrow">¶</a>
 </li>
-            <li class="normal" id="section-3.9.3-2.2">If the GroupData has a StartSegmentId parameter, then that segment number MUST
+            <li class="normal" id="section-3.9.3-3.2">If the GroupData has a StartSegmentId parameter, then that segment number MUST
               be used for the first in-order pointer of the group.  The consumer then increments
-              the segment number for each in-order pointer of that group.<a href="#section-3.9.3-2.2" class="pilcrow">¶</a>
+              the segment number for each in-order pointer of that group.<a href="#section-3.9.3-3.2" class="pilcrow">¶</a>
 </li>
           </ul>
-<p id="section-3.9.3-3">Every group of a segmented NsId MUST have either a GroupData with a StartSegmentId, or
-            use annotated pointers with SegmentIdAnnotation.<a href="#section-3.9.3-3" class="pilcrow">¶</a></p>
-<p id="section-3.9.3-4">A segment number MUST indicate exactly one data item.  That is, the producer
+<p id="section-3.9.3-4">Every group of a segmented NcId MUST have either a GroupData with a StartSegmentId, or
+            use annotated pointers with SegmentIdAnnotation.<a href="#section-3.9.3-4" class="pilcrow">¶</a></p>
+<p id="section-3.9.3-5">A segment number MUST indicate exactly one data item.  That is, the producer
             MUST NOT duplicate the segment number in an object name for different objects.
-            The object hash MUST be the same for the same segment number of a name.<a href="#section-3.9.3-4" class="pilcrow">¶</a></p>
-<p id="section-3.9.3-5">It is allowed to have multiple manifest entries with the same segment number (see below).<a href="#section-3.9.3-5" class="pilcrow">¶</a></p>
-<p id="section-3.9.3-6">While a producer is allowed to mix using GroupData StartSegmentId and SegmentIdAnnotation,
+            The object hash MUST be the same for the same segment number of a name.<a href="#section-3.9.3-5" class="pilcrow">¶</a></p>
+<p id="section-3.9.3-6">It is allowed to have multiple manifest entries with the same segment number (see below).<a href="#section-3.9.3-6" class="pilcrow">¶</a></p>
+<p id="section-3.9.3-7">While a producer is allowed to mix using GroupData StartSegmentId and SegmentIdAnnotation,
             we in general do not consider that a good idea.  It is up to the manifest producer to ensure
             that every segment may be fetched, and fetch in the right order.
-            Segments, when fetched in the <strong>manifest order</strong> reconstruct the original data.<a href="#section-3.9.3-6" class="pilcrow">¶</a></p>
-<p id="section-3.9.3-7">Let us make this clear, the original data is constructed by the in-order manifest retrieval, not
-          the segment number order.  We recommend that the manifest in-order sequence SHOULD correspond
-          to the segment number sequence.<a href="#section-3.9.3-7" class="pilcrow">¶</a></p>
-<p id="section-3.9.3-8">A consumer is not required to fetch every segment.  A consumer may fetch segments in any order
-            it chooses.  It may skip around or omit segments.<a href="#section-3.9.3-8" class="pilcrow">¶</a></p>
-<p id="section-3.9.3-9">It is allowed to have multiple pointers to the same segment number.  This
+            Segments, when fetched in the <strong>manifest order</strong> reconstruct the original data.<a href="#section-3.9.3-7" class="pilcrow">¶</a></p>
+<p id="section-3.9.3-8">Let us make this clear, the original data is constructed by the in-order manifest retrieval, not
+          the segment number order.  The consumer should make no assumptions about reconstructing the original
+          data and the names of those data elements.<a href="#section-3.9.3-8" class="pilcrow">¶</a></p>
+<p id="section-3.9.3-9">A consumer is not required to fetch every segment.  A consumer may fetch segments in any order
+            it chooses.  It may skip around or omit segments.<a href="#section-3.9.3-9" class="pilcrow">¶</a></p>
+<p id="section-3.9.3-10">It is allowed to have multiple pointers to the same segment number.  This
           can be used for data de-duplication, e.g. multiple occurances of the same binary string within
           the reconstructed data object. If the producer uses this method, then the original data
-          cannot be reconstructed by simply fetching the sequence numbers in order.<a href="#section-3.9.3-9" class="pilcrow">¶</a></p>
+          cannot be reconstructed by simply fetching the sequence numbers in order.<a href="#section-3.9.3-10" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -3387,16 +3458,28 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
           </h4>
 <span id="name-leaf-only-manifest-tree"></span><div id="leafonly">
 <figure id="figure-23">
-            <div class="alignCenter art-text artwork" id="section-3.10.1-1.1">
-<pre>
-           Root
-            |
-     ______ M0 _____
-    /       |       \
-   M1       M2       M3
- / | \    / | \    / | \
-D0 D1 D2 D3 D4 D5 D6 D7 D8
-</pre>
+            <div id="section-3.10.1-1.1">
+              <div class="alignLeft art-svg artwork" id="section-3.10.1-1.1.1">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 216 128" width="60%" class="diagram" text-anchor="middle" font-family="monospace" stroke-linecap="round">
+                  <path d="M 164,56 L 168,64" fill="none" stroke="black"></path>
+                  <path d="M 40,64 L 44,56" fill="none" stroke="black"></path>
+                  <path d="M 44,56 L 92,56" fill="none" stroke="black"></path>
+                  <path d="M 124,56 L 164,56" fill="none" stroke="black"></path>
+                  <g class="text">
+                    <text x="108" y="20">Root</text>
+                    <text x="104" y="36">|</text>
+                    <text x="108" y="52">M0</text>
+                    <text x="104" y="68">|</text>
+                    <text x="36" y="84">M1</text>
+                    <text x="108" y="84">M2</text>
+                    <text x="180" y="84">M3</text>
+                    <text x="32" y="100">/ | \</text>
+                    <text x="104" y="100">/ | \</text>
+                    <text x="176" y="100">/ | \</text>
+                    <text x="108" y="116">D0 D1 D2 D3 D4 D5 D6 D7 D8</text>
+                  </g>
+                </svg><a href="#section-3.10.1-1.1.1" class="pilcrow">¶</a>
+</div>
 </div>
 <figcaption><a href="#figure-23" class="selfRef">Figure 23</a>:
 <a href="#name-leaf-only-manifest-tree" class="selfRef">Leaf-only manifest tree</a>
@@ -3404,8 +3487,8 @@ D0 D1 D2 D3 D4 D5 D6 D7 D8
 </div>
 </section>
 <section id="section-3.10.2">
-          <h4 id="name-linear">
-<a href="#section-3.10.2" class="section-number selfRef">3.10.2. </a><a href="#name-linear" class="section-name selfRef">Linear</a>
+          <h4 id="name-linear-chain">
+<a href="#section-3.10.2" class="section-number selfRef">3.10.2. </a><a href="#name-linear-chain" class="section-name selfRef">Linear (chain)</a>
           </h4>
 <p id="section-3.10.2-1">Of special interest are "skewed trees" where a pointer to a manifest may only appear as
             last pointer of (sub-) manifests. Such a tree becomes a sequential list of manifests
@@ -3415,7 +3498,7 @@ D0 D1 D2 D3 D4 D5 D6 D7 D8
 <div class="alignLeft art-text artwork" id="section-3.10.2-2">
 <pre>
 Root -&gt; M0 ----&gt; M1 ----&gt; ...
-|-&gt;DDDD  |-&gt;DDDD
+|-&gt;DDDD  |-&gt;DDDD  |- ...
 </pre><a href="#section-3.10.2-2" class="pilcrow">¶</a>
 </div>
 </section>
@@ -3607,19 +3690,54 @@ return (i, o)
           for the patch itself is added to a new manifest data structure, as is shown in the diagram
           below. For example, the <span><a href="#venti" class="internal xref">venti archival file system of Plan9</a> [<a href="#venti" class="cite xref">venti</a>]</span>
           uses this technique.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
-<span id="name-de-duplication"></span><div id="dedup1">
+<span id="name-de-duplications"></span><div id="dedup1">
 <figure id="figure-29">
-          <div class="alignCenter art-text artwork" id="section-5.3-2.1">
-<pre>
-old_mfst -  - &gt; h1 --&gt; oldData1  &lt;-- h1 &lt; -  -  new_mfst
-         \  - &gt; h2 --&gt; oldData2  &lt;-- h2 &lt; -  - /
-          \            replace3  &lt;-- h5 &lt; -  -/
-           \- &gt; h3 --&gt; oldData3              /
-            \ &gt; h4 --&gt; oldData4  &lt;-- h4 &lt; - /
-</pre>
+          <div id="section-5.3-2.1">
+            <div class="alignLeft art-svg artwork" id="section-5.3-2.1.1">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="80%" viewBox="0 0 456 96" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+                <path d="M 160,16 L 176,16" fill="none" stroke="black"></path>
+                <path d="M 272,16 L 288,16" fill="none" stroke="black"></path>
+                <path d="M 160,32 L 176,32" fill="none" stroke="black"></path>
+                <path d="M 272,32 L 288,32" fill="none" stroke="black"></path>
+                <path d="M 272,48 L 288,48" fill="none" stroke="black"></path>
+                <path d="M 160,64 L 176,64" fill="none" stroke="black"></path>
+                <path d="M 160,80 L 176,80" fill="none" stroke="black"></path>
+                <path d="M 272,80 L 288,80" fill="none" stroke="black"></path>
+                <path d="M 80,32 L 104,80" fill="none" stroke="black"></path>
+                <path d="M 360,80 L 384,32" fill="none" stroke="black"></path>
+                <polygon class="arrowhead" points="280,80 268,74.4 268,85.6" fill="black" transform="rotate(180,272,80)"></polygon>
+                <polygon class="arrowhead" points="280,48 268,42.4 268,53.6" fill="black" transform="rotate(180,272,48)"></polygon>
+                <polygon class="arrowhead" points="280,32 268,26.4 268,37.6" fill="black" transform="rotate(180,272,32)"></polygon>
+                <polygon class="arrowhead" points="280,16 268,10.4 268,21.6" fill="black" transform="rotate(180,272,16)"></polygon>
+                <polygon class="arrowhead" points="184,80 172,74.4 172,85.6" fill="black" transform="rotate(0,176,80)"></polygon>
+                <polygon class="arrowhead" points="184,64 172,58.4 172,69.6" fill="black" transform="rotate(0,176,64)"></polygon>
+                <polygon class="arrowhead" points="184,32 172,26.4 172,37.6" fill="black" transform="rotate(0,176,32)"></polygon>
+                <polygon class="arrowhead" points="184,16 172,10.4 172,21.6" fill="black" transform="rotate(0,176,16)"></polygon>
+                <g class="text">
+                  <text x="44" y="20">old_mfst -</text>
+                  <text x="124" y="20">- &gt; h1</text>
+                  <text x="220" y="20">oldData1</text>
+                  <text x="324" y="20">h1 &lt; -</text>
+                  <text x="368" y="20">-</text>
+                  <text x="420" y="20">new_mfst</text>
+                  <text x="124" y="36">- &gt; h2</text>
+                  <text x="220" y="36">oldData2</text>
+                  <text x="324" y="36">h2 &lt; -</text>
+                  <text x="368" y="36">-</text>
+                  <text x="220" y="52">replace3</text>
+                  <text x="324" y="52">h5 &lt; -</text>
+                  <text x="368" y="52">-</text>
+                  <text x="124" y="68">- &gt; h3</text>
+                  <text x="220" y="68">oldData3</text>
+                  <text x="132" y="84">&gt; h4</text>
+                  <text x="220" y="84">oldData4</text>
+                  <text x="324" y="84">h4 &lt; -</text>
+                </g>
+              </svg><a href="#section-5.3-2.1.1" class="pilcrow">¶</a>
+</div>
 </div>
 <figcaption><a href="#figure-29" class="selfRef">Figure 29</a>:
-<a href="#name-de-duplication" class="selfRef">De-duplication</a>
+<a href="#name-de-duplications" class="selfRef">De-duplications</a>
           </figcaption></figure>
 </div>
 </section>
@@ -4167,7 +4285,7 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
           <tr>
             <td class="text-center" rowspan="1" colspan="1">0x0002</td>
             <td class="text-center" rowspan="1" colspan="1">T_AEADMode</td>
-            <td class="text-center" rowspan="1" colspan="1"></td>
+            <td class="text-center" rowspan="1" colspan="1">Value a per IANA "AEAD Algorithms" <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
           </tr>
           <tr>
             <td class="text-center" rowspan="1" colspan="1">0x0003</td>
@@ -4234,57 +4352,15 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
           </tr>
         </tbody>
       </table>
-<aside id="section-6-21">
-        <p id="section-6-21.1">Do we need to reproduce this here, or is it sufficent to refer to the IANA AEAD table?<a href="#section-6-21.1" class="pilcrow">¶</a></p>
-</aside>
-<span id="name-flic-manifest-aeadmode-valu"></span><table class="left" id="table-8">
-        <caption>
-<a href="#table-8" class="selfRef">Table 8</a>:
-<a href="#name-flic-manifest-aeadmode-valu" class="selfRef">FLIC Manifest (AEADMode Values)</a>
-        </caption>
-<thead>
-          <tr>
-            <th class="text-center" rowspan="1" colspan="1">Numeric ID</th>
-            <th class="text-center" rowspan="1" colspan="1">Name</th>
-            <th class="text-center" rowspan="1" colspan="1">Reference</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="text-center" rowspan="1" colspan="1">1</td>
-            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_128_GCM</td>
-            <td class="text-center" rowspan="1" colspan="1">
-              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
-          </tr>
-          <tr>
-            <td class="text-center" rowspan="1" colspan="1">2</td>
-            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_256_GCM</td>
-            <td class="text-center" rowspan="1" colspan="1">
-              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
-          </tr>
-          <tr>
-            <td class="text-center" rowspan="1" colspan="1">3</td>
-            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_128_CCM</td>
-            <td class="text-center" rowspan="1" colspan="1">
-              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
-          </tr>
-          <tr>
-            <td class="text-center" rowspan="1" colspan="1">4</td>
-            <td class="text-center" rowspan="1" colspan="1">AEAD_AES_256_CCM</td>
-            <td class="text-center" rowspan="1" colspan="1">
-              <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> </td>
-          </tr>
-        </tbody>
-      </table>
 <ul class="compact">
-<li class="compact" id="section-6-23.1">Sub-registry Name: FLIC Manifest (Annotation)<a href="#section-6-23.1" class="pilcrow">¶</a>
+<li class="compact" id="section-6-21.1">Sub-registry Name: FLIC Manifest (Annotation)<a href="#section-6-21.1" class="pilcrow">¶</a>
 </li>
-        <li class="compact" id="section-6-23.2">Registration Procedure: Expert Review<a href="#section-6-23.2" class="pilcrow">¶</a>
+        <li class="compact" id="section-6-21.2">Registration Procedure: Expert Review<a href="#section-6-21.2" class="pilcrow">¶</a>
 </li>
       </ul>
-<span id="name-flic-manifest-annotation"></span><table class="left" id="table-9">
+<span id="name-flic-manifest-annotation"></span><table class="left" id="table-8">
         <caption>
-<a href="#table-9" class="selfRef">Table 9</a>:
+<a href="#table-8" class="selfRef">Table 8</a>:
 <a href="#name-flic-manifest-annotation" class="selfRef">FLIC Manifest (Annotation)</a>
         </caption>
 <thead>

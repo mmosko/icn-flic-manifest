@@ -53,12 +53,16 @@
     <keyword>Information Centric Networking</keyword>
 
     <abstract>
-      <t>This document describes a simple "index table" data structure and its associated
-        Information Centric Networking (ICN) data objects for organizing a set of primitive ICN data
-        objects into a large, File-Like ICN Collection (FLIC). At the core of this collection is a
-          <em>manifest</em> which acts as the collection's root node. The manifest contains an index
-        table with pointers, each pointer being a hash value pointing to either a final data block
-        or another index table node.</t>
+      <t>This document describes how to encode an application data objet into a structured <em>manifest</em>
+        using Information Centric Networking (ICN) data objects, creating a File-Like ICN Collection (FLIC).
+        The manifest is an "index table" of objects that make up the manifest itself and the application data.
+        It records the hash value (content object hash) of each item so a consumer using the manifest may
+        request each piece by a complete hash name.  The manifest is hierarchical and may be encoded into
+        realtively small ICN objects to fit within network MTU sizes.  FLIC has several methods to guide
+        a consumer in constructing appropriate Interest names based on the manifest.  It also supports
+        encryption of the manifest data.  FLIC may be used in CCNx or Named Data Networking, or other
+        ICNs.
+      </t>
     </abstract>
   </front>
 
@@ -70,8 +74,7 @@
         well suited for static content distribution. Each piece of (possibly immutable) static
         content is assigned a name by its producer. Consumers fetch this content using said name.
         Optionally, consumers may specify the full name of content, which includes its name and a
-        unique (with overwhelming probability) cryptographic digest of said content.
-        <!--      (See <xref target="RFC7927" format="default"/> for a formal definition of "full name".) -->
+        cryptographic digest of said content, so the reques is self-verifying.
       </t>
 
       <aside>
@@ -80,9 +83,14 @@
             target="RFC7927" format="default"/>. Where more specificity is needed, we utilize <xref
             target="RFC8569" format="default">CCNx</xref> terminology where a Content Object is the
           data structure that holds application payload.
-          <!--	Therefore, it comprises an optional Name, a PayloadType, a Payload, and an optional Signature. -->
           Terms defined specifically for FLIC are enumerated below in <xref target="Terminology"
           />.</t>
+
+        <t>
+          In this document, we prefer the CCNx terminology.  We will use the CCNx term
+          Content Object, where NDN would use the term Data packet.  The term Content Objec Hash
+          in CCNx corresponds to the NDN Implicit Digest.
+        </t>
       </aside>
 
       <t>To enable requests with full names, consumers need a priori knowledge of content digests.
@@ -110,28 +118,92 @@
         Manifest entry gives one enough information to create an <em>Interest</em> for that entry,
         so it must specify the name, the hash digest, and if needed, the locators.</t>
 
+      <t>
+        FLIC is a distributed data structure illustrated by the following picture.  The FLIC
+        manifest is encoded in the Payload of a Content Object.  A <em>root manifest</em> has
+        a name and a publisher signature.  Subsequent manifests, because they hare in a cryptographic
+        hash tree using SHA256 pointers, do not need to be signed; they have implicit trust.
+        In the figure we call out "data pointer" and "manifest pointer", but in the actual encoding
+        they are all just hash values and the consumer does not necessarily know what it is fetching
+        until it has fetched it.
+      </t>
 
-      <t>FLIC is a distributed data structure illustrated by the following picture.</t>
-      <figure>
-        <name>A FLIC manifest and its directed acyclic graph</name>
-        <artwork name="" type="" align="center" alt=""><![CDATA[
-            root manifest
-.------------------------------------.
-| optional name:                     |
-|   /icn/name/of/this/flic           |
-|                                    |
-| HashGroup (HG):                    |
-|   optional metadata:               |
-|     overall digest, locator, etc.  |    .------.
-|   hash-valued data pointer -----------> | data |
-|     ...                            |    `------'  sub manifest
-|   hash-valued manifest pointer ------.     .------------------.
-|                                    |  `--> |                ----->
-| optional additional HashGroups     |       |                ----->
-|                                    |       `------------------'
+      <figure anchor="example_manifest">
+        <name>Simplified FLIC Content Object and acyclic graph example</name>
+        <artset>
+          <artwork type="svg" name="example_manifest.svg" align="center">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1"  width="80%" viewBox="0 0 672 272" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+              <path d="M 8,16 L 8,256" fill="none" stroke="black"/>
+              <path d="M 24,80 L 24,224" fill="none" stroke="black"/>
+              <path d="M 288,80 L 288,136" fill="none" stroke="black"/>
+              <path d="M 288,184 L 288,224" fill="none" stroke="black"/>
+              <path d="M 304,16 L 304,136" fill="none" stroke="black"/>
+              <path d="M 304,184 L 304,256" fill="none" stroke="black"/>
+              <path d="M 344,128 L 344,160" fill="none" stroke="black"/>
+              <path d="M 368,176 L 368,224" fill="none" stroke="black"/>
+              <path d="M 528,128 L 528,160" fill="none" stroke="black"/>
+              <path d="M 8,16 L 88,16" fill="none" stroke="black"/>
+              <path d="M 224,16 L 304,16" fill="none" stroke="black"/>
+              <path d="M 24,80 L 104,80" fill="none" stroke="black"/>
+              <path d="M 176,80 L 288,80" fill="none" stroke="black"/>
+              <path d="M 344,128 L 528,128" fill="none" stroke="black"/>
+              <path d="M 240,144 L 328,144" fill="none" stroke="black"/>
+              <path d="M 344,160 L 528,160" fill="none" stroke="black"/>
+              <path d="M 272,176 L 320,176" fill="none" stroke="black"/>
+              <path d="M 368,176 L 384,176" fill="none" stroke="black"/>
+              <path d="M 624,176 L 640,176" fill="none" stroke="black"/>
+              <path d="M 328,192 L 352,192" fill="none" stroke="black"/>
+              <path d="M 624,192 L 664,192" fill="none" stroke="black"/>
+              <path d="M 624,208 L 664,208" fill="none" stroke="black"/>
+              <path d="M 24,224 L 288,224" fill="none" stroke="black"/>
+              <path d="M 368,224 L 640,224" fill="none" stroke="black"/>
+              <path d="M 8,256 L 304,256" fill="none" stroke="black"/>
+              <polygon class="arrowhead" points="672,208 660,202.4 660,213.6" fill="black" transform="rotate(0,664,208)"/>
+              <polygon class="arrowhead" points="672,192 660,186.4 660,197.6" fill="black" transform="rotate(0,664,192)"/>
+              <polygon class="arrowhead" points="360,192 348,186.4 348,197.6" fill="black" transform="rotate(0,352,192)"/>
+              <polygon class="arrowhead" points="336,144 324,138.4 324,149.6" fill="black" transform="rotate(0,328,144)"/>
+              <g class="text">
+                  <text x="156" y="20">Content Object</text>
+                  <text x="40" y="36">Name:</text>
+                  <text x="148" y="36">/icn/manifest/name</text>
+                  <text x="104" y="52">Payload Type: Maniest</text>
+                  <text x="52" y="68">Payload:</text>
+                  <text x="140" y="84">Manifest</text>
+                  <text x="96" y="100">HashGroup (HG):</text>
+                  <text x="108" y="116">optional metadata:</text>
+                  <text x="168" y="132">overall digest, locator, etc.</text>
+                  <text x="132" y="148">hash-valued data pointer</text>
+                  <text x="432" y="148">data Content Object</text>
+                  <text x="64" y="164">...</text>
+                  <text x="296" y="164">| |</text>
+                  <text x="148" y="180">hash-valued manifest pointer</text>
+                  <text x="504" y="180">sub manifest Content Object</text>
+                  <text x="156" y="212">optional additional HashGroups</text>
+                  <text x="92" y="244">optional signature</text>
+                </g>
+            </svg>
+          </artwork>
+          <artwork type="ascii-art" align="center" name="example_manifest.txt">
+            <![CDATA[
+.--------Content Object (CO)---------.
+| Name:  /icn/manifest/name          |
+| Payload Type: Maniest              |
+| Payload:                           |
+| +----------Manifest--------------+ |
+| | HashGroup (HG):                | |
+| | optional metadata:             | |
+| |   overall digest, locator, etc.| |    .---------.
+| | hash-valued data pointer -----------> | data CO |
+| |   ...                          | |    `---------'
+| | hash-valued manifest pointer ------.     .---sub manifest CO----.
+| |                                | |  `--> |                     ----->
+| | optional additional HashGroups | |       |                     ----->
+| +--------------------------------+ |       `----------------------'
 | optional signature                 |
 `------------------------------------'
-            	]]></artwork>
+                ]]>
+          </artwork>
+        </artset>
       </figure>
 
       <t>A key design decision is how one names the root manifest, the application data, and
@@ -146,9 +218,8 @@
         the name schema in a given ICN protocol, which we describe in <xref target="encodings"
           format="default"/>.</t>
 
-
       <t>FLIC has encodings for <xref target="CCNxEncoding" format="default">CCNx</xref> as per
-          <xref target="RFC8609" format="default">RFC 8609</xref> and for <xref target="NDNEncoding"
+          <xref target="RFC8609" /> and for <xref target="NDNEncoding"
           format="default">NDN</xref>.  For the implementor, the section <xref target="CCNxTlvs"/> 
           succintly defines the CCNx TLV structures and the format of each TLV value.</t>
 
@@ -703,9 +774,34 @@ reverse_preorder(node)
             children in the tree. The in-order traversal is M0, HG1, M1, HG3, D0, D1, D2, HG2, D3,
             D4.</t>
 
-          <figure anchor="expansion">
-            <name>Node Expansion</name>
-            <artwork align="left" name="" type="" alt=""><![CDATA[
+
+          <figure anchor="expansion"><name>Node Expansio</name>
+            <artset>
+              <artwork type="svg" name="expansion.svg" align="center">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="20%" viewBox="0 0 112 160" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round" >
+                  <path d="M 60,24 L 64,32" fill="none" stroke="black"/>
+                  <path d="M 28,24 L 60,24" fill="none" stroke="black"/>
+                  <g class="text">
+                  <text x="12" y="20">M0</text>
+                  <text x="8" y="36">|</text>
+                  <text x="16" y="52">HG1</text>
+                  <text x="72" y="52">HG2</text>
+                  <text x="16" y="68">| \</text>
+                  <text x="64" y="68">|</text>
+                  <text x="88" y="68">\</text>
+                  <text x="24" y="84">M1 D2</text>
+                  <text x="68" y="84">D3</text>
+                  <text x="100" y="84">D4</text>
+                  <text x="8" y="100">|</text>
+                  <text x="16" y="116">HG3</text>
+                  <text x="8" y="132">|</text>
+                  <text x="32" y="132">\</text>
+                  <text x="24" y="148">D0 D1</text>
+                  </g>
+                </svg>
+              </artwork>
+              <artwork type="ascii-art" align="center" name="expansion.txt">
+                <![CDATA[
 M0 ____
 |      \
 HG1    HG2
@@ -715,7 +811,9 @@ M1 D2  D3  D4
 HG3
 |  \
 D0 D1
-                        ]]></artwork>
+                ]]>
+              </artwork>
+            </artset>
           </figure>
 
           <t>Using the example manifest tree shown in <xref target="leafonly"/>, the in-order
@@ -1787,8 +1885,16 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
         <section anchor="explain_segmented">
           <name>Segmented Schema Details</name>
           <t>When using CCNx Segmented Prefix Strategy or NDN Segmented Prefix strategy, the
-          consumer must determine the segment number to use in the name.  There are
-          two methods.</t>
+          consumer must determine the segment number to use in the name.  Typically, the
+          application data would use a chunk (segment) ID in the content name, which is a
+          compact sequence number.  These could be computed based on the in-order traversal,
+          assuming one knows which manifests point to data versus other manifests.
+          Manifests, however, may not use a compact sequence number and there is no simple
+          way to predict the names.</t>
+
+
+          <t>There are two methods to guide a consumer in generating segment IDs for
+            hash pointers:</t>
           <ul spacing="normal">
             <li>If fetching a pointer with a SegmentIdAnnotation, the consumer MUST use that
               segment number for the pointer.  A pointer with SegmentIdAnnotation does not
@@ -1798,7 +1904,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
               the segment number for each in-order pointer of that group.
             </li>
           </ul>
-          <t>Every group of a segmented NsId MUST have either a GroupData with a StartSegmentId, or
+          <t>Every group of a segmented NcId MUST have either a GroupData with a StartSegmentId, or
             use annotated pointers with SegmentIdAnnotation.</t>
           <t>A segment number MUST indicate exactly one data item.  That is, the producer
             MUST NOT duplicate the segment number in an object name for different objects.
@@ -1810,8 +1916,8 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
             Segments, when fetched in the <strong>manifest order</strong> reconstruct the original data.
           </t>
           <t>Let us make this clear, the original data is constructed by the in-order manifest retrieval, not
-          the segment number order.  We recommend that the manifest in-order sequence SHOULD correspond
-          to the segment number sequence.</t>
+          the segment number order.  The consumer should make no assumptions about reconstructing the original
+          data and the names of those data elements.</t>
           <t>A consumer is not required to fetch every segment.  A consumer may fetch segments in any order
             it chooses.  It may skip around or omit segments.</t>
           <t>It is allowed to have multiple pointers to the same segment number.  This
@@ -1823,8 +1929,32 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
 
       <section><name>Example Structures</name>
         <section><name>Leaf-only data</name>
+
           <figure anchor="leafonly"><name>Leaf-only manifest tree</name>
-            <artwork align="center" name="" type="" alt=""><![CDATA[
+            <artset>
+              <artwork type="svg" name="leafonly.svg">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 216 128" width="60%" class="diagram" text-anchor="middle" font-family="monospace" stroke-linecap="round">
+                  <path d="M 164,56 L 168,64" fill="none" stroke="black"/>
+                  <path d="M 40,64 L 44,56" fill="none" stroke="black"/>
+                  <path d="M 44,56 L 92,56" fill="none" stroke="black"/>
+                  <path d="M 124,56 L 164,56" fill="none" stroke="black"/>
+                  <g class="text">
+                    <text x="108" y="20">Root</text>
+                    <text x="104" y="36">|</text>
+                    <text x="108" y="52">M0</text>
+                    <text x="104" y="68">|</text>
+                    <text x="36" y="84">M1</text>
+                    <text x="108" y="84">M2</text>
+                    <text x="180" y="84">M3</text>
+                    <text x="32" y="100">/ | \</text>
+                    <text x="104" y="100">/ | \</text>
+                    <text x="176" y="100">/ | \</text>
+                    <text x="108" y="116">D0 D1 D2 D3 D4 D5 D6 D7 D8</text>
+                  </g>
+                </svg>
+              </artwork>
+              <artwork type="ascii-art" align="center" name="leafonly.txt">
+                <![CDATA[
            Root
             |
      ______ M0 _____
@@ -1832,12 +1962,14 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
    M1       M2       M3
  / | \    / | \    / | \
 D0 D1 D2 D3 D4 D5 D6 D7 D8
-                        ]]></artwork>
+                ]]>
+              </artwork>
+            </artset>
           </figure>
         </section>
 
         <section>
-          <name>Linear</name>
+          <name>Linear (chain)</name>
           <t>Of special interest are "skewed trees" where a pointer to a manifest may only appear as
             last pointer of (sub-) manifests. Such a tree becomes a sequential list of manifests
             with a maximum of datapointers per manifest packet. Beside the tree shape we also show
@@ -1845,7 +1977,7 @@ D0 D1 D2 D3 D4 D5 D6 D7 D8
             the hash of a manifest packet.</t>
           <artwork align="left" name="" type="" alt=""><![CDATA[
 Root -> M0 ----> M1 ----> ...
-|->DDDD  |->DDDD
+|->DDDD  |->DDDD  |- ...
                         ]]></artwork>
         </section>
       </section>
@@ -1993,16 +2125,61 @@ return (i, o)]]>
           below. For example, the <xref target="venti">venti archival file system of Plan9</xref>
           uses this technique.</t>
 
-        <figure anchor="dedup1">
-          <name>De-duplication</name>
-          <artwork align="center" name="" type="" alt=""><![CDATA[
+          <figure anchor="dedup1"><name>De-duplications</name>
+            <artset>
+              <artwork type="svg" name="dedup.svg">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="80%"  viewBox="0 0 456 96" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+                  <path d="M 160,16 L 176,16" fill="none" stroke="black"/>
+                  <path d="M 272,16 L 288,16" fill="none" stroke="black"/>
+                  <path d="M 160,32 L 176,32" fill="none" stroke="black"/>
+                  <path d="M 272,32 L 288,32" fill="none" stroke="black"/>
+                  <path d="M 272,48 L 288,48" fill="none" stroke="black"/>
+                  <path d="M 160,64 L 176,64" fill="none" stroke="black"/>
+                  <path d="M 160,80 L 176,80" fill="none" stroke="black"/>
+                  <path d="M 272,80 L 288,80" fill="none" stroke="black"/>
+                  <path d="M 80,32 L 104,80" fill="none" stroke="black"/>
+                  <path d="M 360,80 L 384,32" fill="none" stroke="black"/>
+                  <polygon class="arrowhead" points="280,80 268,74.4 268,85.6" fill="black" transform="rotate(180,272,80)"/>
+                  <polygon class="arrowhead" points="280,48 268,42.4 268,53.6" fill="black" transform="rotate(180,272,48)"/>
+                  <polygon class="arrowhead" points="280,32 268,26.4 268,37.6" fill="black" transform="rotate(180,272,32)"/>
+                  <polygon class="arrowhead" points="280,16 268,10.4 268,21.6" fill="black" transform="rotate(180,272,16)"/>
+                  <polygon class="arrowhead" points="184,80 172,74.4 172,85.6" fill="black" transform="rotate(0,176,80)"/>
+                  <polygon class="arrowhead" points="184,64 172,58.4 172,69.6" fill="black" transform="rotate(0,176,64)"/>
+                  <polygon class="arrowhead" points="184,32 172,26.4 172,37.6" fill="black" transform="rotate(0,176,32)"/>
+                  <polygon class="arrowhead" points="184,16 172,10.4 172,21.6" fill="black" transform="rotate(0,176,16)"/>
+                  <g class="text">
+                  <text x="44" y="20">old_mfst -</text>
+                  <text x="124" y="20">- &gt; h1</text>
+                  <text x="220" y="20">oldData1</text>
+                  <text x="324" y="20">h1 &lt; -</text>
+                  <text x="368" y="20">-</text>
+                  <text x="420" y="20">new_mfst</text>
+                  <text x="124" y="36">- &gt; h2</text>
+                  <text x="220" y="36">oldData2</text>
+                  <text x="324" y="36">h2 &lt; -</text>
+                  <text x="368" y="36">-</text>
+                  <text x="220" y="52">replace3</text>
+                  <text x="324" y="52">h5 &lt; -</text>
+                  <text x="368" y="52">-</text>
+                  <text x="124" y="68">- &gt; h3</text>
+                  <text x="220" y="68">oldData3</text>
+                  <text x="132" y="84">&gt; h4</text>
+                  <text x="220" y="84">oldData4</text>
+                  <text x="324" y="84">h4 &lt; -</text>
+                  </g>
+                </svg>
+              </artwork>
+              <artwork type="ascii-art" align="center" name="dedup.txt">
+                <![CDATA[
 old_mfst -  - > h1 --> oldData1  <-- h1 < -  -  new_mfst
          \  - > h2 --> oldData2  <-- h2 < -  - /
           \            replace3  <-- h5 < -  -/
            \- > h3 --> oldData3              /
             \ > h4 --> oldData4  <-- h4 < - /
-                    ]]></artwork>
-        </figure>
+                ]]>
+              </artwork>
+            </artset>
+          </figure>
       </section>
 
       <section anchor="GrowingCollections"><name>Growing ICN collections</name>
@@ -2506,7 +2683,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
             <tr>
               <td align="center">0x0002</td>
               <td align="center">T_AEADMode</td>
-              <td align="center"></td>
+              <td align="center">Value a per IANA "AEAD Algorithms" <xref target='RFC5116'/> </td>
             </tr>
 
             <tr>
@@ -2572,6 +2749,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
           </tbody>
         </table>
 
+<!--
         <aside><t>Do we need to reproduce this here, or is it sufficent to refer to the IANA AEAD table?</t></aside>
 
         <table align="left"><name>FLIC Manifest (AEADMode Values)</name>
@@ -2605,6 +2783,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
             </tr>
           </tbody>
         </table>
+-->
 
         <ul spacing="compact">
           <li>Sub-registry Name: FLIC Manifest (Annotation)</li>
