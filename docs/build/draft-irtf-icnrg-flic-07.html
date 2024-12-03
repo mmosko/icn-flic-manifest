@@ -41,7 +41,7 @@
     wcwidth 0.2.13
     weasyprint 61.2
 -->
-<link href="/usr/src/app/tmp/1a92baa8-ef18-4feb-b8af-81f2f15a27bb/draft-irtf-icnrg-flic-07.xml" rel="alternate" type="application/rfc+xml">
+<link href="/usr/src/app/tmp/662e7911-23bf-466b-abf6-e52c3c57e305/draft-irtf-icnrg-flic-07.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">/*
 
@@ -1228,7 +1228,7 @@ li > p:last-of-type:only-child {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Tschudin, et al.</td>
-<td class="center">Expires 5 June 2025</td>
+<td class="center">Expires 6 June 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1241,12 +1241,12 @@ li > p:last-of-type:only-child {
 <dd class="internet-draft">draft-irtf-icnrg-flic-07</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-12-02" class="published">2 December 2024</time>
+<time datetime="2024-12-03" class="published">3 December 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-06-05">5 June 2025</time></dd>
+<dd class="expires"><time datetime="2025-06-06">6 June 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1300,7 +1300,7 @@ li > p:last-of-type:only-child {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 5 June 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 6 June 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1468,16 +1468,22 @@ li > p:last-of-type:only-child {
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
-                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-integrity-and-origin-authen" class="internal xref">Integrity and Origin Authentication of FLIC Manifests</a></p>
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-trust-security-and-privacy-" class="internal xref">Trust, Security, and Privacy Goals</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
-                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-confidentiality-of-manifest" class="internal xref">Confidentiality of Manifest Data</a></p>
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-integrity-and-origin-authen" class="internal xref">Integrity and Origin Authentication of FLIC Manifests</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3">
-                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-privacy-of-names-and-linkab" class="internal xref">Privacy of names and linkability of access patterns</a></p>
+                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-confidentiality-of-manifest" class="internal xref">Confidentiality of Manifest Data</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.4">
-                <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-symmetric-key-lifespan-scop" class="internal xref">Symmetric key lifespan, scope, and use</a></p>
+                <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-rsa-oaep-security" class="internal xref">RSA-OAEP Security</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.5">
+                <p id="section-toc.1-1.7.2.5.1"><a href="#section-7.5" class="auto internal xref">7.5</a>.  <a href="#name-symmetric-key-lifespan-scop" class="internal xref">Symmetric key lifespan, scope, and use</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.6">
+                <p id="section-toc.1-1.7.2.6.1"><a href="#section-7.6" class="auto internal xref">7.6</a>.  <a href="#name-hiding-plaintext-length" class="internal xref">Hiding Plaintext Length</a></p>
 </li>
             </ul>
 </li>
@@ -1643,8 +1649,10 @@ li > p:last-of-type:only-child {
         <h3 id="name-requirements-language">
 <a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-requirements-language" class="section-name selfRef">Requirements Language</a>
         </h3>
-<p id="section-1.2-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD
-          NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as
+<p id="section-1.2-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>",
+          "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>",
+          "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>"
+          in this document are to be interpreted as
           described in <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span>.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
 </section>
 </section>
@@ -1705,7 +1713,7 @@ li > p:last-of-type:only-child {
 <div id="libraries">
 <p id="section-2-11">FLIC goes to considerable lengths to allow creation and parsing by
         application-independent library code. Therefore, any options used by applications in the
-        data structure or encryption capabilities MUST NOT require applications to have
+        data structure or encryption capabilities <span class="bcp14">MUST NOT</span> require applications to have
         application-specific Manifest traversal algorithms. This ensures that such application
         agnostic libraries can always successfully parse and traverse any FLIC Manifest by ignoring
         the optional capabilities.<a href="#section-2-11" class="pilcrow">¶</a></p>
@@ -1821,7 +1829,7 @@ li > p:last-of-type:only-child {
 <p id="section-3.2-3">A name constructor definition may define one or more Locator prefixes that can be used in the
           construction of Interests from the pointers in the manifest. The Locators are inherited
           when walking a manifest tree, so they do not need to be defined everywhere. It is
-          RECOMMENDED that only the Root manifest contain Locators so that a single operation can
+          <span class="bcp14">RECOMMENDED</span> that only the Root manifest contain Locators so that a single operation can
           update the locators. One use case when storing application payloads at different replicas
           is to replace the Root manifest with a new one that contains locators for the current
           replicas.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
@@ -1840,15 +1848,15 @@ li > p:last-of-type:only-child {
         indicate what Name Constructor to use to fetch the pointers inside the group.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
 <p id="section-3.3-3">NCID 0 is the default name constructor. If it is not defined in an NCD, it is assumed to
           be a HashNamingConstructor. A Manifest may re-define the default as needed.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
-<p id="section-3.3-4">A Manifest MUST use locally unique NCIDs in the NCD.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<p id="section-3.3-4">A Manifest <span class="bcp14">MUST</span> use locally unique NCIDs in the NCD.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
 <p id="section-3.3-5">NCDs and their associated NCIDs are inherited as one traverses a manifest. That is, a
           manifest consumer must remember the NCDs as it traverses manifests. If it encounters a
-          HashGroup that uses an unknown NCID, the RECOMMENDED action is to report a malformed
+          HashGroup that uses an unknown NCID, the <span class="bcp14">RECOMMENDED</span> action is to report a malformed
           manifest to the user.<a href="#section-3.3-5" class="pilcrow">¶</a></p>
 <p id="section-3.3-6">A Manifest may update an NCID. If a child manifest re-defines an NCID, the manifest
-          consumer MUST use the new definition from that point forward under that Manifest
+          consumer <span class="bcp14">MUST</span> use the new definition from that point forward under that Manifest
           branch.<a href="#section-3.3-6" class="pilcrow">¶</a></p>
-<p id="section-3.3-7">It is RECOMMENDED that only the root or similar top-level manifest define NCDs and they
+<p id="section-3.3-7">It is <span class="bcp14">RECOMMENDED</span> that only the root or similar top-level manifest define NCDs and they
           not be re-defined in subsequent manifests.<a href="#section-3.3-7" class="pilcrow">¶</a></p>
 <p id="section-3.3-8">We expect that an application constructing a Manifest will take one of three approaches
           to name constructors. The advantage of using, or re-defining, the default name constructor
@@ -1913,10 +1921,10 @@ li > p:last-of-type:only-child {
 </dd>
           <dd class="break"></dd>
 <dt id="section-3.3-11.7">Type 3 (Segmented Naming):</dt>
-          <dd style="margin-left: 1.5em" id="section-3.3-11.8">As in Type 2, but the consumer MUST track Segment Numbers.  If the Hash Group provides
-          Segment Number annotations for each pointer, it MUST use those numbers.  Otherwise, the
-          consumer MUST use a 0-based counter that follows the traversal order.  The publisher
-          MAY include a <code>StartSegmentId</code> field in the group data to indicate the index
+          <dd style="margin-left: 1.5em" id="section-3.3-11.8">As in Type 2, but the consumer <span class="bcp14">MUST</span> track Segment Numbers.  If the Hash Group provides
+          Segment Number annotations for each pointer, it <span class="bcp14">MUST</span> use those numbers.  Otherwise, the
+          consumer <span class="bcp14">MUST</span> use a 0-based counter that follows the traversal order.  The publisher
+          <span class="bcp14">MAY</span> include a <code>StartSegmentId</code> field in the group data to indicate the index
           of the first hash pointer of the group.<a href="#section-3.3-11.8" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
@@ -2030,11 +2038,12 @@ AlgorithmCtx = AEADCtx / RsaWrapCtx
 AuthTag = T_AUTH_TAG LENGTH *OCTET ; e.g. AEAD authentication tag
 EncryptedNode = T_ENCRYPTED_NODE LENGTH *OCTET ; Encrypted Node
 
-Node = T_NODE LENGTH [NodeData] 1*HashGroup
+Node = T_NODE LENGTH [NodeData] 1*HashGroup [Pad]
 NodeData = T_NODE_DATA LENGTH [SubtreeSize] [SubtreeDigest]
               [Locators] 0*Vendor 0*NcDef
 SubtreeSize = T_SUBTREE_SIZE LENGTH INTEGER
 SubtreeDigest = T_SUBTREE_DIGEST LENGTH HashValue
+Pad = T_PAD LENGTH 0*OCTET ; as per RFC8609
 
 NcDef = T_NCDEF LENGTH NcId NcSchema
 NcId = T_NCID LENGTH INTEGER
@@ -2157,27 +2166,32 @@ WrappedKey = T_WRAPPED_KEY LENGTH RsaOaepEnc{4OCTET 1*OCTET}
           <dd style="margin-left: 1.5em" id="section-3.6-5.24">A list of one or more Hash Values<a href="#section-3.6-5.24" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.25">GroupData:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.26">Metadata that applies to a HashGroup<a href="#section-3.6-5.26" class="pilcrow">¶</a>
+<dt id="section-3.6-5.25">Pad:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.26">The Node may include a Pad, as per <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.3.1" class="relref">Section 3.3.1</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>.
+            This allows the publisher to hide the plaintext length in an encrypted manifest.<a href="#section-3.6-5.26" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.27">LeafSize:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.28">Size of all application data immediately under the Group (i.e. via direct pointers)<a href="#section-3.6-5.28" class="pilcrow">¶</a>
+<dt id="section-3.6-5.27">GroupData:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.28">Metadata that applies to a HashGroup<a href="#section-3.6-5.28" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.29">LeafDigest:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.30">Digest of all application data immediately under the Group<a href="#section-3.6-5.30" class="pilcrow">¶</a>
+<dt id="section-3.6-5.29">LeafSize:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.30">Size of all application data immediately under the Group (i.e. via direct pointers)<a href="#section-3.6-5.30" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.31">StartSegmentId:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.32">
+<dt id="section-3.6-5.31">LeafDigest:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.32">Digest of all application data immediately under the Group<a href="#section-3.6-5.32" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-3.6-5.33">StartSegmentId:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.34">
             If using a name constructor that requires a chunk number (segment number), this field indicates the starting value
             for the group.  Using the StartSegmentId means that a consumer does not need to track the segment id between
-            manifests and simplifies interest name generation.<a href="#section-3.6-5.32" class="pilcrow">¶</a>
+            manifests and simplifies interest name generation.<a href="#section-3.6-5.34" class="pilcrow">¶</a>
 </dd>
           <dd class="break"></dd>
-<dt id="section-3.6-5.33">Ptr:</dt>
-          <dd style="margin-left: 1.5em" id="section-3.6-5.34">The ContentObjectHash of a child, which may be a data ContentObject (i.e. with Payload) or another Manifest Node.<a href="#section-3.6-5.34" class="pilcrow">¶</a>
+<dt id="section-3.6-5.35">Ptr:</dt>
+          <dd style="margin-left: 1.5em" id="section-3.6-5.36">The ContentObjectHash of a child, which may be a data ContentObject (i.e. with Payload) or another Manifest Node.<a href="#section-3.6-5.36" class="pilcrow">¶</a>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -2256,7 +2270,7 @@ reverse_preorder(node)
 <a href="#name-node-expansio" class="selfRef">Node Expansio</a>
             </figcaption></figure>
 </div>
-<p id="section-3.7.1-6">Using the example manifest tree shown in <a href="#leafonly" class="auto internal xref">Figure 23</a>, the in-order
+<p id="section-3.7.1-6">Using the example manifest tree shown in <a href="#leafonly" class="auto internal xref">Figure 24</a>, the in-order
             traversal would be: Root, M0, M1, D0, D1, D2, M2, D3, D4, D5, M3, D6, D7, D8.<a href="#section-3.7.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2294,10 +2308,10 @@ reverse_preorder(node)
 <a href="#section-3.8.1" class="section-number selfRef">3.8.1. </a><a href="#name-aead-mode" class="section-name selfRef">AEAD Mode</a>
           </h4>
 <p id="section-3.8.1-1">This mechanism uses <span><a href="#AESGCM" class="internal xref">AES-GEM</a> [<a href="#AESGCM" class="cite xref">AESGCM</a>]</span> or <span><a href="#RFC3310" class="internal xref">AES-CCM</a> [<a href="#RFC3310" class="cite xref">RFC3310</a>]</span> for manifest encryption. A publisher creating a <code>SecurityCtx</code>
-            SHOULD use the mechanisms in <span>[<a href="#RFC6655" class="cite xref">RFC6655</a>]</span> for AES-CCM IV generation and
+            <span class="bcp14">SHOULD</span> use the mechanisms in <span>[<a href="#RFC6655" class="cite xref">RFC6655</a>]</span> for AES-CCM IV generation and
             <span>[<a href="#RFC5288" class="cite xref">RFC5288</a>]</span>
             for AES-GCM IV generation.<a href="#section-3.8.1-1" class="pilcrow">¶</a></p>
-<p id="section-3.8.1-2">When the publisher and consumer establish the <code>KeyNum</code>, they SHOULD also establish a salt.
+<p id="section-3.8.1-2">When the publisher and consumer establish the <code>KeyNum</code>, they <span class="bcp14">SHOULD</span> also establish a salt.
             This results in a 4-byte salt and 8-byte nonce.  If no salt exists, the AEADNonce
             may be the entire IV.<a href="#section-3.8.1-2" class="pilcrow">¶</a></p>
 <p id="section-3.8.1-3">The scope of the <code>KeyNum</code> is upto the publisher and consumer agreement.  It may be
@@ -2306,17 +2320,17 @@ reverse_preorder(node)
           or scope.  See the <a href="#Security" class="auto internal xref">Section 7</a> section for a discussion.<a href="#section-3.8.1-3" class="pilcrow">¶</a></p>
 <p id="section-3.8.1-4">As these references specify, it is essential that the publisher creating a Manifest
             never use a Nonce more than once for the same key. For keys exchanged via a session
-            protocol, such as CCNx, the publisher MUST use unique nonces on each Manifest for that
-            session. If the key is derived via a group key mechanism, the publisher MUST ensure that
+            protocol, such as CCNx, the publisher <span class="bcp14">MUST</span> use unique nonces on each Manifest for that
+            session. If the key is derived via a group key mechanism, the publisher <span class="bcp14">MUST</span> ensure that
             the same Nonce is not used more than once for the same Content Encryption Key.<a href="#section-3.8.1-4" class="pilcrow">¶</a></p>
 <p id="section-3.8.1-5">The AEAD Mode uses <span>[<a href="#RFC5116" class="cite xref">RFC5116</a>]</span> defined symbols AEAD_AES_128_CCM,
             AEAD_AES_128_GCM, AEAD_AES_256_CCM and AEAH_AES_256_GCM to specify the key length and
             algorithm.<a href="#section-3.8.1-5" class="pilcrow">¶</a></p>
-<p id="section-3.8.1-6"> The <code>KeyNum</code> identifies a key on the receiver. The key MUST be exactly of the
+<p id="section-3.8.1-6"> The <code>KeyNum</code> identifies a key on the receiver. The key <span class="bcp14">MUST</span> be exactly of the
             length specific by the Mode. Many receivers may have the same key with the same
               <code>KeyNum</code>.<a href="#section-3.8.1-6" class="pilcrow">¶</a></p>
-<p id="section-3.8.1-7">The publisher MAY use a KDF for the manifest.  If <code>KDFData</code> is present,
-          the consumer MUST derive a manifest-specific key from the shared key identified by
+<p id="section-3.8.1-7">The publisher <span class="bcp14">MAY</span> use a KDF for the manifest.  If <code>KDFData</code> is present,
+          the consumer <span class="bcp14">MUST</span> derive a manifest-specific key from the shared key identified by
           <code>KeyNum</code>.  The <code>KDFAlg</code> is taken from the IANA registry for <span>[<a href="#RFC9180" class="cite xref">RFC9180</a>]</span>.
           If <code>KDFInfo</code> is present, the consumer uses that string
           as in the KDF's <code>info</code> parameter.  If the <code>KDFInfo</code> is not present, then
@@ -2326,7 +2340,7 @@ reverse_preorder(node)
           associated with the key for use in the AEAD algorithm, this salt should not be used
           in the KDF.  The publisher and consumer may agree on a seaparte random salt as
           part of their key agreement on the <code>KeyNum</code> for use in the KDF.<a href="#section-3.8.1-7" class="pilcrow">¶</a></p>
-<p id="section-3.8.1-8">Within a single manifest tree, a publisher MAY use the same <code>KDFData</code>
+<p id="section-3.8.1-8">Within a single manifest tree, a publisher <span class="bcp14">MAY</span> use the same <code>KDFData</code>
           and <code>KDFInfo</code> over multiple manifests, so long as it uses unique <code>Nonce</code>.
           This allows a consumer to cache a single derived key based on the <code>(KeyNum, KDFInfo)</code>
           pair.  This is the normal use of the KDF mode: the publisher only needs to track a single
@@ -2362,7 +2376,7 @@ reverse_preorder(node)
             <li id="section-3.8.1-12.4">The derived key will use the left <code>bits</code> of the KDF output to satisfy the
             <code>AEADMode</code> key length (typically 128 or 256 bits).<a href="#section-3.8.1-12.4" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.1-12.5">DerivedKey = LEFT(KDF(Shared Key, FixedInfo, Salt), bits).<a href="#section-3.8.1-12.5" class="pilcrow">¶</a>
+            <li id="section-3.8.1-12.5">DerivedKey = LEFT(KDF(Shared Key, FixedInfo, KDF Salt), bits).<a href="#section-3.8.1-12.5" class="pilcrow">¶</a>
 </li>
           </ol>
 <p id="section-3.8.1-13">To encrypt a Manifest, the publisher:<a href="#section-3.8.1-13" class="pilcrow">¶</a></p>
@@ -2409,7 +2423,7 @@ reverse_preorder(node)
 </li>
             <li id="section-3.8.1-16.8">Verifies and decrypts the data using the key and saved <code>AuthTag</code>.<a href="#section-3.8.1-16.8" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.1-16.9">If the decryption fails, the consumer SHOULD notify the user and stop further
+            <li id="section-3.8.1-16.9">If the decryption fails, the consumer <span class="bcp14">SHOULD</span> notify the user and stop further
               processing of the manifest.<a href="#section-3.8.1-16.9" class="pilcrow">¶</a>
 </li>
           </ol>
@@ -2420,102 +2434,135 @@ reverse_preorder(node)
           <h4 id="name-rsa-oaep-key-transport-mode">
 <a href="#section-3.8.2" class="section-number selfRef">3.8.2. </a><a href="#name-rsa-oaep-key-transport-mode" class="section-name selfRef">RSA-OAEP Key Transport Mode</a>
           </h4>
-<p id="section-3.8.2-1">The RSA-OAEP mode uses RSA-OAEP (see <span><a href="https://rfc-editor.org/rfc/rfc8017#section-7.1" class="relref">Section 7.1</a> of [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span>) to encrypt a symmetric
-            key that is used to encrypt the Manifest. We call this RSA key the Key Encryption Key
+<p id="section-3.8.2-1">The RSA-OAEP mode uses RSA-OAEP (see <span><a href="https://rfc-editor.org/rfc/rfc8017#section-7.1" class="relref">Section 7.1</a> of [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span> and <span>[<a href="#NIST-800-56Br2" class="cite xref">NIST-800-56Br2</a>]</span>)
+            to encrypt a symmetric key that is used to encrypt the Manifest. We call this RSA key the Key Encryption Key
             (KEK) and each group member has this private key. A separate key distribuiton system is
             responsible for distributing the KEK. For our purposes, it is reasonable to assume that
             the KEK private key is available at a Locator and that group members can decrypt this
             private key.<a href="#section-3.8.2-1" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-2"><code>T_RSA_WRAP_CTX</code> uses <span><a href="#RFC8017" class="internal xref">RSA-OAEP</a> [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span> with mask generation function 
+<p id="section-3.8.2-2">This usage of RSA-OAEP is intented to be compliant with <span><a href="#NIST-800-56Br2" class="internal xref">KTS-OAEP</a> [<a href="#NIST-800-56Br2" class="cite xref">NIST-800-56Br2</a>]</span>.
+            See <a href="#OAEP_Security" class="auto internal xref">Section 7.4</a> for a discussion of compliance with NIST recommndations.
+            KTS-OAEP compliance only applies when there is a specific owner of the wrapping private key.
+            NIST does not approve KTS-OAEP for group key distribution.<a href="#section-3.8.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-3"><code>T_RSA_WRAP_CTX</code> uses <span><a href="#RFC8017" class="internal xref">RSA-OAEP</a> [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span> with mask generation function 
             <span><a href="#RFC8017" class="internal xref">MGF1</a> [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span> and
             the specified hash algorithm.  The hash algorithm number is taken from the IANA registry
-            "CCNx Hash Function Types".<a href="#section-3.8.2-2" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-3">The <code>RsaOaepData</code> includes an <code>AEADData</code> that indicates how to use the warpped key to
+            "CCNx Hash Function Types," which are all NIST approved hash functions.<a href="#section-3.8.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-4">The <code>RsaOaepData</code> includes an <code>AEADData</code> that indicates how to use the warpped key to
             decrypt the manifest.  It optionally includes the wrapped key itself.  A publisher
-            using <code>RsaWrapCtx</code> MUST include the optional wrapped key information in the first
-            manifest node that uses it.  The publisher MAY include the wrapped key in other manifest nodes.
-            It MUST use distinct <code>KeyNum</code> for distinct <code>WrappedKey</code>.<a href="#section-3.8.2-3" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-4">The RSA-OAEP <code>KeyNum</code> is only significant within a given manifest.<a href="#section-3.8.2-4" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-5">The <code>AEADData</code> MAY include a <code>KDFData</code> element, in which case it is used the
-            same was as with AEAD Mode.<a href="#section-3.8.2-5" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-6">In a typical usage, the publisher would begin encryption at the root manifest.  It must
+            using <code>RsaWrapCtx</code> <span class="bcp14">MUST</span> include the optional wrapped key information in the first
+            manifest node that uses it.  The publisher <span class="bcp14">MAY</span> include the wrapped key in other manifest nodes.
+            It <span class="bcp14">MUST</span> use distinct <code>KeyNum</code> for distinct <code>WrappedKey</code>.<a href="#section-3.8.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-5">The RSA-OAEP <code>KeyNum</code> is only significant within a given manifest.<a href="#section-3.8.2-5" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-6">The <code>AEADData</code> <span class="bcp14">MAY</span> include a <code>KDFData</code> element, in which case it is used the
+            same was as with AEAD Mode.<a href="#section-3.8.2-6" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-7">In a typical usage, the publisher would begin encryption at the root manifest.  It must
               include the full <code>WrapedData</code> here, as it is the first usage of the <code>KeyNum</code>.
               In subsequent manifests, the publisher may only include the <code>AEADData</code> in
-              the <code>RsaOaepData</code> to save space.<a href="#section-3.8.2-6" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-7">The <code>KeyId</code> identifies the KEK.  If the consumer already has the key
+              the <code>RsaOaepData</code> to save space.<a href="#section-3.8.2-7" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-8">The <code>KeyId</code> identifies the KEK.  If the consumer already has the key
             corresponding to <code>KeyId</code> locally, it does not need to fetch it from the <code>LocatorPrefixx</code>.
-            The <code>KeyId</code> is similar to the Content Object KeyId field <span>[<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>.<a href="#section-3.8.2-7" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-8">The symmetric key MUST be one that is compatible with the AEAD Mode, i.e. a 128-bit or
-            256-bit random number. Further, the symmetric key MUST fit in the OAEP envelope.  Note that for
+            The <code>KeyId</code> is similar to the Content Object KeyId field <span>[<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>.<a href="#section-3.8.2-8" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-9">The symmetric key <span class="bcp14">MUST</span> be one that is compatible with the AEAD Mode, i.e. a 128-bit or
+            256-bit random number. Further, the symmetric key <span class="bcp14">MUST</span> fit in the OAEP envelope.  Note that for
             a 128-bit key (16 bytes) plus a 4-byte salt requires a minimum 688-bit RSA key and a 256-bit key
             requires a minimum 816-bit RSA key.  So in practical terms, a 1024-bit RSA key is the miniminum
-            for the RSA-OAEP encryption with a SHA-256 hash algoirithm.<a href="#section-3.8.2-8" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-9">Any group key protocol and system needed are outside the scope of this document. We
+            for the RSA-OAEP encryption with a SHA-256 hash algoirithm (it is recommended to use at least 2048-bit
+            RSA keys <span>[<a href="#NIST-800-131Ar2" class="cite xref">NIST-800-131Ar2</a>]</span>).<a href="#section-3.8.2-9" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-10">Any group key protocol and system needed are outside the scope of this document. We
             assume there is a Key Manager (KM) and a Publisher (P) and a set of group members.
-            Through some means, the Publisher therefore has at its disposal:<a href="#section-3.8.2-9" class="pilcrow">¶</a></p>
+            Through some means, the Publisher therefore has at its disposal:<a href="#section-3.8.2-10" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3.8.2-10.1">A Content Encryption Key (CEK), i.e. the symmetric key.<a href="#section-3.8.2-10.1" class="pilcrow">¶</a>
+<li class="normal" id="section-3.8.2-11.1">A Content Encryption Key (CEK), i.e. the symmetric key.<a href="#section-3.8.2-11.1" class="pilcrow">¶</a>
 </li>
-            <li class="normal" id="section-3.8.2-10.2">The RSA-OAEP wrapped CEK.<a href="#section-3.8.2-10.2" class="pilcrow">¶</a>
+            <li class="normal" id="section-3.8.2-11.2">The RSA-OAEP wrapped CEK.<a href="#section-3.8.2-11.2" class="pilcrow">¶</a>
 </li>
-            <li class="normal" id="section-3.8.2-10.3">The KeyId of the KEK used to wrap the CEK.<a href="#section-3.8.2-10.3" class="pilcrow">¶</a>
+            <li class="normal" id="section-3.8.2-11.3">The KeyId of the KEK used to wrap the CEK.<a href="#section-3.8.2-11.3" class="pilcrow">¶</a>
 </li>
-            <li class="normal" id="section-3.8.2-10.4">The Locator of the KEK, which is shared under some group key protocol.<a href="#section-3.8.2-10.4" class="pilcrow">¶</a>
+            <li class="normal" id="section-3.8.2-11.4">The Locator of the KEK, which is shared under some group key protocol.<a href="#section-3.8.2-11.4" class="pilcrow">¶</a>
 </li>
           </ul>
-<p id="section-3.8.2-11">This specification requires that if a group member fetches the KEK key at
+<p id="section-3.8.2-12">This specification requires that if a group member fetches the KEK key at
             Locator, it can decrypt the <code>WrappedKey</code>
             and retrieve the CEK.  The <code>WrappedKey</code>
             includes a 4-byte salt plus an AES key.  The 4-byte salt is used by the AEAD algorithm
-            as part of the IV, and MUST remain the same for the given <code>KeyNum</code>.<a href="#section-3.8.2-11" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-12">In one example, a publisher could request a key for a group and the Key Manager could
+            as part of the IV, and <span class="bcp14">MUST</span> remain the same for the given <code>KeyNum</code>.<a href="#section-3.8.2-12" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-13">In one example, a publisher could request a key for a group and the Key Manager could
             securely communicate (<code>CEK, Wapped_CEK, KeyId, Locator</code>) back to the publisher.
             The Key Manager is responsible for publishing the Locator. In another example, the
             publisher could be a group member and have a group private key in which case the
             publisher can create their own key encryption key, publish it under the Locator and
             proceed. The publisher generates <code>CEK, Wrapped_CEK, KeyId</code>, and a Locator on its
-            own.<a href="#section-3.8.2-12" class="pilcrow">¶</a></p>
-<p id="section-3.8.2-13">To create the wrapped key using a Key Encryption Key:<a href="#section-3.8.2-13" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-3.8.2-14">
-            <li id="section-3.8.2-14.1">Obtain the CEK in binary format (e.g. 32 bytes for 256 bits)<a href="#section-3.8.2-14.1" class="pilcrow">¶</a>
+            own.<a href="#section-3.8.2-13" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-14">The RSA-OAEP "label" ("additional information" in <span>[<a href="#NIST-800-131Ar2" class="cite xref">NIST-800-131Ar2</a>]</span>)
+            is constructed as follows.  The Name TLV is the name of the Content Object carrying
+            the <code>RsaOaepWrapper</code> with the <code>WrappedKey</code> or the original root manifest name if
+            the current content object does not have a name.  The RSA signing key is the signing key
+            of the current Content Object (if signed) or the original root manfiest signing key.
+            The <code>KeyId, KeyLink, HashAlg</code> TLVs are from the <code>RsaOaepWrapper</code> field.
+            The label is hashed via the <code>HashAlg</code>, so the length of the label does not
+            affect the size of the encryption.<a href="#section-3.8.2-14" class="pilcrow">¶</a></p>
+<span id="name-oaep-label"></span><div id="AdditionalInfo">
+<figure id="figure-5">
+            <div class="lang-pseudocode sourcecode" id="section-3.8.2-15.1">
+<pre>
+AdditionalInfo = "FLIC RSA-OAEP" ||
+                 RSA Signing Public Key TLV ||
+                 Name TLV of immediate or root manifest ||
+                 Wrapping KeyID TLV ||
+                 Wrapping KeyLink TLV (if present in RsaOaepWrapper) ||
+                 Wrapping HashAlg TLV
+
+</pre>
+</div>
+<figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
+<a href="#name-oaep-label" class="selfRef">OAEP Label</a>
+            </figcaption></figure>
+</div>
+<p id="section-3.8.2-16">To create the wrapped key using a Key Encryption Key:<a href="#section-3.8.2-16" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.8.2-17">
+            <li id="section-3.8.2-17.1">Obtain the CEK in binary format (e.g. 32 bytes for 256 bits)<a href="#section-3.8.2-17.1" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.2-14.2">RSA encrypt the <code>WrappedKey</code> value using the KEK public key with OAEP padding, following <span><a href="https://rfc-editor.org/rfc/rfc8017#section-7.1" class="relref">Section 7.1</a> of [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span>. The encryption is not signed because the
+            <li id="section-3.8.2-17.2">RSA encrypt the <code>WrappedKey</code> value using the KEK public key with OAEP padding and
+              the OAEP label (additional information), following <span>[<a href="#NIST-800-131Ar2" class="cite xref">NIST-800-131Ar2</a>]</span>. The encryption is not signed or authenticated because the
               root Manifest must have been signed by the publisher already.  Or the encapsulating
-              Content Object (Data Object) is signed via ICN mechanisms.<a href="#section-3.8.2-14.2" class="pilcrow">¶</a>
+              Content Object (Data Object) is signed via ICN mechanisms.<a href="#section-3.8.2-17.2" class="pilcrow">¶</a>
 </li>
           </ol>
-<p id="section-3.8.2-15">To decrypt the wrapped key using a Key Encryption Key:<a href="#section-3.8.2-15" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-3.8.2-16">
-            <li id="section-3.8.2-16.1">RSA decrypt the <code>WrappedKey</code> value using the KEK private key with OAEP padding, following
-                <span><a href="https://rfc-editor.org/rfc/rfc8017#section-7.1" class="relref">Section 7.1</a> of [<a href="#RFC8017" class="cite xref">RFC8017</a>]</span>.<a href="#section-3.8.2-16.1" class="pilcrow">¶</a>
+<p id="section-3.8.2-18">To decrypt the wrapped key using a Key Encryption Key:<a href="#section-3.8.2-18" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.8.2-19">
+            <li id="section-3.8.2-19.1">RSA decrypt the <code>WrappedKey</code> value using the KEK private key with OAEP padding and
+              OAEP label, following
+              <span>[<a href="#NIST-800-131Ar2" class="cite xref">NIST-800-131Ar2</a>]</span>.<a href="#section-3.8.2-19.1" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.2-16.2">Verify the unwrapped key is a valid length for the AEADMode.<a href="#section-3.8.2-16.2" class="pilcrow">¶</a>
-</li>
-          </ol>
-<p id="section-3.8.2-17">To encrypt a Manifest, the publisher:<a href="#section-3.8.2-17" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-3.8.2-18">
-            <li id="section-3.8.2-18.1">Acquires the set of (CEK, salt, WrappedKey, KeyId, Locator).  The publisher may
-              generate these values itself, or acquire them from a key manager.<a href="#section-3.8.2-18.1" class="pilcrow">¶</a>
-</li>
-            <li id="section-3.8.2-18.2">Creates a <code>SecurityCtx</code> and adds it to the Manifest. The <code>SecurityCtx</code>
-              includes an <code>AEADNonce</code> and <code>AEADMode</code>, as per AEAD mode.<a href="#section-3.8.2-18.2" class="pilcrow">¶</a>
-</li>
-            <li id="section-3.8.2-18.3">Encrypts the Manifest as per AEAD Mode using the RSA-OAEP SecurityCtx and CEK.<a href="#section-3.8.2-18.3" class="pilcrow">¶</a>
+            <li id="section-3.8.2-19.2">Verify the unwrapped key is a valid length for the AEADMode.<a href="#section-3.8.2-19.2" class="pilcrow">¶</a>
 </li>
           </ol>
-<p id="section-3.8.2-19">To decrypt a Manifest, the consumer:<a href="#section-3.8.2-19" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-3.8.2-20">
-            <li id="section-3.8.2-20.1">Acquires the RSA private key corresponding to <code>KeyId</code> via the <code>KeyLocator</code>
-            or whatever means the publisher and consumers use to distribute keys.<a href="#section-3.8.2-20.1" class="pilcrow">¶</a>
+<p id="section-3.8.2-20">To encrypt a Manifest, the publisher:<a href="#section-3.8.2-20" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.8.2-21">
+            <li id="section-3.8.2-21.1">Acquires the set of (CEK, salt, WrappedKey, KeyId, Locator).  The publisher may
+              generate these values itself, or acquire them from a key manager.<a href="#section-3.8.2-21.1" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.2-20.2">It SHOULD verify that it trusts the Manifest publisher to use the provided key
-              Locator.<a href="#section-3.8.2-20.2" class="pilcrow">¶</a>
+            <li id="section-3.8.2-21.2">Creates a <code>SecurityCtx</code> and adds it to the Manifest. The <code>SecurityCtx</code>
+              includes an <code>AEADNonce</code> and <code>AEADMode</code>, as per AEAD mode.<a href="#section-3.8.2-21.2" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.2-20.3">Decrypts the <code>WrappedKey</code> to get the CEK and salt. If the consumer has already decrypted the
-              same exact WrappedKey TLV block, it may use that cached CEK and salt.<a href="#section-3.8.2-20.3" class="pilcrow">¶</a>
+            <li id="section-3.8.2-21.3">It is <span class="bcp14">RECOMMENDED</span> to also inclue the use of a KDF in the <code>AEADData</code>.<a href="#section-3.8.2-21.3" class="pilcrow">¶</a>
 </li>
-            <li id="section-3.8.2-20.4">Using the <code>CEK</code>, <code>AEADNonce</code>, and <code>AEADMode</code>, decrypt the
-              Manifest as per AEAD Mode.<a href="#section-3.8.2-20.4" class="pilcrow">¶</a>
+            <li id="section-3.8.2-21.4">Encrypts the Manifest as per AEAD Mode using the RSA-OAEP SecurityCtx and CEK.<a href="#section-3.8.2-21.4" class="pilcrow">¶</a>
+</li>
+          </ol>
+<p id="section-3.8.2-22">To decrypt a Manifest, the consumer:<a href="#section-3.8.2-22" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.8.2-23">
+            <li id="section-3.8.2-23.1">Acquires the RSA private key corresponding to <code>KeyId</code> via the <code>KeyLocator</code>
+            or whatever means the publisher and consumers use to distribute keys.<a href="#section-3.8.2-23.1" class="pilcrow">¶</a>
+</li>
+            <li id="section-3.8.2-23.2">It <span class="bcp14">SHOULD</span> verify that it trusts the Manifest publisher to use the provided wrapping key.<a href="#section-3.8.2-23.2" class="pilcrow">¶</a>
+</li>
+            <li id="section-3.8.2-23.3">Decrypts the <code>WrappedKey</code> to get the CEK and salt. If the consumer has already decrypted the
+              same exact WrappedKey TLV block, it may use that cached CEK and salt.  The same wrapping key is determined
+              by the publisher's signing KeyId, the wrapping key KeyId, and the AEADData.<a href="#section-3.8.2-23.3" class="pilcrow">¶</a>
+</li>
+            <li id="section-3.8.2-23.4">Using the <code>CEK</code> and <code>AEADData</code>, decrypt the Manifest as per AEAD Mode.<a href="#section-3.8.2-23.4" class="pilcrow">¶</a>
 </li>
           </ol>
 </section>
@@ -2539,7 +2586,7 @@ reverse_preorder(node)
             type is required. Therefore this specification defines a new payload type of
             T_PAYLOADTYPE_MANIFEST.<a href="#section-3.9.1-2" class="pilcrow">¶</a></p>
 <span id="name-ccnx-embedding-grammar"></span><div id="CCNxGrammer">
-<figure id="figure-5">
+<figure id="figure-6">
             <div class="lang-abnf sourcecode" id="section-3.9.1-3.1">
 <pre>
 ManifestContentObject = TYPE LENGTH [Name] [ExpiryTime]
@@ -2550,7 +2597,7 @@ PayloadType = TYPE LENGTH T_PAYLOADTYPE_MANIFEST ; Value TBD
 Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 </pre>
 </div>
-<figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
+<figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
 <a href="#name-ccnx-embedding-grammar" class="selfRef">CCNx Embedding Grammar</a>
             </figcaption></figure>
 </div>
@@ -2573,7 +2620,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 </li>
               <li class="normal" id="section-3.9.1.1-3.2">The Root Manifest has an NsDef that specifies HashSchema. Its GroupData uses that
                 NsId. All internal and leaf manifests use the same GroupData NsId. A Manifest Tree
-                MAY omit the NsDef and NsId elements and rely on the default being HashSchema.<a href="#section-3.9.1.1-3.2" class="pilcrow">¶</a>
+                <span class="bcp14">MAY</span> omit the NsDef and NsId elements and rely on the default being HashSchema.<a href="#section-3.9.1.1-3.2" class="pilcrow">¶</a>
 </li>
               <li class="normal" id="section-3.9.1.1-3.3">The Top Manifest is a nameless CCNx content object. It may have cache control
                 directies.<a href="#section-3.9.1.1-3.3" class="pilcrow">¶</a>
@@ -2731,7 +2778,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
                 TLV contexts.  A parser may skip over any experimental TLV it does not implement.
                 We do not show experimental TLVs in the artwork below.<a href="#section-3.9.1.5-5" class="pilcrow">¶</a></p>
 <p id="section-3.9.1.5-6">There is no required order of TLV blocks withhin a TLV context.  We show the
-                  RECOMMENDED ordering of TLV blocks.  TLV blocks MUST NOT repeat unless
+                  <span class="bcp14">RECOMMENDED</span> ordering of TLV blocks.  TLV blocks <span class="bcp14">MUST NOT</span> repeat unless
                   specifically allowed in the <span><a href="#grammar" class="internal xref">grammar</a> (<a href="#grammar" class="auto internal xref">Section 3.6</a>)</span>.<a href="#section-3.9.1.5-6" class="pilcrow">¶</a></p>
 <div id="tlv_manifest">
 <section id="section-3.9.1.5.1">
@@ -2744,7 +2791,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
             But it may also have a Security Context, Node, and Authentication Tag.  This can happen when a manifest
             is in-place decrypted.  In place decryption operates on the body of the <code>EncryptedNode</code> TLV and
             then changes the type from <code>T_ENCRYPTED_NODE</code> to <code>T_NODE</code>.<a href="#section-3.9.1.5.1-2" class="pilcrow">¶</a></p>
-<span id="name-flic-manifest-tlv-container"></span><figure id="figure-6">
+<span id="name-flic-manifest-tlv-container"></span><figure id="figure-7">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.1-3.1">
 <pre>
                     1                   2                   3
@@ -2760,7 +2807,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
+<figcaption><a href="#figure-7" class="selfRef">Figure 7</a>:
 <a href="#name-flic-manifest-tlv-container" class="selfRef">FLIC manifest TLV container</a>
                 </figcaption></figure>
 </section>
@@ -2773,7 +2820,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 <p id="section-3.9.1.5.2-1">The <code>SecurityCtx</code> TLV wraps an <code>AlgroithmCtx</code>, which may be either a
         symmetric key encryption context <code>AEADCtx</code> or an assymetric key wrapping
         of the decryption key, <code>RsaWrapCtx</code>.<a href="#section-3.9.1.5.2-1" class="pilcrow">¶</a></p>
-<span id="name-flic-security-context-tlv-c"></span><figure id="figure-7">
+<span id="name-flic-security-context-tlv-c"></span><figure id="figure-8">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.2-2.1">
 <pre>
                     1                   2                   3
@@ -2785,7 +2832,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-7" class="selfRef">Figure 7</a>:
+<figcaption><a href="#figure-8" class="selfRef">Figure 8</a>:
 <a href="#name-flic-security-context-tlv-c" class="selfRef">FLIC Security Context TLV container</a>
                 </figcaption></figure>
 </section>
@@ -2803,7 +2850,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 <p id="section-3.9.1.5.3-3">The <code>AEADMode</code> is an integer that identifes the encryption algorithm.
         All defined values fit within 1 octet.  The IANA registry "AEAD Algorithms"
         allows for up to 2 octets.<a href="#section-3.9.1.5.3-3" class="pilcrow">¶</a></p>
-<span id="name-flic-aead-context-tlv-conta"></span><figure id="figure-8">
+<span id="name-flic-aead-context-tlv-conta"></span><figure id="figure-9">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.3-4.1">
 <pre>
                     1                   2                   3
@@ -2827,7 +2874,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-8" class="selfRef">Figure 8</a>:
+<figcaption><a href="#figure-9" class="selfRef">Figure 9</a>:
 <a href="#name-flic-aead-context-tlv-conta" class="selfRef">FLIC AEAD Context TLV container</a>
                 </figcaption></figure>
 </section>
@@ -2846,7 +2893,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
           network byte order.<a href="#section-3.9.1.5.4-2" class="pilcrow">¶</a></p>
 <p id="section-3.9.1.5.4-3">The wrapped key value is the RSA-OAEP cyphertext of
           the <code>WrappedKey</code> record.<a href="#section-3.9.1.5.4-3" class="pilcrow">¶</a></p>
-<span id="name-flic-rsa-oaep-tlv-container"></span><figure id="figure-9">
+<span id="name-flic-rsa-oaep-tlv-container"></span><figure id="figure-10">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.4-4.1">
 <pre>
                     1                   2                   3
@@ -2889,7 +2936,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 
 </pre>
 </div>
-<figcaption><a href="#figure-9" class="selfRef">Figure 9</a>:
+<figcaption><a href="#figure-10" class="selfRef">Figure 10</a>:
 <a href="#name-flic-rsa-oaep-tlv-container" class="selfRef">FLIC RSA-OAEP TLV container</a>
                 </figcaption></figure>
 </section>
@@ -2901,7 +2948,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
               </h6>
 <p id="section-3.9.1.5.5-1">The <code>Node</code> contains the manifest information.  It has an
         optional NodeData, plus one or more hash groups.<a href="#section-3.9.1.5.5-1" class="pilcrow">¶</a></p>
-<span id="name-flic-node-tlv-container"></span><figure id="figure-10">
+<span id="name-flic-node-tlv-container"></span><figure id="figure-11">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.5-2.1">
 <pre>
                     1                   2                   3
@@ -2915,7 +2962,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-10" class="selfRef">Figure 10</a>:
+<figcaption><a href="#figure-11" class="selfRef">Figure 11</a>:
 <a href="#name-flic-node-tlv-container" class="selfRef">FLIC Node TLV container</a>
                 </figcaption></figure>
 </section>
@@ -2930,7 +2977,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
         TLV container.<a href="#section-3.9.1.5.6-1" class="pilcrow">¶</a></p>
 <p id="section-3.9.1.5.6-2">SubtreeSize, SubtreeDigest, and Vendor are encoded as previously specified
           (<code>INTEGER</code>, <code>HashValue</code>, and <code>T_ORG</code>, respectively).<a href="#section-3.9.1.5.6-2" class="pilcrow">¶</a></p>
-<span id="name-flic-nodedata-tlv-container"></span><figure id="figure-11">
+<span id="name-flic-nodedata-tlv-container"></span><figure id="figure-12">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.6-3.1">
 <pre>
                     1                   2                   3
@@ -2950,7 +2997,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-11" class="selfRef">Figure 11</a>:
+<figcaption><a href="#figure-12" class="selfRef">Figure 12</a>:
 <a href="#name-flic-nodedata-tlv-container" class="selfRef">FLIC NodeData TLV container</a>
                 </figcaption></figure>
 </section>
@@ -2964,7 +3011,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
         <code>Locator</code> entries.  Each <code>Locator</code> wraps a CCN x Link <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.3.4" class="relref">Section 3.3.4</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>.
         In the CCNx draft, "Link" does not have its own TLV type, but rather is embedded inside a type
         with specific meaning, such as KeyLink or PublicKeyLocator.<a href="#section-3.9.1.5.7-1" class="pilcrow">¶</a></p>
-<span id="name-flic-locators-tlv-container"></span><figure id="figure-12">
+<span id="name-flic-locators-tlv-container"></span><figure id="figure-13">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.7-2.1">
 <pre>
                     1                   2                   3
@@ -2976,10 +3023,10 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-12" class="selfRef">Figure 12</a>:
+<figcaption><a href="#figure-13" class="selfRef">Figure 13</a>:
 <a href="#name-flic-locators-tlv-container" class="selfRef">FLIC Locators TLV container</a>
                 </figcaption></figure>
-<span id="name-flic-locator-tlv-container"></span><figure id="figure-13">
+<span id="name-flic-locator-tlv-container"></span><figure id="figure-14">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.7-3.1">
 <pre>
                     1                   2                   3
@@ -2991,7 +3038,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-13" class="selfRef">Figure 13</a>:
+<figcaption><a href="#figure-14" class="selfRef">Figure 14</a>:
 <a href="#name-flic-locator-tlv-container" class="selfRef">FLIC Locator TLV container</a>
                 </figcaption></figure>
 </section>
@@ -3008,7 +3055,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 <p id="section-3.9.1.5.8-3"><code>NcSchema</code> may include <code>ProtocolFlags</code>, which are TLVs
         intended to be included in an Interest.  These may control discovery or
         response freshness.  The value of protocol flags is ICN specific.<a href="#section-3.9.1.5.8-3" class="pilcrow">¶</a></p>
-<span id="name-flic-name-constructor-defin"></span><figure id="figure-14">
+<span id="name-flic-name-constructor-defin"></span><figure id="figure-15">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.8-4.1">
 <pre>
                     1                   2                   3
@@ -3022,7 +3069,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-14" class="selfRef">Figure 14</a>:
+<figcaption><a href="#figure-15" class="selfRef">Figure 15</a>:
 <a href="#name-flic-name-constructor-defin" class="selfRef">FLIC Name Constructor Definition TLV container</a>
                 </figcaption></figure>
 </section>
@@ -3034,7 +3081,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
               </h6>
 <p id="section-3.9.1.5.9-1">The <code>HashSchema</code> uses CCNx nameless objects.  It must have
         one or more locators.<a href="#section-3.9.1.5.9-1" class="pilcrow">¶</a></p>
-<span id="name-flic-hash-schema-tlv-contai"></span><figure id="figure-15">
+<span id="name-flic-hash-schema-tlv-contai"></span><figure id="figure-16">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.9-2.1">
 <pre>
                     1                   2                   3
@@ -3050,7 +3097,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-15" class="selfRef">Figure 15</a>:
+<figcaption><a href="#figure-16" class="selfRef">Figure 16</a>:
 <a href="#name-flic-hash-schema-tlv-contai" class="selfRef">FLIC Hash Schema TLV container</a>
                 </figcaption></figure>
 </section>
@@ -3063,7 +3110,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 <p id="section-3.9.1.5.10-1">The <code>PrefixSchema</code> uses named content objects.
         CCNx uses the provided name and does not use locators.<a href="#section-3.9.1.5.10-1" class="pilcrow">¶</a></p>
 <p id="section-3.9.1.5.10-2">The <code>Name</code> is encoded as <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.6.1" class="relref">Section 3.6.1</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>.<a href="#section-3.9.1.5.10-2" class="pilcrow">¶</a></p>
-<span id="name-flic-prefix-schema-tlv-cont"></span><figure id="figure-16">
+<span id="name-flic-prefix-schema-tlv-cont"></span><figure id="figure-17">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.10-3.1">
 <pre>
                     1                   2                   3
@@ -3077,7 +3124,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-16" class="selfRef">Figure 16</a>:
+<figcaption><a href="#figure-17" class="selfRef">Figure 17</a>:
 <a href="#name-flic-prefix-schema-tlv-cont" class="selfRef">FLIC Prefix Schema TLV container</a>
                 </figcaption></figure>
 </section>
@@ -3094,7 +3141,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 <p id="section-3.9.1.5.11-2">The <code>Name</code> is encoded as <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.6.1" class="relref">Section 3.6.1</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>.<a href="#section-3.9.1.5.11-2" class="pilcrow">¶</a></p>
 <p id="section-3.9.1.5.11-3">In CCNx, the <code>SuffixComponentType</code> must be 2 octets, as per
         the CCNx TLV type size.<a href="#section-3.9.1.5.11-3" class="pilcrow">¶</a></p>
-<span id="name-flic-segmented-schema-tlv-c"></span><figure id="figure-17">
+<span id="name-flic-segmented-schema-tlv-c"></span><figure id="figure-18">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.11-4.1">
 <pre>
                     1                   2                   3
@@ -3112,7 +3159,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-17" class="selfRef">Figure 17</a>:
+<figcaption><a href="#figure-18" class="selfRef">Figure 18</a>:
 <a href="#name-flic-segmented-schema-tlv-c" class="selfRef">FLIC Segmented Schema TLV container</a>
                 </figcaption></figure>
 </section>
@@ -3130,11 +3177,11 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 <p id="section-3.9.1.5.12-3"><code>Ptrs</code> is an array
         of raw CCNx hash values entries (i.e. SHA256 TLVs), as per
         <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.3.3" class="relref">Section 3.3.3</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>.
-        Each entry MAY be a different hash type and different TLV length,
+        Each entry <span class="bcp14">MAY</span> be a different hash type and different TLV length,
         so a parser must use the hash TLV type and TLV length fields
         of each entry.<a href="#section-3.9.1.5.12-3" class="pilcrow">¶</a></p>
 <p id="section-3.9.1.5.12-4"><code>AnotatedPtrs</code> is a list of annotations for each pointer.<a href="#section-3.9.1.5.12-4" class="pilcrow">¶</a></p>
-<span id="name-flic-hash-group-tlv-contain"></span><figure id="figure-18">
+<span id="name-flic-hash-group-tlv-contain"></span><figure id="figure-19">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.12-5.1">
 <pre>
                     1                   2                   3
@@ -3148,10 +3195,10 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-18" class="selfRef">Figure 18</a>:
+<figcaption><a href="#figure-19" class="selfRef">Figure 19</a>:
 <a href="#name-flic-hash-group-tlv-contain" class="selfRef">FLIC Hash Group TLV container</a>
                 </figcaption></figure>
-<span id="name-flic-ptrs-tlv-container"></span><figure id="figure-19">
+<span id="name-flic-ptrs-tlv-container"></span><figure id="figure-20">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.12-6.1">
 <pre>
                     1                   2                   3
@@ -3163,7 +3210,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-19" class="selfRef">Figure 19</a>:
+<figcaption><a href="#figure-20" class="selfRef">Figure 20</a>:
 <a href="#name-flic-ptrs-tlv-container" class="selfRef">FLIC Ptrs TLV container</a>
                 </figcaption></figure>
 </section>
@@ -3176,7 +3223,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 <p id="section-3.9.1.5.13-1">The <code>GroupData</code> is a set of optional fields.
         The encoding of these fields has been previously described
         (NcId, INTEGER, HashValue, T_ORG).<a href="#section-3.9.1.5.13-1" class="pilcrow">¶</a></p>
-<span id="name-flic-group-data-tlv-contain"></span><figure id="figure-20">
+<span id="name-flic-group-data-tlv-contain"></span><figure id="figure-21">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.13-2.1">
 <pre>
                     1                   2                   3
@@ -3200,7 +3247,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-20" class="selfRef">Figure 20</a>:
+<figcaption><a href="#figure-21" class="selfRef">Figure 21</a>:
 <a href="#name-flic-group-data-tlv-contain" class="selfRef">FLIC Group Data TLV container</a>
                 </figcaption></figure>
 </section>
@@ -3216,7 +3263,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
           allowed by the annotation.<a href="#section-3.9.1.5.14-2" class="pilcrow">¶</a></p>
 <p id="section-3.9.1.5.14-3">The defined annotations (SizeAnnotation, SegmentIdAnnotation, and LinkAnnotation)
           all use previously defined encodings (INTEGER or Name) and are not shown here.<a href="#section-3.9.1.5.14-3" class="pilcrow">¶</a></p>
-<span id="name-flic-annotated-pointers-tlv"></span><figure id="figure-21">
+<span id="name-flic-annotated-pointers-tlv"></span><figure id="figure-22">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.14-4.1">
 <pre>
                     1                   2                   3
@@ -3228,10 +3275,10 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-21" class="selfRef">Figure 21</a>:
+<figcaption><a href="#figure-22" class="selfRef">Figure 22</a>:
 <a href="#name-flic-annotated-pointers-tlv" class="selfRef">FLIC Annotated Pointers TLV container</a>
                 </figcaption></figure>
-<span id="name-flic-pointer-block-tlv-cont"></span><figure id="figure-22">
+<span id="name-flic-pointer-block-tlv-cont"></span><figure id="figure-23">
                 <div class="alignLeft art-text artwork" id="section-3.9.1.5.14-5.1">
 <pre>
                     1                   2                   3
@@ -3247,7 +3294,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 +---------------+---------------+---------------+---------------+
 </pre>
 </div>
-<figcaption><a href="#figure-22" class="selfRef">Figure 22</a>:
+<figcaption><a href="#figure-23" class="selfRef">Figure 23</a>:
 <a href="#name-flic-pointer-block-tlv-cont" class="selfRef">FLIC Pointer Block TLV container</a>
                 </figcaption></figure>
 </section>
@@ -3280,7 +3327,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 </li>
               <li class="normal" id="section-3.9.2.1-3.2">The Root Manifest has an NsDef that specifies HashSchema. Its GroupData uses that
                 NsId. All internal and leaf manifests use the same GroupData NsId. A Manifest Tree
-                MAY omit the NsDef and NsId elements and rely on the default being HashSchema.<a href="#section-3.9.2.1-3.2" class="pilcrow">¶</a>
+                <span class="bcp14">MAY</span> omit the NsDef and NsId elements and rely on the default being HashSchema.<a href="#section-3.9.2.1-3.2" class="pilcrow">¶</a>
 </li>
               <li class="normal" id="section-3.9.2.1-3.3">The Top Manifest has a 0-length Name. It may have cache control directies.<a href="#section-3.9.2.1-3.3" class="pilcrow">¶</a>
 </li>
@@ -3418,7 +3465,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 <p id="section-3.9.3-2">There are two methods to guide a consumer in generating segment IDs for
             hash pointers:<a href="#section-3.9.3-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3.9.3-3.1">If fetching a pointer with a SegmentIdAnnotation, the consumer MUST use that
+<li class="normal" id="section-3.9.3-3.1">If fetching a pointer with a SegmentIdAnnotation, the consumer <span class="bcp14">MUST</span> use that
               segment number for the pointer.  A pointer with SegmentIdAnnotation does not
               increment the SegmentId used by the GroupData case.<a href="#section-3.9.3-3.1" class="pilcrow">¶</a>
 </li>
@@ -3427,11 +3474,11 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
               the segment number for each in-order pointer of that group.<a href="#section-3.9.3-3.2" class="pilcrow">¶</a>
 </li>
           </ul>
-<p id="section-3.9.3-4">Every group of a segmented NcId MUST have either a GroupData with a StartSegmentId, or
+<p id="section-3.9.3-4">Every group of a segmented NcId <span class="bcp14">MUST</span> have either a GroupData with a StartSegmentId, or
             use annotated pointers with SegmentIdAnnotation.<a href="#section-3.9.3-4" class="pilcrow">¶</a></p>
-<p id="section-3.9.3-5">A segment number MUST indicate exactly one data item.  That is, the producer
-            MUST NOT duplicate the segment number in an object name for different objects.
-            The object hash MUST be the same for the same segment number of a name.<a href="#section-3.9.3-5" class="pilcrow">¶</a></p>
+<p id="section-3.9.3-5">A segment number <span class="bcp14">MUST</span> indicate exactly one data item.  That is, the producer
+            <span class="bcp14">MUST NOT</span> duplicate the segment number in an object name for different objects.
+            The object hash <span class="bcp14">MUST</span> be the same for the same segment number of a name.<a href="#section-3.9.3-5" class="pilcrow">¶</a></p>
 <p id="section-3.9.3-6">It is allowed to have multiple manifest entries with the same segment number (see below).<a href="#section-3.9.3-6" class="pilcrow">¶</a></p>
 <p id="section-3.9.3-7">While a producer is allowed to mix using GroupData StartSegmentId and SegmentIdAnnotation,
             we in general do not consider that a good idea.  It is up to the manifest producer to ensure
@@ -3459,7 +3506,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
 <a href="#section-3.10.1" class="section-number selfRef">3.10.1. </a><a href="#name-leaf-only-data" class="section-name selfRef">Leaf-only data</a>
           </h4>
 <span id="name-leaf-only-manifest-tree"></span><div id="leafonly">
-<figure id="figure-23">
+<figure id="figure-24">
             <div id="section-3.10.1-1.1">
               <div class="alignLeft art-svg artwork" id="section-3.10.1-1.1.1">
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 216 128" width="60%" class="diagram" text-anchor="middle" font-family="monospace" stroke-linecap="round">
@@ -3483,7 +3530,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object
                 </svg><a href="#section-3.10.1-1.1.1" class="pilcrow">¶</a>
 </div>
 </div>
-<figcaption><a href="#figure-23" class="selfRef">Figure 23</a>:
+<figcaption><a href="#figure-24" class="selfRef">Figure 24</a>:
 <a href="#name-leaf-only-manifest-tree" class="selfRef">Leaf-only manifest tree</a>
             </figcaption></figure>
 </div>
@@ -3547,7 +3594,7 @@ Root -&gt; M0 ----&gt; M1 ----&gt; ...
           to generate Interests. Take for example the figure below where the root manifest is named
           by hash h0. It has nameless children with hashes with hashes h1 ... hN.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
 <span id="name-data-organization"></span><div id="Locating1">
-<figure id="figure-24">
+<figure id="figure-25">
           <div class="alignLeft art-text artwork" id="section-5.1-2.1">
 <pre>
 Objects:
@@ -3560,7 +3607,7 @@ Query for the manifest:
 interest(name=/a/b/c, implicitDigest=h0)
 </pre>
 </div>
-<figcaption><a href="#figure-24" class="selfRef">Figure 24</a>:
+<figcaption><a href="#figure-25" class="selfRef">Figure 25</a>:
 <a href="#name-data-organization" class="selfRef">Data Organization</a>
           </figcaption></figure>
 </div>
@@ -3568,7 +3615,7 @@ interest(name=/a/b/c, implicitDigest=h0)
           the manifest does not provide any Locators data structure, so the client must continue
           using the name it used for the manifest.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
 <span id="name-data-interests"></span><div id="Locating2">
-<figure id="figure-25">
+<figure id="figure-26">
           <div class="alignLeft art-text artwork" id="section-5.1-4.1">
 <pre>
 interest(name=/a/b/c, implicitDigest=h1)
@@ -3576,13 +3623,13 @@ interest(name=/a/b/c, implicitDigest=h1)
 interest(name=/a/b/c, implicitDigest=hN)
 </pre>
 </div>
-<figcaption><a href="#figure-25" class="selfRef">Figure 25</a>:
+<figcaption><a href="#figure-26" class="selfRef">Figure 26</a>:
 <a href="#name-data-interests" class="selfRef">Data Interests</a>
           </figcaption></figure>
 </div>
 <p id="section-5.1-5">Using the locator metadata entry, this behavior can be changed:<a href="#section-5.1-5" class="pilcrow">¶</a></p>
 <span id="name-using-locators"></span><div id="Locating3">
-<figure id="figure-26">
+<figure id="figure-27">
           <div class="alignLeft art-text artwork" id="section-5.1-6.1">
 <pre>
 Objects:
@@ -3598,7 +3645,7 @@ interest(name=/x/y/z, implicitDigest=h1)
 interest(name=/a/b/c, implicitDigest=h2)
 </pre>
 </div>
-<figcaption><a href="#figure-26" class="selfRef">Figure 26</a>:
+<figcaption><a href="#figure-27" class="selfRef">Figure 27</a>:
 <a href="#name-using-locators" class="selfRef">Using Locators</a>
           </figcaption></figure>
 </div>
@@ -3619,7 +3666,7 @@ interest(name=/a/b/c, implicitDigest=h2)
 </div>
 <p id="section-5.2-3">With this offset, seeking is done as follows:<a href="#section-5.2-3" class="pilcrow">¶</a></p>
 <span id="name-seeking-algorithm"></span><div id="Seeking1">
-<figure id="figure-27">
+<figure id="figure-28">
           <div class="lang-pseudocode sourcecode" id="section-5.2-4.1">
 <pre>
 Input: seek_pos P, a FLIC manifest with a hash group having N entries
@@ -3634,7 +3681,7 @@ return out-of-range
 
 </pre>
 </div>
-<figcaption><a href="#figure-27" class="selfRef">Figure 27</a>:
+<figcaption><a href="#figure-28" class="selfRef">Figure 28</a>:
 <a href="#name-seeking-algorithm" class="selfRef">Seeking Algorithm</a>
           </figcaption></figure>
 </div>
@@ -3655,7 +3702,7 @@ D - L * (k - 1)
 </div>
 <p id="section-5.2-9">Using these, the seeking algorithm can be thus simplified to the following:<a href="#section-5.2-9" class="pilcrow">¶</a></p>
 <span id="name-seeking-algorithm-2"></span><div id="Seeking2">
-<figure id="figure-28">
+<figure id="figure-29">
           <div class="lang-pseudocode sourcecode" id="section-5.2-10.1">
 <pre>
 Input: seek_pos P, a FLIC manifest with a hash group having
@@ -3671,7 +3718,7 @@ o = P mod L
 return (i, o)
 </pre>
 </div>
-<figcaption><a href="#figure-28" class="selfRef">Figure 28</a>:
+<figcaption><a href="#figure-29" class="selfRef">Figure 29</a>:
 <a href="#name-seeking-algorithm-2" class="selfRef">Seeking Algorithm</a>
           </figcaption></figure>
 </div>
@@ -3693,7 +3740,7 @@ return (i, o)
           below. For example, the <span><a href="#venti" class="internal xref">venti archival file system of Plan9</a> [<a href="#venti" class="cite xref">venti</a>]</span>
           uses this technique.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
 <span id="name-de-duplications"></span><div id="dedup1">
-<figure id="figure-29">
+<figure id="figure-30">
           <div id="section-5.3-2.1">
             <div class="alignLeft art-svg artwork" id="section-5.3-2.1.1">
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="80%" viewBox="0 0 456 96" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
@@ -3738,7 +3785,7 @@ return (i, o)
               </svg><a href="#section-5.3-2.1.1" class="pilcrow">¶</a>
 </div>
 </div>
-<figcaption><a href="#figure-29" class="selfRef">Figure 29</a>:
+<figcaption><a href="#figure-30" class="selfRef">Figure 30</a>:
 <a href="#name-de-duplications" class="selfRef">De-duplications</a>
           </figcaption></figure>
 </div>
@@ -3754,7 +3801,7 @@ return (i, o)
           <p id="section-5.4-2.1"><strong>Note</strong> that this tree will not be skewed (anymore).<a href="#section-5.4-2.1" class="pilcrow">¶</a></p>
 </aside>
 <span id="name-growing-a-collection"></span><div id="Growing">
-<figure id="figure-30">
+<figure id="figure-31">
           <div class="alignCenter art-text artwork" id="section-5.4-3.1">
 <pre>
 old data &lt; -  -  -  mfst_old &lt;-- h_old -  - mfst_new
@@ -3765,7 +3812,7 @@ new data2                                 /
 new dataN &lt;-- h_N -  -  -  -  -  -  -  -/
 </pre>
 </div>
-<figcaption><a href="#figure-30" class="selfRef">Figure 30</a>:
+<figcaption><a href="#figure-31" class="selfRef">Figure 31</a>:
 <a href="#name-growing-a-collection" class="selfRef">Growing A Collection</a>
           </figcaption></figure>
 </div>
@@ -3797,7 +3844,7 @@ new dataN &lt;-- h_N -  -  -  -  -  -  -  -/
           arbitrarily many per-name manifests (which are signed by whomever wants to publish this
           data):<a href="#section-5.5-3" class="pilcrow">¶</a></p>
 <span id="name-relocating-a-collection"></span><div id="Relocating">
-<figure id="figure-31">
+<figure id="figure-32">
           <div class="alignLeft art-text artwork" id="section-5.5-4.1">
 <pre>
 
@@ -3806,7 +3853,7 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
                                 &lt; - mfst(/internet/archive/flic234)
 </pre>
 </div>
-<figcaption><a href="#figure-31" class="selfRef">Figure 31</a>:
+<figcaption><a href="#figure-32" class="selfRef">Figure 32</a>:
 <a href="#name-relocating-a-collection" class="selfRef">Relocating A Collection</a>
           </figcaption></figure>
 </div>
@@ -4088,9 +4135,16 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
             <td class="text-center" rowspan="1" colspan="1"></td>
           </tr>
           <tr>
-            <td class="text-center" rowspan="1" colspan="1">0x0013-0x0FFE</td>
+            <td class="text-center" rowspan="1" colspan="1">0x0013-0x0FFD</td>
             <td class="text-center" rowspan="1" colspan="1">Unassigned</td>
             <td class="text-center" rowspan="1" colspan="1"></td>
+          </tr>
+          <tr>
+            <td class="text-center" rowspan="1" colspan="1">0x0FFE</td>
+            <td class="text-center" rowspan="1" colspan="1">T_PAD</td>
+            <td class="text-center" rowspan="1" colspan="1">
+              <span><a href="https://rfc-editor.org/rfc/rfc8609#section-3.3.1" class="relref">Section 3.3.1</a> of [<a href="#RFC8609" class="cite xref">RFC8609</a>]</span>
+</td>
           </tr>
           <tr>
             <td class="text-center" rowspan="1" colspan="1">0x0FFF</td>
@@ -4445,10 +4499,37 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
       </ul>
 <p id="section-7-3"><strong>Anything else?????</strong>.<a href="#section-7-3" class="pilcrow">¶</a></p>
 <section id="section-7.1">
-        <h3 id="name-integrity-and-origin-authen">
-<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-integrity-and-origin-authen" class="section-name selfRef">Integrity and Origin Authentication of FLIC Manifests</a>
+        <h3 id="name-trust-security-and-privacy-">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-trust-security-and-privacy-" class="section-name selfRef">Trust, Security, and Privacy Goals</a>
         </h3>
-<p id="section-7.1-1">A FLIC Manifest is used to describe how to form Interests to access large CCNx or NDN
+<p id="section-7.1-1">A FLIC manifest has it's own security and privacy apart from the underlying application data
+        that the manifest describes.  The trust and privacy of the application data is not considered
+        by FLIC, only the trust, security, and privacy of the manifest itself.  The trust of a consumer
+        on a manifest is based on the root manifest name, it's publisher's key, the signature on the
+        root manfiest, and the consumers belief that the given key is trusted to publish the name.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-2">The security and privacy of a FLIC manifest is for the hash pointers and name constructors
+          it contains.  FLIC does not provide privacy for: the name of the root manifest or any
+          named ICN packet in the tree, the publisher's
+          public key ID in any manifest or application data object,
+          the key identifiers used to encrypt a FLIC manifest.
+          The first two items are part of the Content Object and thus outside the FLIC security envelope
+          (though they are authenticated by the root manifest signature).  The FLIC <code>SecurityCtx</code>
+          information is outside the encryption envelope, so elements like the symmetric <code>KeyNumber</code>
+          or the RSA-OAEP wrapping <code>KeyId</code> are exposed.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+<p id="section-7.1-3">
+          An observer may be able to track, for example, all manifests from a publisher that use the same
+          preshared symmetric key by the pair (publisher public key id, key number) in the Content Object and
+          FLIC security context.  With RSA-OAEP encapsulation, the wrapping key id and the wrapped key number
+          are public information and could be used to correlate manifest objects.  One could use a unique
+          wrapped key (and thus key number) for each manifest.  If using a KDF, the <code>KDFInfo</code> field is
+          public and could be used to correlate manifests if kept constand for a single manifest tree or a
+          sequential counter is used.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+</section>
+<section id="section-7.2">
+        <h3 id="name-integrity-and-origin-authen">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-integrity-and-origin-authen" class="section-name selfRef">Integrity and Origin Authentication of FLIC Manifests</a>
+        </h3>
+<p id="section-7.2-1">A FLIC Manifest is used to describe how to form Interests to access CCNx or NDN
           application data. The Manifest is itself either an individual content object, or a tree of
           content objects linked together via the corresponding content hashes. The NDN and CCnx
           protocol architectures directly provide both individual object integrity (using
@@ -4457,95 +4538,127 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
           respectively, provide the protocol machinery and keying to support strong integrity and
           authentication. Therefore, FLIC utilizes the existing protocol specifications for these
           functions, rather than providing its own. There are a few subtle differences in the
-          handling of signatures and keys in NDN and CCNx worth recapitulating here:<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+          handling of signatures and keys in NDN and CCNx worth recapitulating here:<a href="#section-7.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-7.1-2.1">NDN in general adds a signature to every individual data packet rather than
+<li class="normal" id="section-7.2-2.1">NDN in general adds a signature to every individual data packet rather than
             aggregating signatures via some object-level scheme. When employing FLIC Manifests to
-            multi-packet NDN objects, it is expected that the individual packet signatures would be
-            elided and the signture on the Manifest used instead.<a href="#section-7.1-2.1" class="pilcrow">¶</a>
+            multi-packet NDN objects, it is expected that a consumer will use the FLIC Manifest
+          signature to govern the trust of all the application data, rather than the signatures on
+          the application data packets.<a href="#section-7.2-2.1" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-7.1-2.2">In contrast, CCNx is biased to have primitive objects or pieces thereof be "nameless"
+          <li class="normal" id="section-7.2-2.2">In contrast, CCNx is biased to have primitive objects or pieces thereof be "nameless"
             in the sense they are identified only by their hashes rather than each having a name
             directly bound to the content through an individual signature. Therefore, CCNx depends
             heavily on FLIC (or an alternative method) to provide the name and the signed binding of
-            the name to the content described in the Manifest<a href="#section-7.1-2.2" class="pilcrow">¶</a>
+            the name to the content described in the Manifest<a href="#section-7.2-2.2" class="pilcrow">¶</a>
 </li>
         </ul>
-<p id="section-7.1-3">A FLIC Manifest therefore gets integrity of its individual pieces through the existing
+<p id="section-7.2-3">A FLIC Manifest therefore gets integrity of its individual pieces through the existing
           secure hashing procedures of the underlying protocols. Origin authentication of the entire
           Manifest is achieved through hash chaining and applying a signature <strong>only</strong>
           to the root Manifest of a manifest tree. It is important to note that the Name of the
           Manifest, which is what the signature is bound to, need not bear any particular
           relationship to the names of the application objects pointed to in the Manifest via Name
-          Constructors. This has a number of important benefits described in <a href="#nameconstructors" class="auto internal xref">Section 3.3</a>.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+          Constructors. This has a number of important benefits described in <a href="#nameconstructors" class="auto internal xref">Section 3.3</a>.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
 </section>
-<section id="section-7.2">
+<section id="section-7.3">
         <h3 id="name-confidentiality-of-manifest">
-<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-confidentiality-of-manifest" class="section-name selfRef">Confidentiality of Manifest Data</a>
+<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-confidentiality-of-manifest" class="section-name selfRef">Confidentiality of Manifest Data</a>
         </h3>
-<p id="section-7.2-1">ICN protocol architectures like CCNx and NDN, while providing integrity and origin
+<p id="section-7.3-1">ICN protocol architectures like CCNx and NDN, while providing integrity and origin
           authentication as described above, leaves confidentiality issues entirely in the domain of
           the ICN application. Therefore, since FLIC is an application-level construct in both NDN
           and CCNx, it is incumbent on this specification for FLIC to provide the desired
           confidentiality properties using encryption. One could leave the specification of Manifest
           encryption entirely in the hands of the individual application utilizing FLIC, but this
-          would be undesirable for a number of reasons:<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+          would be undesirable for a number of reasons:<a href="#section-7.3-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-7.2-2.1">The sensitivity of the information in a Manifest may be different from the sensitivity
+<li class="normal" id="section-7.3-2.1">The sensitivity of the information in a Manifest may be different from the sensitivity
             of the application data it describes. In some cases, it may not be necessary to encrypt
             manifests, or to encrypt them with a different keying scheme from that used for the
-            application data<a href="#section-7.2-2.1" class="pilcrow">¶</a>
+            application data<a href="#section-7.3-2.1" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-7.2-2.2">One of the major capabilities enabled by FLIC is to allow repositories or forwarding
+          <li class="normal" id="section-7.3-2.2">One of the major capabilities enabled by FLIC is to allow repositories or forwarding
             caches to operate on Manifests (see in particular <a href="#metadata" class="auto internal xref">Section 3.4</a>). In order
             to allow such intermediaries to interpret manifests without revealing the underlying
-            application data, separate encryption and keying is necessary<a href="#section-7.2-2.2" class="pilcrow">¶</a>
+            application data, separate encryption and keying is necessary<a href="#section-7.3-2.2" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-7.2-2.3">A strong design goal of FLIC is <em>universality</em> such that it can be used
+          <li class="normal" id="section-7.3-2.3">A strong design goal of FLIC is <em>universality</em> such that it can be used
             transparently by many different ICN applications. This argues that FLIC should have a
             set of common encryption and keying capabilities that can be delegated to library code
-            and not have to be re-worked by each individual application (see <a href="#libraries" class="auto internal xref">Section 2, Paragraph 11</a>)<a href="#section-7.2-2.3" class="pilcrow">¶</a>
+            and not have to be re-worked by each individual application (see <a href="#libraries" class="auto internal xref">Section 2, Paragraph 11</a>)<a href="#section-7.3-2.3" class="pilcrow">¶</a>
 </li>
         </ul>
-<p id="section-7.2-3">Therefore, this specification directly specifies two encryption encapsulations and
+<p id="section-7.3-3">Therefore, this specification directly specifies two encryption encapsulations and
           associated links to key management, as described in <a href="#encryption" class="auto internal xref">Section 3.8</a>. As more
           experience is gained with various use cases, additional encryption capabilities may be
           needed and hence we expect the encryption aspects of this specification to evolve over
-          time.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
+          time.<a href="#section-7.3-3" class="pilcrow">¶</a></p>
 </section>
-<section id="section-7.3">
-        <h3 id="name-privacy-of-names-and-linkab">
-<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-privacy-of-names-and-linkab" class="section-name selfRef">Privacy of names and linkability of access patterns</a>
-        </h3>
-<p id="section-7.3-1">What to say here, if anything?<a href="#section-7.3-1" class="pilcrow">¶</a></p>
-</section>
+<div id="OAEP_Security">
 <section id="section-7.4">
-        <h3 id="name-symmetric-key-lifespan-scop">
-<a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-symmetric-key-lifespan-scop" class="section-name selfRef">Symmetric key lifespan, scope, and use</a>
+        <h3 id="name-rsa-oaep-security">
+<a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-rsa-oaep-security" class="section-name selfRef">RSA-OAEP Security</a>
         </h3>
-<p id="section-7.4-1">The lifespan and scope of symmetric keys, as identified by a <code>KeyNum</code>, is
-        different between an <code>AeadCtx</code> and an <code>RsaOaepCtx</code>.  In the <code>AeadCtx</code>
+<p id="section-7.4-1">The RSA-OAEP encryption mechanism follows the recommendations of <span>[<a href="#NIST-800-56Br2" class="cite xref">NIST-800-56Br2</a>]</span>,
+          when not used for group keying.
+          FLIC RSA-OAEP does not use integral key confirmation (MacKey), but rather signs the root
+          manifest with the sender's private key.  The RSA-OAEP encryption is of both the
+          transported key, K, but also an AES salt, S.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
+<p id="section-7.4-2">RSA key generation is assumed to comply with <span>[<a href="#NIST-800-56Br2" class="cite xref">NIST-800-56Br2</a>]</span> Sec 6.,
+          but that is outside the control of FLIC.<a href="#section-7.4-2" class="pilcrow">¶</a></p>
+<p id="section-7.4-3">The belief of the sender that it is using the correct wrapping public key for the
+          receiver, and the sender's belief that the receiver has possesion of the private key
+          are functions of the key distribution system beyond the scope of FLIC.  One possible
+          mechanism to bring these beliefs closer to FLIC is to require that the manifest requester
+          sign the Interest, such as using the CCNx mechanisms for signing an Interest, and the
+          sender (publisher) check that the signature time is recent.  This mechanism requires
+          that the sender already have the public key and trust the owner of the private key
+          to consume the manifest.  This mechanism should not be used to distribute the public key.<a href="#section-7.4-3" class="pilcrow">¶</a></p>
+<p id="section-7.4-4">The RSA-OAEP mechanism uses approved NIST hash functions (SHA256 or SHA512, as per the
+          IANA CCNx hash function registry).  It also uses additional information for the
+          OAEP label, as recommended by <span>[<a href="#NIST-800-56Br2" class="cite xref">NIST-800-56Br2</a>]</span> Sec 9.1.<a href="#section-7.4-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<section id="section-7.5">
+        <h3 id="name-symmetric-key-lifespan-scop">
+<a href="#section-7.5" class="section-number selfRef">7.5. </a><a href="#name-symmetric-key-lifespan-scop" class="section-name selfRef">Symmetric key lifespan, scope, and use</a>
+        </h3>
+<p id="section-7.5-1">The lifespan and scope of symmetric keys, as identified by a <code>KeyNum</code>, is
+        different between an <code>AeadCtx</code> and a <code>RsaOaepCtx</code>.  In the <code>AeadCtx</code>
         case, the lifespan and scope is agreed to by the publisher and consumer out of band.
         In the <code>RsaOaepCtx</code> the lifespan and scope is implicitly the curent manifest.
-        We will discuss the <code>RsaOaepCtx</code> case first, as it is the simpler of the two.<a href="#section-7.4-1" class="pilcrow">¶</a></p>
-<p id="section-7.4-2">For <code>RsaOaepCtx</code>, the first manifest in the tree to use RSA-OAEP must include the
+        We will discuss the <code>RsaOaepCtx</code> case first, as it is the simpler of the two.<a href="#section-7.5-1" class="pilcrow">¶</a></p>
+<p id="section-7.5-2">For <code>RsaOaepCtx</code>, the first manifest in the tree to use RSA-OAEP must include the
         wrapped key.  The <code>KeyNum</code> is purely local within the manifest.  The only requirement
         is that the <code>KeyNum</code> have a one-to-one assiciation with a specific wrapped key within
-        the manifest.  That is, a publisher must not reuse a <code>KeyNum</code> within a single manifest tree
+        the manifest.  That is, a publisher <span class="bcp14">MUST NOT</span> reuse a <code>KeyNum</code> within a single manifest tree
         for two different AES key and salt combinations.  The key lifespan is strictly the 
-        <code>ExpiryTime</code> of the manifest and the scope is that single manifest.<a href="#section-7.4-2" class="pilcrow">¶</a></p>
-<p id="section-7.4-3">A publisher should use new symmetric keys for each manifest encrypted with RSA-OAEP.<a href="#section-7.4-3" class="pilcrow">¶</a></p>
-<p id="section-7.4-4">For <code>AeadCtx</code>, a publisher and one or more consumers agree on a shared
+        <code>ExpiryTime</code> of the manifest and the scope is that single manifest.<a href="#section-7.5-2" class="pilcrow">¶</a></p>
+<p id="section-7.5-3">A publisher should use new symmetric keys for each manifest encrypted with RSA-OAEP.<a href="#section-7.5-3" class="pilcrow">¶</a></p>
+<p id="section-7.5-4">For <code>AeadCtx</code>, a publisher and one or more consumers agree on a shared
         symmetric key out-of-band and share it via some means.  The publisher and consumer must
         agree on both the lifespan of the key and its scope.  The lifespan of such a key should be
         no shorter than the greatest <code>ExpiryTime</code> of a manifest published with the key.
         The scope of use should be, at minimum, manifests signed by the publisher's <code>KeyId</code>.
-        The publisher and consumer may also add name prefix limitations to a symmetric key's scope.<a href="#section-7.4-4" class="pilcrow">¶</a></p>
-<p id="section-7.4-5">Because there is no requirement that an <code>AeadCtx</code> <code>KeyNum</code> be globally unique, one should
+        The publisher and consumer may also add name prefix limitations to a symmetric key's scope.<a href="#section-7.5-4" class="pilcrow">¶</a></p>
+<p id="section-7.5-5">Because there is no requirement that an <code>AeadCtx</code> <code>KeyNum</code> be globally unique, one should
         store them based on their scopes, such as <code>(Publisher KeyId, KeyNum)</code> or
-        <code>(Publisher KeyId, Name Prefix, KeyNum)</code>.<a href="#section-7.4-5" class="pilcrow">¶</a></p>
-<p id="section-7.4-6">If a publisher will use a single AES key across multiple manifests, it must ensure that
-          it never re-uses the same nonce.<a href="#section-7.4-6" class="pilcrow">¶</a></p>
+        <code>(Publisher KeyId, Name Prefix, KeyNum)</code>.<a href="#section-7.5-5" class="pilcrow">¶</a></p>
+<p id="section-7.5-6">If a publisher will use a single AES key across multiple manifests, it must ensure that
+          it never re-uses the same nonce.<a href="#section-7.5-6" class="pilcrow">¶</a></p>
+</section>
+<section id="section-7.6">
+        <h3 id="name-hiding-plaintext-length">
+<a href="#section-7.6" class="section-number selfRef">7.6. </a><a href="#name-hiding-plaintext-length" class="section-name selfRef">Hiding Plaintext Length</a>
+        </h3>
+<p id="section-7.6-1">A publisher <span class="bcp14">MAY</span> include a <code>Pad</code> element in the <code>Node</code> element to hide
+          the true length of a manifest.  It is <span class="bcp14">RECOMMENDED</span> that a publisher pad all encrypted
+        <code>Node</code> to a multiple of 128 bytes, or up to the maximum that will fit in the MTU target,
+        to reduce the number of possible manifest sizes.  It is important that the sequence of manifest
+        sizes within a manifest tree not have an identifying sequence of sizes.  A publisher of an
+        encrypted manifest <span class="bcp14">SHOULD</span> pad all manifests in a tree out to the same
+        largest size.<a href="#section-7.6-1" class="pilcrow">¶</a></p>
 </section>
 </section>
 </div>
@@ -4573,10 +4686,6 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
 <dt id="RFC5288">[RFC5288]</dt>
         <dd>
 <span class="refAuthor">Salowey, J.</span>, <span class="refAuthor">Choudhury, A.</span>, and <span class="refAuthor">D. McGrew</span>, <span class="refTitle">"AES Galois Counter Mode (GCM) Cipher Suites for TLS"</span>, <span class="seriesInfo">RFC 5288</span>, <span class="seriesInfo">DOI 10.17487/RFC5288</span>, <time datetime="2008-08" class="refDate">August 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5288">https://www.rfc-editor.org/info/rfc5288</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC5990">[RFC5990]</dt>
-        <dd>
-<span class="refAuthor">Randall, J.</span>, <span class="refAuthor">Kaliski, B.</span>, <span class="refAuthor">Brainard, J.</span>, and <span class="refAuthor">S. Turner</span>, <span class="refTitle">"Use of the RSA-KEM Key Transport Algorithm in the Cryptographic Message Syntax (CMS)"</span>, <span class="seriesInfo">RFC 5990</span>, <span class="seriesInfo">DOI 10.17487/RFC5990</span>, <time datetime="2010-09" class="refDate">September 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5990">https://www.rfc-editor.org/info/rfc5990</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC6655">[RFC6655]</dt>
         <dd>
@@ -4625,6 +4734,14 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
         <dd>
 <span class="refTitle">"NDN Packet Format Specification."</span>, <time datetime="2016" class="refDate">2016</time>, <span>&lt;<a href="http://named-data.net/doc/ndn-tlv/">http://named-data.net/doc/ndn-tlv/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="NIST-800-131Ar2">[NIST-800-131Ar2]</dt>
+        <dd>
+<span class="refAuthor">Barker, E.</span> and <span class="refAuthor">A. Roginsky</span>, <span class="refTitle">"Transitioning the Use of Cryptographic Algorithms and Key Lengths"</span>, <span class="seriesInfo">National Institute of Standards and Technology SP 800-131A Rev. 2</span>, <time datetime="2019" class="refDate">2019</time>, <span>&lt;<a href="https://doi.org/10.6028/NIST.SP.800-131Ar2">https://doi.org/10.6028/NIST.SP.800-131Ar2</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="NIST-800-56Br2">[NIST-800-56Br2]</dt>
+        <dd>
+<span class="refAuthor">Barker, E.</span>, <span class="refAuthor">Chen, L.</span>, <span class="refAuthor">Roginsky, A.</span>, <span class="refAuthor">Vassilev, A.</span>, <span class="refAuthor">Davis, R.</span>, and <span class="refAuthor">S. Simon</span>, <span class="refTitle">"Recommendation for Pair-Wise Key-Establishment Using Integer Factorization Cryptography"</span>, <span class="seriesInfo">National Institute of Standards and Technology SP 800-56B Rev. 2</span>, <time datetime="2019" class="refDate">2019</time>, <span>&lt;<a href="https://doi.org/10.6028/NIST.SP.800-56Br2">https://doi.org/10.6028/NIST.SP.800-56Br2</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="ProjectOrigin">[ProjectOrigin]</dt>
         <dd>
 <span class="refAuthor">Mosko, M.</span>, <span class="refTitle">"Peer-to-Peer Sharing with CCNx 1.0"</span>, <time datetime="2014" class="refDate">2014</time>, <span>&lt;<a href="https://github.com/PARC/CCNxReports/blob/master/SelectedTopics/p2pshare.pdf">https://github.com/PARC/CCNxReports/blob/master/SelectedTopics/p2pshare.pdf</a>&gt;</span>. </dd>
@@ -4636,10 +4753,6 @@ data &lt; - nameless_mfst() &lt;-- h  &lt; - mfst(/com/example/east/the/flic)
 <dt id="RFC7927">[RFC7927]</dt>
         <dd>
 <span class="refAuthor">Kutscher, D., Ed.</span>, <span class="refAuthor">Eum, S.</span>, <span class="refAuthor">Pentikousis, K.</span>, <span class="refAuthor">Psaras, I.</span>, <span class="refAuthor">Corujo, D.</span>, <span class="refAuthor">Saucez, D.</span>, <span class="refAuthor">Schmidt, T.</span>, and <span class="refAuthor">M. Waehlisch</span>, <span class="refTitle">"Information-Centric Networking (ICN) Research Challenges"</span>, <span class="seriesInfo">RFC 7927</span>, <span class="seriesInfo">DOI 10.17487/RFC7927</span>, <time datetime="2016-07" class="refDate">July 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7927">https://www.rfc-editor.org/info/rfc7927</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RSAKEM">[RSAKEM]</dt>
-        <dd>
-<span class="refAuthor">Barker, E.</span>, <span class="refAuthor">Chen, L.</span>, <span class="refAuthor">Roginsky, A.</span>, <span class="refAuthor">Vassilev, A.</span>, <span class="refAuthor">Davis, R.</span>, and <span class="refAuthor">S. Simon</span>, <span class="refTitle">"Recommendation for Pair-Wise Key-Establishment Using Integer Factorization Cryptography"</span>, <span class="seriesInfo">National Institute of Standards and Technology SP 800-56B Rev. 2</span>, <time datetime="2019" class="refDate">2019</time>, <span>&lt;<a href="https://doi.org/10.6028/NIST.SP.800-56Br2">https://doi.org/10.6028/NIST.SP.800-56Br2</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="SHS">[SHS]</dt>
         <dd>

@@ -242,8 +242,10 @@
 
       <section>
         <name>Requirements Language</name>
-        <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD
-          NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as
+        <t>The key words "<bcp14>MUST</bcp14>", "<bcp14>MUST NOT</bcp14>", "<bcp14>REQUIRED</bcp14>", "<bcp14>SHALL</bcp14>",
+          "<bcp14>SHALL NOT</bcp14>", "<bcp14>SHOULD</bcp14>",
+          "<bcp14>SHOULD NOT</bcp14>", "<bcp14>RECOMMENDED</bcp14>", "<bcp14>MAY</bcp14>", and "<bcp14>OPTIONAL</bcp14>"
+          in this document are to be interpreted as
           described in <xref target="RFC2119"/>.</t>
       </section>
     </section>
@@ -314,7 +316,7 @@
 
       <t anchor="libraries">FLIC goes to considerable lengths to allow creation and parsing by
         application-independent library code. Therefore, any options used by applications in the
-        data structure or encryption capabilities MUST NOT require applications to have
+        data structure or encryption capabilities <bcp14>MUST NOT</bcp14> require applications to have
         application-specific Manifest traversal algorithms. This ensures that such application
         agnostic libraries can always successfully parse and traverse any FLIC Manifest by ignoring
         the optional capabilities.</t>
@@ -408,7 +410,7 @@
         <t>A name constructor definition may define one or more Locator prefixes that can be used in the
           construction of Interests from the pointers in the manifest. The Locators are inherited
           when walking a manifest tree, so they do not need to be defined everywhere. It is
-          RECOMMENDED that only the Root manifest contain Locators so that a single operation can
+          <bcp14>RECOMMENDED</bcp14> that only the Root manifest contain Locators so that a single operation can
           update the locators. One use case when storing application payloads at different replicas
           is to replace the Root manifest with a new one that contains locators for the current
           replicas.</t>
@@ -427,18 +429,18 @@
         <t>NCID 0 is the default name constructor. If it is not defined in an NCD, it is assumed to
           be a HashNamingConstructor. A Manifest may re-define the default as needed.</t>
 
-        <t>A Manifest MUST use locally unique NCIDs in the NCD.</t>
+        <t>A Manifest <bcp14>MUST</bcp14> use locally unique NCIDs in the NCD.</t>
 
         <t>NCDs and their associated NCIDs are inherited as one traverses a manifest. That is, a
           manifest consumer must remember the NCDs as it traverses manifests. If it encounters a
-          HashGroup that uses an unknown NCID, the RECOMMENDED action is to report a malformed
+          HashGroup that uses an unknown NCID, the <bcp14>RECOMMENDED</bcp14> action is to report a malformed
           manifest to the user.</t>
 
         <t>A Manifest may update an NCID. If a child manifest re-defines an NCID, the manifest
-          consumer MUST use the new definition from that point forward under that Manifest
+          consumer <bcp14>MUST</bcp14> use the new definition from that point forward under that Manifest
           branch.</t>
 
-        <t>It is RECOMMENDED that only the root or similar top-level manifest define NCDs and they
+        <t>It is <bcp14>RECOMMENDED</bcp14> that only the root or similar top-level manifest define NCDs and they
           not be re-defined in subsequent manifests.</t>
         <t>We expect that an application constructing a Manifest will take one of three approaches
           to name constructors. The advantage of using, or re-defining, the default name constructor
@@ -489,10 +491,10 @@
           used by CCNx, as these are not nameless objects.</dd>
 
           <dt>Type 3 (Segmented Naming):</dt>
-          <dd>As in Type 2, but the consumer MUST track Segment Numbers.  If the Hash Group provides
-          Segment Number annotations for each pointer, it MUST use those numbers.  Otherwise, the
-          consumer MUST use a 0-based counter that follows the traversal order.  The publisher
-          MAY include a <tt>StartSegmentId</tt> field in the group data to indicate the index
+          <dd>As in Type 2, but the consumer <bcp14>MUST</bcp14> track Segment Numbers.  If the Hash Group provides
+          Segment Number annotations for each pointer, it <bcp14>MUST</bcp14> use those numbers.  Otherwise, the
+          consumer <bcp14>MUST</bcp14> use a 0-based counter that follows the traversal order.  The publisher
+          <bcp14>MAY</bcp14> include a <tt>StartSegmentId</tt> field in the group data to indicate the index
           of the first hash pointer of the group.</dd>
         </dl>
 
@@ -608,11 +610,12 @@ AlgorithmCtx = AEADCtx / RsaWrapCtx
 AuthTag = T_AUTH_TAG LENGTH *OCTET ; e.g. AEAD authentication tag
 EncryptedNode = T_ENCRYPTED_NODE LENGTH *OCTET ; Encrypted Node
 
-Node = T_NODE LENGTH [NodeData] 1*HashGroup
+Node = T_NODE LENGTH [NodeData] 1*HashGroup [Pad]
 NodeData = T_NODE_DATA LENGTH [SubtreeSize] [SubtreeDigest]
               [Locators] 0*Vendor 0*NcDef
 SubtreeSize = T_SUBTREE_SIZE LENGTH INTEGER
 SubtreeDigest = T_SUBTREE_DIGEST LENGTH HashValue
+Pad = T_PAD LENGTH 0*OCTET ; as per RFC8609
 
 NcDef = T_NCDEF LENGTH NcId NcSchema
 NcId = T_NCID LENGTH INTEGER
@@ -718,6 +721,11 @@ WrappedKey = T_WRAPPED_KEY LENGTH RsaOaepEnc{4OCTET 1*OCTET}
 
           <dt>Ptrs:</dt>
           <dd>A list of one or more Hash Values</dd>
+
+          <dt>Pad:</dt>
+          <dd>The Node may include a Pad, as per <xref target="RFC8609" section="3.3.1"/>.
+            This allows the publisher to hide the plaintext length in an encrypted manifest.
+          </dd>
 
           <dt>GroupData:</dt>
           <dd>Metadata that applies to a HashGroup</dd>
@@ -855,11 +863,11 @@ D0 D1
           <name>AEAD Mode</name>
           <t>This mechanism uses <xref target="AESGCM">AES-GEM</xref> or <xref target="RFC3310"
               >AES-CCM</xref> for manifest encryption. A publisher creating a <tt>SecurityCtx</tt>
-            SHOULD use the mechanisms in <xref target="RFC6655"/> for AES-CCM IV generation and
+            <bcp14>SHOULD</bcp14> use the mechanisms in <xref target="RFC6655"/> for AES-CCM IV generation and
             <xref target="RFC5288"/>
             for AES-GCM IV generation.</t>
 
-          <t>When the publisher and consumer establish the <tt>KeyNum</tt>, they SHOULD also establish a salt.
+          <t>When the publisher and consumer establish the <tt>KeyNum</tt>, they <bcp14>SHOULD</bcp14> also establish a salt.
             This results in a 4-byte salt and 8-byte nonce.  If no salt exists, the AEADNonce
             may be the entire IV.
           </t>
@@ -871,20 +879,20 @@ D0 D1
 
           <t>As these references specify, it is essential that the publisher creating a Manifest
             never use a Nonce more than once for the same key. For keys exchanged via a session
-            protocol, such as CCNx, the publisher MUST use unique nonces on each Manifest for that
-            session. If the key is derived via a group key mechanism, the publisher MUST ensure that
+            protocol, such as CCNx, the publisher <bcp14>MUST</bcp14> use unique nonces on each Manifest for that
+            session. If the key is derived via a group key mechanism, the publisher <bcp14>MUST</bcp14> ensure that
             the same Nonce is not used more than once for the same Content Encryption Key.</t>
 
           <t>The AEAD Mode uses <xref target="RFC5116"/> defined symbols AEAD_AES_128_CCM,
             AEAD_AES_128_GCM, AEAD_AES_256_CCM and AEAH_AES_256_GCM to specify the key length and
             algorithm.</t>
 
-          <t> The <tt>KeyNum</tt> identifies a key on the receiver. The key MUST be exactly of the
+          <t> The <tt>KeyNum</tt> identifies a key on the receiver. The key <bcp14>MUST</bcp14> be exactly of the
             length specific by the Mode. Many receivers may have the same key with the same
               <tt>KeyNum</tt>.</t>
 
-          <t>The publisher MAY use a KDF for the manifest.  If <tt>KDFData</tt> is present,
-          the consumer MUST derive a manifest-specific key from the shared key identified by
+          <t>The publisher <bcp14>MAY</bcp14> use a KDF for the manifest.  If <tt>KDFData</tt> is present,
+          the consumer <bcp14>MUST</bcp14> derive a manifest-specific key from the shared key identified by
           <tt>KeyNum</tt>.  The <tt>KDFAlg</tt> is taken from the IANA registry for <xref target="RFC9180"/>.
           If <tt>KDFInfo</tt> is present, the consumer uses that string
           as in the KDF's <tt>info</tt> parameter.  If the <tt>KDFInfo</tt> is not present, then
@@ -895,7 +903,7 @@ D0 D1
           in the KDF.  The publisher and consumer may agree on a seaparte random salt as
           part of their key agreement on the <tt>KeyNum</tt> for use in the KDF.</t>
 
-          <t>Within a single manifest tree, a publisher MAY use the same <tt>KDFData</tt>
+          <t>Within a single manifest tree, a publisher <bcp14>MAY</bcp14> use the same <tt>KDFData</tt>
           and <tt>KDFInfo</tt> over multiple manifests, so long as it uses unique <tt>Nonce</tt>.
           This allows a consumer to cache a single derived key based on the <tt>(KeyNum, KDFInfo)</tt>
           pair.  This is the normal use of the KDF mode: the publisher only needs to track a single
@@ -929,7 +937,7 @@ D0 D1
               as the <tt>Salt</tt>.  Otherwise, the KDF's default salt is used. </li>
             <li>The derived key will use the left <tt>bits</tt> of the KDF output to satisfy the
             <tt>AEADMode</tt> key length (typically 128 or 256 bits).</li>
-            <li>DerivedKey = LEFT(KDF(Shared Key, FixedInfo, Salt), bits).</li>
+            <li>DerivedKey = LEFT(KDF(Shared Key, FixedInfo, KDF Salt), bits).</li>
           </ol>              
 
           <t>To encrypt a Manifest, the publisher:</t>
@@ -961,34 +969,40 @@ D0 D1
             <li>If <tt>KDFData</tt> is present, derives a key as above.</li>
             <li>If the publisher and consumer shared a salt, it is used in the decryption.</li>
             <li>Verifies and decrypts the data using the key and saved <tt>AuthTag</tt>.</li>
-            <li>If the decryption fails, the consumer SHOULD notify the user and stop further
+            <li>If the decryption fails, the consumer <bcp14>SHOULD</bcp14> notify the user and stop further
               processing of the manifest.</li>
           </ol>
         </section>
 
         <section anchor="rsa_wrap">
           <name>RSA-OAEP Key Transport Mode</name>
-          <t>The RSA-OAEP mode uses RSA-OAEP (see <xref target="RFC8017" section="7.1" format="default"/>) to encrypt a symmetric
-            key that is used to encrypt the Manifest. We call this RSA key the Key Encryption Key
+          <t>The RSA-OAEP mode uses RSA-OAEP (see <xref target="RFC8017" section="7.1" format="default"/> and <xref target="NIST-800-56Br2"/>)
+            to encrypt a symmetric key that is used to encrypt the Manifest. We call this RSA key the Key Encryption Key
             (KEK) and each group member has this private key. A separate key distribuiton system is
             responsible for distributing the KEK. For our purposes, it is reasonable to assume that
             the KEK private key is available at a Locator and that group members can decrypt this
             private key.</t>
 
+          <t>This usage of RSA-OAEP is intented to be compliant with <xref target="NIST-800-56Br2">KTS-OAEP</xref>.
+            See <xref target="OAEP_Security"/> for a discussion of compliance with NIST recommndations.
+            KTS-OAEP compliance only applies when there is a specific owner of the wrapping private key.
+            NIST does not approve KTS-OAEP for group key distribution.
+          </t>
+
             <t><tt>T_RSA_WRAP_CTX</tt> uses <xref target="RFC8017">RSA-OAEP</xref> with mask generation function 
             <xref target="RFC8017">MGF1</xref> and
             the specified hash algorithm.  The hash algorithm number is taken from the IANA registry
-            "CCNx Hash Function Types".</t>
+            "CCNx Hash Function Types," which are all NIST approved hash functions.</t>
 
             <t>The <tt>RsaOaepData</tt> includes an <tt>AEADData</tt> that indicates how to use the warpped key to
             decrypt the manifest.  It optionally includes the wrapped key itself.  A publisher
-            using <tt>RsaWrapCtx</tt> MUST include the optional wrapped key information in the first
-            manifest node that uses it.  The publisher MAY include the wrapped key in other manifest nodes.
-            It MUST use distinct <tt>KeyNum</tt> for distinct <tt>WrappedKey</tt>.</t>
+            using <tt>RsaWrapCtx</tt> <bcp14>MUST</bcp14> include the optional wrapped key information in the first
+            manifest node that uses it.  The publisher <bcp14>MAY</bcp14> include the wrapped key in other manifest nodes.
+            It <bcp14>MUST</bcp14> use distinct <tt>KeyNum</tt> for distinct <tt>WrappedKey</tt>.</t>
 
             <t>The RSA-OAEP <tt>KeyNum</tt> is only significant within a given manifest.</t>
 
-            <t>The <tt>AEADData</tt> MAY include a <tt>KDFData</tt> element, in which case it is used the
+            <t>The <tt>AEADData</tt> <bcp14>MAY</bcp14> include a <tt>KDFData</tt> element, in which case it is used the
             same was as with AEAD Mode.</t>
 
             <t>In a typical usage, the publisher would begin encryption at the root manifest.  It must
@@ -1000,11 +1014,12 @@ D0 D1
             corresponding to <tt>KeyId</tt> locally, it does not need to fetch it from the <tt>LocatorPrefixx</tt>.
             The <tt>KeyId</tt> is similar to the Content Object KeyId field <xref target="RFC8609"/>.</t>
 
-          <t>The symmetric key MUST be one that is compatible with the AEAD Mode, i.e. a 128-bit or
-            256-bit random number. Further, the symmetric key MUST fit in the OAEP envelope.  Note that for
+          <t>The symmetric key <bcp14>MUST</bcp14> be one that is compatible with the AEAD Mode, i.e. a 128-bit or
+            256-bit random number. Further, the symmetric key <bcp14>MUST</bcp14> fit in the OAEP envelope.  Note that for
             a 128-bit key (16 bytes) plus a 4-byte salt requires a minimum 688-bit RSA key and a 256-bit key
             requires a minimum 816-bit RSA key.  So in practical terms, a 1024-bit RSA key is the miniminum
-            for the RSA-OAEP encryption with a SHA-256 hash algoirithm.</t>
+            for the RSA-OAEP encryption with a SHA-256 hash algoirithm (it is recommended to use at least 2048-bit
+            RSA keys <xref target="NIST-800-131Ar2"/>).</t>
 
           <t>Any group key protocol and system needed are outside the scope of this document. We
             assume there is a Key Manager (KM) and a Publisher (P) and a set of group members.
@@ -1020,7 +1035,7 @@ D0 D1
             Locator, it can decrypt the <tt>WrappedKey</tt>
             and retrieve the CEK.  The <tt>WrappedKey</tt>
             includes a 4-byte salt plus an AES key.  The 4-byte salt is used by the AEAD algorithm
-            as part of the IV, and MUST remain the same for the given <tt>KeyNum</tt>.
+            as part of the IV, and <bcp14>MUST</bcp14> remain the same for the given <tt>KeyNum</tt>.
           </t>
 
           <t>In one example, a publisher could request a key for a group and the Key Manager could
@@ -1031,19 +1046,43 @@ D0 D1
             proceed. The publisher generates <tt>CEK, Wrapped_CEK, KeyId</tt>, and a Locator on its
             own.</t>
 
+          <t>The RSA-OAEP "label" ("additional information" in <xref target="NIST-800-131Ar2"/>)
+            is constructed as follows.  The Name TLV is the name of the Content Object carrying
+            the <tt>RsaOaepWrapper</tt> with the <tt>WrappedKey</tt> or the original root manifest name if
+            the current content object does not have a name.  The RSA signing key is the signing key
+            of the current Content Object (if signed) or the original root manfiest signing key.
+            The <tt>KeyId, KeyLink, HashAlg</tt> TLVs are from the <tt>RsaOaepWrapper</tt> field.
+            The label is hashed via the <tt>HashAlg</tt>, so the length of the label does not
+            affect the size of the encryption.
+          </t>
+
+          <figure anchor="AdditionalInfo"><name>OAEP Label</name>
+            <sourcecode type='pseudocode'><![CDATA[
+AdditionalInfo = "FLIC RSA-OAEP" ||
+                 RSA Signing Public Key TLV ||
+                 Name TLV of immediate or root manifest ||
+                 Wrapping KeyID TLV ||
+                 Wrapping KeyLink TLV (if present in RsaOaepWrapper) ||
+                 Wrapping HashAlg TLV
+]]>
+            </sourcecode>
+          </figure>
+
           <t>To create the wrapped key using a Key Encryption Key:</t>
           <ol>
             <li>Obtain the CEK in binary format (e.g. 32 bytes for 256 bits)</li>
-            <li>RSA encrypt the <tt>WrappedKey</tt> value using the KEK public key with OAEP padding, following <xref
-                target="RFC8017" section="7.1"/>. The encryption is not signed because the
+            <li>RSA encrypt the <tt>WrappedKey</tt> value using the KEK public key with OAEP padding and
+              the OAEP label (additional information), following <xref
+                target="NIST-800-131Ar2"/>. The encryption is not signed or authenticated because the
               root Manifest must have been signed by the publisher already.  Or the encapsulating
               Content Object (Data Object) is signed via ICN mechanisms.</li>
           </ol>
 
           <t>To decrypt the wrapped key using a Key Encryption Key:</t>
           <ol>
-            <li>RSA decrypt the <tt>WrappedKey</tt> value using the KEK private key with OAEP padding, following
-                <xref target="RFC8017" section="7.1" format="default"/>.</li>
+            <li>RSA decrypt the <tt>WrappedKey</tt> value using the KEK private key with OAEP padding and
+              OAEP label, following
+              <xref target="NIST-800-131Ar2"/>.</li>
             <li>Verify the unwrapped key is a valid length for the AEADMode.</li>
           </ol>
 
@@ -1053,6 +1092,7 @@ D0 D1
               generate these values itself, or acquire them from a key manager.</li>
             <li>Creates a <tt>SecurityCtx</tt> and adds it to the Manifest. The <tt>SecurityCtx</tt>
               includes an <tt>AEADNonce</tt> and <tt>AEADMode</tt>, as per AEAD mode.</li>
+            <li>It is <bcp14>RECOMMENDED</bcp14> to also inclue the use of a KDF in the <tt>AEADData</tt>.</li>
             <li>Encrypts the Manifest as per AEAD Mode using the RSA-OAEP SecurityCtx and CEK.</li>
           </ol>
 
@@ -1060,12 +1100,11 @@ D0 D1
           <ol>
             <li>Acquires the RSA private key corresponding to <tt>KeyId</tt> via the <tt>KeyLocator</tt>
             or whatever means the publisher and consumers use to distribute keys.</li>
-            <li>It SHOULD verify that it trusts the Manifest publisher to use the provided key
-              Locator.</li>
+            <li>It <bcp14>SHOULD</bcp14> verify that it trusts the Manifest publisher to use the provided wrapping key.</li>
             <li>Decrypts the <tt>WrappedKey</tt> to get the CEK and salt. If the consumer has already decrypted the
-              same exact WrappedKey TLV block, it may use that cached CEK and salt.</li>
-            <li>Using the <tt>CEK</tt>, <tt>AEADNonce</tt>, and <tt>AEADMode</tt>, decrypt the
-              Manifest as per AEAD Mode.</li>
+              same exact WrappedKey TLV block, it may use that cached CEK and salt.  The same wrapping key is determined
+              by the publisher's signing KeyId, the wrapping key KeyId, and the AEADData.</li>
+            <li>Using the <tt>CEK</tt> and <tt>AEADData</tt>, decrypt the Manifest as per AEAD Mode.</li>
           </ol>
         </section>
 
@@ -1155,7 +1194,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
 
               <li>The Root Manifest has an NsDef that specifies HashSchema. Its GroupData uses that
                 NsId. All internal and leaf manifests use the same GroupData NsId. A Manifest Tree
-                MAY omit the NsDef and NsId elements and rely on the default being HashSchema.</li>
+                <bcp14>MAY</bcp14> omit the NsDef and NsId elements and rely on the default being HashSchema.</li>
 
               <li>The Top Manifest is a nameless CCNx content object. It may have cache control
                 directies.</li>
@@ -1311,7 +1350,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
                 We do not show experimental TLVs in the artwork below.</t>
 
                 <t>There is no required order of TLV blocks withhin a TLV context.  We show the
-                  RECOMMENDED ordering of TLV blocks.  TLV blocks MUST NOT repeat unless
+                  <bcp14>RECOMMENDED</bcp14> ordering of TLV blocks.  TLV blocks <bcp14>MUST NOT</bcp14> repeat unless
                   specifically allowed in the <xref target="grammar">grammar</xref>.</t>
 
       <section anchor="tlv_manifest" title="Manifest TLV">
@@ -1642,7 +1681,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
         <t><tt>Ptrs</tt> is an array
         of raw CCNx hash values entries (i.e. SHA256 TLVs), as per
         <xref target="RFC8609" section="3.3.3"/>.
-        Each entry MAY be a different hash type and different TLV length,
+        Each entry <bcp14>MAY</bcp14> be a different hash type and different TLV length,
         so a parser must use the hash TLV type and TLV length fields
         of each entry.</t>
         <t><tt>AnotatedPtrs</tt> is a list of annotations for each pointer.</t>
@@ -1768,7 +1807,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
 
               <li>The Root Manifest has an NsDef that specifies HashSchema. Its GroupData uses that
                 NsId. All internal and leaf manifests use the same GroupData NsId. A Manifest Tree
-                MAY omit the NsDef and NsId elements and rely on the default being HashSchema.</li>
+                <bcp14>MAY</bcp14> omit the NsDef and NsId elements and rely on the default being HashSchema.</li>
 
               <li>The Top Manifest has a 0-length Name. It may have cache control directies.</li>
 
@@ -1898,7 +1937,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
           <t>There are two methods to guide a consumer in generating segment IDs for
             hash pointers:</t>
           <ul spacing="normal">
-            <li>If fetching a pointer with a SegmentIdAnnotation, the consumer MUST use that
+            <li>If fetching a pointer with a SegmentIdAnnotation, the consumer <bcp14>MUST</bcp14> use that
               segment number for the pointer.  A pointer with SegmentIdAnnotation does not
               increment the SegmentId used by the GroupData case.</li>
             <li>If the GroupData has a StartSegmentId parameter, then that segment number MUST
@@ -1906,11 +1945,11 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
               the segment number for each in-order pointer of that group.
             </li>
           </ul>
-          <t>Every group of a segmented NcId MUST have either a GroupData with a StartSegmentId, or
+          <t>Every group of a segmented NcId <bcp14>MUST</bcp14> have either a GroupData with a StartSegmentId, or
             use annotated pointers with SegmentIdAnnotation.</t>
-          <t>A segment number MUST indicate exactly one data item.  That is, the producer
-            MUST NOT duplicate the segment number in an object name for different objects.
-            The object hash MUST be the same for the same segment number of a name.  </t>
+          <t>A segment number <bcp14>MUST</bcp14> indicate exactly one data item.  That is, the producer
+            <bcp14>MUST NOT</bcp14> duplicate the segment number in an object name for different objects.
+            The object hash <bcp14>MUST</bcp14> be the same for the same segment number of a name.  </t>
           <t>It is allowed to have multiple manifest entries with the same segment number (see below).</t>
           <t>While a producer is allowed to mix using GroupData StartSegmentId and SegmentIdAnnotation,
             we in general do not consider that a good idea.  It is up to the manifest producer to ensure
@@ -2501,9 +2540,14 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
               <td align="center"></td>
             </tr>          
             <tr>
-              <td align="center">0x0013-0x0FFE</td>
+              <td align="center">0x0013-0x0FFD</td>
               <td align="center">Unassigned</td>
               <td align="center"></td>
+            </tr>
+            <tr>
+              <td align="center">0x0FFE</td>
+              <td align="center">T_PAD</td>
+              <td align="center"><xref target="RFC8609" section="3.3.1"/></td>
             </tr>
             <tr>
               <td align="center">0x0FFF</td>
@@ -2849,6 +2893,8 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
 
     <section anchor="Security">
       <name>Security Considerations</name>
+
+
       <t>TODO Need a discussion on:</t>
       <ul spacing="normal">
         <li>signing and hash chaining security. (<strong>Note: Did I cover this adequately
@@ -2865,8 +2911,38 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
       <t><strong>Anything else?????</strong>.</t>
 
       <section>
+        <name>Trust, Security, and Privacy Goals</name>
+        <t>A FLIC manifest has it's own security and privacy apart from the underlying application data
+        that the manifest describes.  The trust and privacy of the application data is not considered
+        by FLIC, only the trust, security, and privacy of the manifest itself.  The trust of a consumer
+        on a manifest is based on the root manifest name, it's publisher's key, the signature on the
+        root manfiest, and the consumers belief that the given key is trusted to publish the name.</t>
+
+        <t>The security and privacy of a FLIC manifest is for the hash pointers and name constructors
+          it contains.  FLIC does not provide privacy for: the name of the root manifest or any
+          named ICN packet in the tree, the publisher's
+          public key ID in any manifest or application data object,
+          the key identifiers used to encrypt a FLIC manifest.
+          The first two items are part of the Content Object and thus outside the FLIC security envelope
+          (though they are authenticated by the root manifest signature).  The FLIC <tt>SecurityCtx</tt>
+          information is outside the encryption envelope, so elements like the symmetric <tt>KeyNumber</tt>
+          or the RSA-OAEP wrapping <tt>KeyId</tt> are exposed.
+        </t>
+
+        <t>
+          An observer may be able to track, for example, all manifests from a publisher that use the same
+          preshared symmetric key by the pair (publisher public key id, key number) in the Content Object and
+          FLIC security context.  With RSA-OAEP encapsulation, the wrapping key id and the wrapped key number
+          are public information and could be used to correlate manifest objects.  One could use a unique
+          wrapped key (and thus key number) for each manifest.  If using a KDF, the <tt>KDFInfo</tt> field is
+          public and could be used to correlate manifests if kept constand for a single manifest tree or a
+          sequential counter is used.
+        </t>
+      </section>
+
+      <section>
         <name>Integrity and Origin Authentication of FLIC Manifests</name>
-        <t>A FLIC Manifest is used to describe how to form Interests to access large CCNx or NDN
+        <t>A FLIC Manifest is used to describe how to form Interests to access CCNx or NDN
           application data. The Manifest is itself either an individual content object, or a tree of
           content objects linked together via the corresponding content hashes. The NDN and CCnx
           protocol architectures directly provide both individual object integrity (using
@@ -2879,8 +2955,9 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
         <ul>
           <li>NDN in general adds a signature to every individual data packet rather than
             aggregating signatures via some object-level scheme. When employing FLIC Manifests to
-            multi-packet NDN objects, it is expected that the individual packet signatures would be
-            elided and the signture on the Manifest used instead.</li>
+            multi-packet NDN objects, it is expected that a consumer will use the FLIC Manifest
+          signature to govern the trust of all the application data, rather than the signatures on
+          the application data packets.</li>
           <li>In contrast, CCNx is biased to have primitive objects or pieces thereof be "nameless"
             in the sense they are identified only by their hashes rather than each having a name
             directly bound to the content through an individual signature. Therefore, CCNx depends
@@ -2929,15 +3006,34 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
           time.</t>
       </section>
 
-      <section>
-        <name>Privacy of names and linkability of access patterns</name>
-        <t>What to say here, if anything?</t>
-      </section>
+      <section anchor="OAEP_Security">
+        <name>RSA-OAEP Security</name>
+        <t>The RSA-OAEP encryption mechanism follows the recommendations of <xref target="NIST-800-56Br2"/>,
+          when not used for group keying.
+          FLIC RSA-OAEP does not use integral key confirmation (MacKey), but rather signs the root
+          manifest with the sender's private key.  The RSA-OAEP encryption is of both the
+          transported key, K, but also an AES salt, S.</t>
 
+        <t>RSA key generation is assumed to comply with <xref target="NIST-800-56Br2"/> Sec 6.,
+          but that is outside the control of FLIC.</t>
+
+        <t>The belief of the sender that it is using the correct wrapping public key for the
+          receiver, and the sender's belief that the receiver has possesion of the private key
+          are functions of the key distribution system beyond the scope of FLIC.  One possible
+          mechanism to bring these beliefs closer to FLIC is to require that the manifest requester
+          sign the Interest, such as using the CCNx mechanisms for signing an Interest, and the
+          sender (publisher) check that the signature time is recent.  This mechanism requires
+          that the sender already have the public key and trust the owner of the private key
+          to consume the manifest.  This mechanism should not be used to distribute the public key.</t>
+
+        <t>The RSA-OAEP mechanism uses approved NIST hash functions (SHA256 or SHA512, as per the
+          IANA CCNx hash function registry).  It also uses additional information for the
+          OAEP label, as recommended by <xref target="NIST-800-56Br2"/> Sec 9.1.</t>
+      </section>
       <section>
         <name>Symmetric key lifespan, scope, and use</name>
         <t>The lifespan and scope of symmetric keys, as identified by a <tt>KeyNum</tt>, is
-        different between an <tt>AeadCtx</tt> and an <tt>RsaOaepCtx</tt>.  In the <tt>AeadCtx</tt>
+        different between an <tt>AeadCtx</tt> and a <tt>RsaOaepCtx</tt>.  In the <tt>AeadCtx</tt>
         case, the lifespan and scope is agreed to by the publisher and consumer out of band.
         In the <tt>RsaOaepCtx</tt> the lifespan and scope is implicitly the curent manifest.
         We will discuss the <tt>RsaOaepCtx</tt> case first, as it is the simpler of the two.</t>
@@ -2945,7 +3041,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
         <t>For <tt>RsaOaepCtx</tt>, the first manifest in the tree to use RSA-OAEP must include the
         wrapped key.  The <tt>KeyNum</tt> is purely local within the manifest.  The only requirement
         is that the <tt>KeyNum</tt> have a one-to-one assiciation with a specific wrapped key within
-        the manifest.  That is, a publisher must not reuse a <tt>KeyNum</tt> within a single manifest tree
+        the manifest.  That is, a publisher <bcp14>MUST NOT</bcp14> reuse a <tt>KeyNum</tt> within a single manifest tree
         for two different AES key and salt combinations.  The key lifespan is strictly the 
         <tt>ExpiryTime</tt> of the manifest and the scope is that single manifest.</t>
 
@@ -2966,6 +3062,17 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
           it never re-uses the same nonce.</t>
 
       </section>
+
+      <section>
+        <name>Hiding Plaintext Length</name>
+        <t>A publisher <bcp14>MAY</bcp14> include a <tt>Pad</tt> element in the <tt>Node</tt> element to hide
+          the true length of a manifest.  It is <bcp14>RECOMMENDED</bcp14> that a publisher pad all encrypted
+        <tt>Node</tt> to a multiple of 128 bytes, or up to the maximum that will fit in the MTU target,
+        to reduce the number of possible manifest sizes.  It is important that the sequence of manifest
+        sizes within a manifest tree not have an identifying sequence of sizes.  A publisher of an
+        encrypted manifest <bcp14>SHOULD</bcp14> pad all manifests in a tree out to the same
+        largest size.</t>
+      </section>
     </section>
   </middle>
 
@@ -2977,7 +3084,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
 <!--    <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3394.xml"/> -->
 		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5116.xml"/>
 		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5288.xml"/>
-		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5990.xml"/>
+<!--		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5990.xml"/> -->
 		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6655.xml"/>
 		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8017.xml"/>
 		<xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8569.xml"/>
@@ -3010,7 +3117,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
           <seriesInfo name="National Institute of Standards and Technology" value="SP 180-4"/>
         </reference>
 
-        <reference anchor="RSAKEM" target="https://doi.org/10.6028/NIST.SP.800-56Br2">
+        <reference anchor="NIST-800-56Br2" target="https://doi.org/10.6028/NIST.SP.800-56Br2">
           <front>
             <title>Recommendation for Pair-Wise Key-Establishment Using Integer Factorization Cryptography</title>
             <author surname="Barker" initials="E."/>
@@ -3022,6 +3129,17 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
             <date year="2019"/>
           </front>
           <seriesInfo name="National Institute of Standards and Technology" value="SP 800-56B Rev. 2"/>
+        </reference>
+
+
+        <reference anchor="NIST-800-131Ar2" target="https://doi.org/10.6028/NIST.SP.800-131Ar2">
+          <front>
+            <title>Transitioning the Use of Cryptographic Algorithms and Key Lengths</title>
+            <author surname="Barker" initials="E."/>
+            <author surname="Roginsky" initials="A."/>
+            <date year="2019"/>
+          </front>
+          <seriesInfo name="National Institute of Standards and Technology" value="SP 800-131A Rev. 2"/>
         </reference>
 
         <reference anchor="NDN" target="https://named-data.net/project/execsummary/">
