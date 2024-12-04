@@ -324,7 +324,7 @@
       The optimizer will find a set of tree parameters that minimizes the tree height and
       minimizes the number of wasted pointers due to the size of the application data.</t>
 
-      <t>A recommended FLIC structure is to use a distinguised root manifest with exactly one
+      <t>A <bcp14>RECOMMENDED</bcp14> FLIC structure is to use a distinguised root manifest with exactly one
       pointer to the top manifest of a regular n-ary graph.  The root manifest is signed by
       the publisher and contains links to certificates or public keys.  It also specifies
       the Name Constructors used in the manifest.  If using RSA-OAEP key wrapping, it
@@ -541,7 +541,7 @@
             <dt>Segmented Schema:</dt>
             <dd>Every content object has a differnt name, denoted by the last name component.
             FLIC allows the publisher to specify the TLV type of that last name component
-            (e.g. ManifestId or ChunkId in CCNx).  The publisher <bcp14>MUST</bcp14> include a
+            (e.g. ManifestId or ChunkNumber in CCNx).  The publisher <bcp14>MUST</bcp14> include a
             mechanism to tell the consumer the ID of each content object.  FLIC provides two
             methods: use a <tt>StartSegmentId</tt> field in the <tt>HashGroup</tt> or use
             a <em>SegmentIdAnnotation</em> for each pointer.  The consumer will use
@@ -549,6 +549,135 @@
             type, and set the TLV value to the segment ID.  The resulting name is used
             in the Interest.  For NDN, <tt>Locators</tt> may also be used as Forwarding Hints.</dd>
           </dl>
+        </section>
+
+        <section anchor="explain_segmented">
+          <name>Segmented Schema Details</name>
+          <t>The Segmented Prefix schema uses a different name in all Content Objects and
+            distinguishes them via their ContentObjectHash. Note that in CCNx, using a
+            SegmentedPrefixSchema means that only the Root Manifest has a Locator for
+            the Segmented Prefix (minus the segment ID).</t>
+            
+          <t>The consumer must determine the segment ID to use in the name. Typically, the
+            application data would use a chunk number in the content name, which is a
+            compact sequence number. These could be computed based on the in-order traversal,
+            assuming one knows which manifests point to data versus other manifests.
+            Manifests, however, may not use a compact sequence number and there is no simple
+            way to predict the names.</t>
+
+          <t>The SegmentedSchema uses a name component suffix to distinguish each content object.
+            This name component will be of type <tt>SuffixComponentType</tt>. In CCNx, this would
+            be a <tt>ChunkNumber</tt> or <tt>ManifestId</tt> type (<tt>T_MANIFEST_ID</tt> is defined in
+            this document's <xref target="IANA">IANA section</xref>), though one may specify different types. 
+            The reason for specifying the 
+            <tt>SuffixComponentType</tt> in the name definition is that application data would
+            typically use chunked names with sequential identifiers and the FLIC manifest tree
+            would typically use the <tt>ManifestId</tt>.</t>
+
+          <t>A publisher may name the manifest tree and the application data as desired, as long
+            as the consumer can generate the required Interest names. FLIC provides two mechanisms: 
+            <tt>AnnotatedPointers</tt> and <tt>StartSegmentId</tt>. One could use an annotated pointer
+            to specify the exact name or name suffix for each pointer, so the consumer does not
+            need to calculate anything; it simply uses the name specified. The downside is there
+            is an annotation for each pointer, which reduces the number possible pointers in a
+            given MTU. The <tt>StartSegmentId</tt> is a single integer per hash group that indicates the
+            beginning ID for the pointer array. The consumer calculates each pointer's name suffix
+            from the start segment ID plus pointer offset, and then wraps it in a name component
+            of type <tt>SuffixComponentType</tt>.</t>
+
+          <t>Because FLIC uses a preorder tree traversal, the node IDs of a manifest's children
+            in the traversal order are not compact. They will skip around based on the preorder recursion. This means one
+            needs a different ID for each manifest if one wants to use the <tt>StartSegmentId</tt>
+            hint. A publisher may use any form of integer ID in the <tt>ManifestId</tt> name
+            component so long as it is locally (within a hash group) sequential and globally
+            unique.</t>
+
+          <t>As an example, the <xref target="ccnpy"/> implementation uses the regular k-ary tree
+          IDs per tree height as the manifest IDs (where k is the number of allowed indirect
+          pointers per manirest).  These are globally unique and locally sequential
+          for all the children of a manifest.</t>
+
+          <t>There are two methods to guide a consumer in generating segment IDs for
+            hash pointers:</t>
+          <ul spacing="normal">
+            <li>If fetching a pointer with a <tt>SegmentIdAnnotation</tt> (see <xref target="annotations"/>), 
+            the consumer <bcp14>MUST</bcp14> use that segment ID for the pointer.</li>
+            <li>If the GroupData has a <tt>StartSegmentId</tt> parameter, then the segment ID of each pointer
+            is calculated the <tt>StaretSegmentId</tt> plus the offset of the pointer from the first
+            pointer of the Hash Group.  Pointers with a <tt>SegmentIdAnnotation</tt> still count against
+            the offset even though the annotation takes precednece.
+            </li>
+          </ul>
+
+          <t>As an example, consider the manifest shown in <xref target="SegmentIdExample"/>.  The Interests generated, in order, have
+          these names and hash restrictions.  We have used short example hash values for the sake of clarity.</t>
+          <ol spacing="compact">
+            <li><tt>/foo/7=10, hash=0x0001</tt></li>
+            <li><tt>/foo/7=20, hash=0x0002</tt></li>
+            <li><tt>/foo/7=12, hash=0x0003</tt></li>
+            <li><tt>/bar/8=0, hash=0x0004</tt></li>
+            <li><tt>/bar/8=1, hash=0x0005</tt></li>
+            <li><tt>/bar/8=2, hash=0x0006</tt></li>
+          </ol>
+
+        <figure anchor="SegmentIdExample">
+          <name>Segment ID Example</name>
+          <artwork align="left" name="" type="ascii-art" alt=""><![CDATA[
+Meanifest
+  Node
+    NodeData
+      NcDef NcId 1 SegmentedSchema Name '/foo' SuffixComponentType 7
+      NcDef NcId 2 SegmentedSchema Name '/bar' SuffixComponentType 8
+    HashGroup
+      GroupData NcId 1 StartSegmentId 10
+      AnnotatedPtrs
+        PointerBlock
+          Ptr HashValue(0x0001) 
+          Ptr HashValue(0x0002) SegmentIdAnnotation(20)
+          Ptr HashValue(0x0003) 
+    HashGroup
+      GroupData NcId 2 StartSegmentId 0
+      Ptrs
+          HashValue(0x0004) 
+          HashValue(0x0005)
+          HashValue(0x0006) 
+]]>
+          </artwork>
+        </figure>
+
+          <t>Every group of a segmented NcId <bcp14>MUST</bcp14> have either a GroupData with a
+            StartSegmentId, or use annotated pointers with SegmentIdAnnotation.</t>
+
+          <t>A producer <bcp14>MUST</bcp14> ensure that a segment ID names exactly one data item. That is, the
+            producer <bcp14>MUST NOT</bcp14> duplicate the segment ID in an object name for
+            a different object. The object hash <bcp14>MUST</bcp14> be the same for the same segment
+            ID of a name, within the longest of the <tt>ExpiryTime</tt> of the manifest or the named object.
+            In other words, there is a one-to-one correspondance between a segment ID and a hash
+            for the lifetime of the manifest and the constituent objects.
+            Note that a <em>consumer</em> should not assume this is true, as a bad actor could
+            violate this rule.  A consumer shoud only assume the uniqueness of cryptographic hashes.</t>
+
+          <t>It is allowed to have multiple manifest entries with the same segment ID (see
+            below).</t>
+
+          <t>While a producer <bcp14>MAY</bcp14> mix using GroupData <tt>StartSegmentId</tt> and
+            <tt>SegmentIdAnnotation</tt>, we in general do not consider that a good idea. It is up to the
+            manifest producer to ensure that every segment may be fetched, and fetch in the right
+            order. Segments, when fetched in the <strong>manifest order</strong> reconstruct the
+            original data. </t>
+
+          <t>Let us make this clear, the original data is constructed by the in-order manifest
+            traversal, not the segment ID order. The consumer should make no assumptions about
+            reconstructing the original data and the names of those data elements.</t>
+
+          <t>A consumer <bcp14>MAY</bcp14> skip fetching some segments. A consumer <bcp14>MAY</bcp14>> fetch segments in any
+            order it chooses. It may skip around or omit segments.</t>
+
+          <t>A manifest <bcp14>MAY</bcp14> have multiple pointers to the same segment ID (and thus same hash). This
+            can be used for data de-duplication, e.g. multiple occurances of the same binary string
+            within
+            the reconstructed data object. If the producer uses this method, then the original data
+            cannot be reconstructed by simply fetching the segment IDs in order.</t>
         </section>
       </section>
 
@@ -573,6 +702,38 @@
             or repository access to the Manifest data does not as a side effect reveal the contents
             of the application data itself.</t>
         </aside>
+
+        <section anchor="digests">
+          <name>SubtreeDigest and LeafDigest</name>
+          <t>It is <bcp14>RECOMMENDED</bcp14> that the root manifest have a <tt>SubtreeDigest</tt>
+          field in the <tt>NodeData</tt> with the crytographic hash of the entire application data.  This allows the
+          manifest consumer to validate that the final reconstructed data is correct.</t>
+
+          <t>A consumer <bcp14>SHOULD</bcp14> validate the outer-most <tt>SubtreeDigest</tt>, if any.  If this digest
+          does not validate, a consumer <bcp14>SHOULD</bcp14> validate nested <tt>SubtreeDigest</tt> or <tt>LeafDigest</tt>
+          to help pinpoint where there is a discrepency.
+          </t>
+
+          <t>As an example, a publisher might include a <tt>SubtreeDigest</tt> in the root manifest <tt>NodeData</tt>
+          and then a <tt>LeafDigest</tt> in every manifest with direct pointers.  It is not necessary to validate every
+          <tt>LeafDigest</tt> if the overall <tt>SubtreeDigest</tt> checks.  If the <tt>SubtreeDigest</tt> does not check,
+          then the consumer could locate where the problem is by validating the <tt>LeafDigests</tt>.</t>
+
+          <t>A consumer <bcp14>SHOULD</bcp14> inform the user when a digest does not validate.</t>
+
+          <t>A discrepency in a digest should be considered an error condition.</t>
+        </section>
+
+        <section anchor="sizes">
+          <name>SubtreeSize and LeafSize</name>
+          <t>The <tt>SubtreeSize</tt> and <tt>LeafSize</tt> fields are provided to help a consumer seek
+          through a manifest to specific locations.  They are not intended to validate the application
+          data.</t>
+
+          <t>A consumer <bcp14>MAY</bcp14> compare the sizes in <tt>SubtreeSize</tt> and <tt>LeafSize</tt> to
+          the true application payload sizes retrieved from the manifest nodes and report any discrepencies to
+          the user.</t>
+        </section>
       </section>
 
       <section anchor="annotations">
@@ -583,14 +744,15 @@
           SizeAnnotation</tt>, <tt>SegmentIdAnnotation</tt>, and <tt>LinkAnnotation</tt>.</t>
 
 
-        <t>The <em>SizeAnnotation</em> specifies the number of application layer octets covered by
+        <t>The <tt>SizeAnnotation</tt> specifies the number of application layer octets covered by
           the pointer.</t>
 
-        <t>The <em>SegmentIdAnnotation</em> is a unique suffix for the pointer for use with the
+        <t>The <tt>SegmentIdAnnotation</tt> is a unique suffix for the pointer for use with the
           Seegmented Schema name constructor. Using annotations allows non-sequential segment IDs,
-          which could happen if manifest trees are named in the traversal order.</t>
+          which could happen if manifest trees are named in the traversal order.  See 
+          <xref target="explain_segmented"/> details on using the annotation.</t>
 
-        <t>The <em>LinkAnnotation</em> is a link to be used to name the pointer (less the pointer
+        <t>The <tt>LinkAnnotation</tt> is a link to be used to name the pointer (less the pointer
           itself). For NDN, the poitner would be appended to the name for a complete name. In CCNx,
           the name would be used in the Interest along with the pointer in the
           ContentObjectHashRestriction field. The link may include a KeyId restriction.</t>
@@ -783,7 +945,7 @@ WrappedKey = T_WRAPPED_KEY LENGTH RsaOaepEnc{4OCTET 1*OCTET}
 
           <dt>StartSegmentId:</dt>
           <dd>
-            If using a name constructor that requires a chunk number (segment number), this field
+            If using a name constructor that requires a chunk number (segment ID), this field
             indicates the starting value
             for the group. Using the StartSegmentId means that a consumer does not need to track the
             segment id between
@@ -914,23 +1076,23 @@ D0 D1
         <t>Additional modes may be defined in subsequent specifications. We expect that an RSA-KEM
           mode and Elliptic Curve mode should be specified.</t>
 
-        <t>For group key based encryption, FLIC uses RSA-OAEP to wrap the <tt>WrappedKey</tt>
+        <t>To distribute a decryption key with the manifest itself, FLIC uses RSA-OAEP to wrap the <tt>WrappedKey</tt>
           element. This specification only details the pertinent aspects of the encryption. It
           describes how a consumer locates the appropriate keys in the ICN namespace. It does not
-          specify aspects of a key manager which may or may not be used as part of key distribution
+          specify aspects of a key manager which may be used as part of key distribution
           and management, nor does it specify the protocol between a key manager and a publisher. In
           its simpliest form, the publisher could be the key manager, in which case there is no
           extra protocol needed between the publisher and key manager.</t>
 
         <t>The manifest is always encrypted with an AEAD algorithm. The difference between the
           preshared key mode and the RSA wrapped mode is how the parties communicate the AES
-          decryption key. The group key mechanism facilitates the distribution of the shared key
+          decryption key. The RSA OAEP mechanism facilitates the distribution of the shared key
           without an on-line key agreement protocol like (the expired draft) <xref
             target="I-D.wood-icnrg-ccnxkeyexchange">CCNxKE</xref>.</t>
 
         <section anchor="aead">
           <name>AEAD Mode</name>
-          <t>This mechanism uses <xref target="AESGCM">AES-GEM</xref> or <xref target="RFC3310"
+          <t>This mechanism uses <xref target="NIST-800-38D">AES-GEM</xref> or <xref target="RFC3310"
             >
             AES-CCM</xref> for manifest encryption. A publisher creating a <tt>SecurityCtx</tt>
             <bcp14>
@@ -947,12 +1109,11 @@ D0 D1
             keys, their lifespan, or scope. See the <xref target="Security" /> section for a
             discussion.</t>
 
-          <t>As these references specify, it is essential that the publisher creating a Manifest
-            never use a Nonce more than once for the same key. For keys exchanged via a session
-            protocol, such as CCNx, the publisher <bcp14>MUST</bcp14> use unique nonces on each
-            Manifest for that session. If the key is derived via a group key mechanism, the
-            publisher <bcp14>MUST</bcp14> ensure that the same Nonce is not used more than once for
-            the same Content Encryption Key.</t>
+          <t>As these references specify, the publisher <bcp14>MUST</bcp14> use unique nonces on each
+            Manifest that uses the same key or derived KDF key.  A publisher <bcp14>MAY</bcp14>
+            use the mechanisms of <xref target="RFC5116" section="3.2"/> for nonce generation 
+            (what we cal "salt" is termed "fixed-common" therein).
+            </t>
 
           <t>The AEAD Mode uses <xref target="RFC5116" /> defined symbols AEAD_AES_128_CCM,
             AEAD_AES_128_GCM, AEAD_AES_256_CCM and AEAH_AES_256_GCM to specify the key length and
@@ -1048,18 +1209,18 @@ D0 D1
 
         <section anchor="rsa_wrap">
           <name>RSA-OAEP Key Transport Mode</name>
-          <t>The RSA-OAEP mode uses RSA-OAEP (see <xref target="RFC8017" section="7.1"
+          <t>The <tt>RsaOaepCtx</tt>> mode uses RSA-OAEP (see <xref target="RFC8017" section="7.1"
               format="default" /> and <xref target="NIST-800-56Br2" />) to encrypt a symmetric key
-            that is used to encrypt the Manifest. We call this RSA key the Key Encryption Key (KEK)
-            and each group member has this private key. A separate key distribuiton system is
-            responsible for distributing the KEK. For our purposes, it is reasonable to assume that
-            the KEK private key is available at a Locator and that group members can decrypt this
-            private key.</t>
+            that is used to encrypt the Manifest. We call this RSA public key the Key Encryption Key (KEK)
+            and the consumer has the private key. A separate key distribuiton system is
+            responsible for distributing the KEK.  The publisher <bcp14>MAY</bcp14> include a
+            <tt>KeyLink</tt> to help a consumer find the corresponding private key, such as from a
+            key distribution service.  An ICN system may use the RSA-OAEP mode as part of a group keying
+            protocol.  Key distribution and group keying are both beyond the scope of FLIC.</t>
 
-          <t>This usage of RSA-OAEP is intented to be compliant with <xref target="NIST-800-56Br2">
-            KTS-OAEP</xref>. See <xref target="OAEP_Security" /> for a discussion of compliance with
-            NIST recommndations. KTS-OAEP compliance only applies when there is a specific owner of
-            the wrapping private key. NIST does not approve KTS-OAEP for group key distribution. </t>
+          <t>This usage of RSA-OAEP is intented to be compliant with KTS-OAEP <xref target="NIST-800-56Br2"/>. 
+            See <xref target="OAEP_Security" /> for a discussion of compliance with
+            NIST recommndations.</t>
 
           <t><tt>T_RSA_WRAP_CTX</tt> uses <xref target="RFC8017">RSA-OAEP</xref> with mask
             generation function <xref target="RFC8017">MGF1</xref> and the specified hash algorithm.
@@ -1070,8 +1231,8 @@ D0 D1
             warpped key to decrypt the manifest. It optionally includes the wrapped key itself. A
             publisher using <tt>RsaWrapCtx</tt> <bcp14>MUST</bcp14> include the optional wrapped key
             information in the first manifest node that uses it. The publisher <bcp14>MAY</bcp14>
-            include the wrapped key in other manifest nodes. It <bcp14>MUST</bcp14> use distinct <tt>
-            KeyNum</tt> for distinct <tt>WrappedKey</tt>.</t>
+            include the wrapped key in other manifest nodes. It <bcp14>MUST</bcp14> use distinct 
+            <tt>KeyNum</tt> for distinct <tt>WrappedKey</tt>.</t>
 
           <t>The RSA-OAEP <tt>KeyNum</tt> is only significant within a given manifest.</t>
 
@@ -1083,9 +1244,9 @@ D0 D1
             In subsequent manifests, the publisher may only include the <tt>AEADData</tt> in the <tt>
             RsaOaepData</tt> to save space.</t>
 
-          <t>The <tt>KeyId</tt> identifies the KEK. If the consumer already has the key
-            corresponding to <tt>KeyId</tt> locally, it does not need to fetch it from the <tt>
-            LocatorPrefixx</tt>. The <tt>KeyId</tt> is similar to the Content Object KeyId field <xref
+          <t>The <tt>KeyId</tt> identifies the KEK. If the consumer already has the private key
+            corresponding to <tt>KeyId</tt> locally, it does not need to fetch it from the 
+            <tt>KeyLink</tt>. The <tt>KeyId</tt> is similar to the Content Object KeyId field <xref
               target="RFC8609" />.</t>
 
           <t>The symmetric key <bcp14>MUST</bcp14> be one that is compatible with the AEAD Mode,
@@ -1171,7 +1332,7 @@ AdditionalInfo = "FLIC RSA-OAEP" ||
 
           <t>To decrypt a Manifest, the consumer:</t>
           <ol>
-            <li>Acquires the RSA private key corresponding to <tt>KeyId</tt> via the <tt>KeyLocator</tt>
+            <li>Acquires the RSA private key corresponding to <tt>KeyId</tt> via the <tt>KeyLink</tt>
               or whatever means the publisher and consumers use to distribute keys.</li>
             <li>It <bcp14>SHOULD</bcp14> verify that it trusts the Manifest publisher to use the
               provided wrapping key.</li>
@@ -1335,36 +1496,6 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
 
           <section anchor="SegmentedPrefixStrategy">
             <name>CCNx Segmented Prefix Strategy</name>
-            <t>The Segmented Prefix schema uses a different name in all Content Objects and
-              distinguishes them via their ContentObjectHash. Note that in CCNx, using a
-              SegmentedPrefixSchema means that only the Root Manifest has a Locator for
-              the Segmented Prefix (minus the segment number).</t>
-            <t>The SegmentedSchema uses name component suffix to distinguish each content object.
-              This name component will be of type <tt>SuffixComponentType</tt>. In CCNx, this would
-              be a <tt>ChunkId</tt> or <tt>ManifestId</tt> type (<tt>ManifestId</tt> is defined in
-              this document), though one may specify different types. The reason for specifying the <tt>
-              SuffixComponentType</tt> in the name definition is that application data would
-              typically use chunked names with sequential identifiers and the FLIC manifest tree
-              would typically use the <tt>ManifestId</tt>.</t>
-
-            <t>A publisher may name the manifest tree and the application data as desired, as long
-              as the consumer can generate the required name. FLIC provides two mechanisms: <tt>
-              AnnotatedPointers</tt> and <tt>StartSegmentId</tt>. One could use an annotated pointer
-              to specify the exact name or name suffix for each pointer, so the consumer does not
-              need to calculate anything; it simply uses the name specified. The downside is there
-              is an annotation for each pointer, which reduces the number possible pointers in a
-              given MTU. The start segment id is a compact integer per hash group that indicates the
-              beginning ID for the pointer array. The consumer calculates each pointer's name suffix
-              from the start segment ID plus pointer offset, and then wraps it in a name component
-              of type <tt>SuffixComponentType</tt>. </t>
-
-            <t>Because FLIC uses a preorder tree traversal, the node IDs in the traversal order are
-              not compact. They will skip around based on the preorder recursion. This means one
-              needs a different ID for each manifest if one wants to use the <tt>StartSegmentId</tt>
-              hint. A publisher may use any form of integer ID in the <tt>ManifestId</tt> name
-              component so long as it is locally (within a hash group) sequential and globally
-              unique.</t>
-
             <t>It proceeds as follows:</t>
             <ul spacing="normal">
               <li>The Root Manifest content object has a name used to fetch the manifest. It is
@@ -2006,56 +2137,6 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
 
           </section>
         </section>
-
-        <section anchor="explain_segmented">
-          <name>Segmented Schema Details</name>
-          <t>When using CCNx Segmented Prefix Strategy or NDN Segmented Prefix strategy, the
-            consumer must determine the segment number to use in the name. Typically, the
-            application data would use a chunk (segment) ID in the content name, which is a
-            compact sequence number. These could be computed based on the in-order traversal,
-            assuming one knows which manifests point to data versus other manifests.
-            Manifests, however, may not use a compact sequence number and there is no simple
-            way to predict the names.</t>
-
-
-          <t>There are two methods to guide a consumer in generating segment IDs for
-            hash pointers:</t>
-          <ul spacing="normal">
-            <li>If fetching a pointer with a SegmentIdAnnotation, the consumer <bcp14>MUST</bcp14>
-              use that segment number for the pointer. A pointer with SegmentIdAnnotation does not
-              increment the SegmentId used by the GroupData case.</li>
-            <li>If the GroupData has a StartSegmentId parameter, then that segment number MUST
-              be used for the first in-order pointer of the group. The consumer then increments
-              the segment number for each in-order pointer of that group.
-            </li>
-          </ul>
-          <t>Every group of a segmented NcId <bcp14>MUST</bcp14> have either a GroupData with a
-            StartSegmentId, or use annotated pointers with SegmentIdAnnotation.</t>
-          <t>A segment number <bcp14>MUST</bcp14> indicate exactly one data item. That is, the
-            producer <bcp14>MUST NOT</bcp14> duplicate the segment number in an object name for
-            different objects. The object hash <bcp14>MUST</bcp14> be the same for the same segment
-            number of a name. </t>
-          <t>It is allowed to have multiple manifest entries with the same segment number (see
-            below).</t>
-          <t>While a producer is allowed to mix using GroupData StartSegmentId and
-            SegmentIdAnnotation, we in general do not consider that a good idea. It is up to the
-            manifest producer to ensure that every segment may be fetched, and fetch in the right
-            order. Segments, when fetched in the <strong>manifest order</strong> reconstruct the
-            original data. </t>
-          <t>Let us make this clear, the original data is constructed by the in-order manifest
-            retrieval, not
-            the segment number order. The consumer should make no assumptions about reconstructing
-            the original
-            data and the names of those data elements.</t>
-          <t>A consumer is not required to fetch every segment. A consumer may fetch segments in any
-            order
-            it chooses. It may skip around or omit segments.</t>
-          <t>It is allowed to have multiple pointers to the same segment number. This
-            can be used for data de-duplication, e.g. multiple occurances of the same binary string
-            within
-            the reconstructed data object. If the producer uses this method, then the original data
-            cannot be reconstructed by simply fetching the sequence numbers in order.</t>
-        </section>
       </section>
 
       <section>
@@ -2134,269 +2215,6 @@ Root -> M0 ----> M1 ----> ...
         <li>utility of the encryption options for use by repositories and forwarders</li>
         <li>need for application metadata in manifests</li>
       </ul>
-    </section>
-
-    <section anchor="Usage">
-      <name>Usage Examples</name>
-      <section anchor="Locating">
-        <name>Locating FLIC leaf and manifest nodes</name>
-        <t>The names of manifest and data objects are often missing or not unique, unless using
-          specific naming conventions. In this example, we show how using manifest locators is used
-          to generate Interests. Take for example the figure below where the root manifest is named
-          by hash h0. It has nameless children with hashes with hashes h1 ... hN. </t>
-
-        <figure anchor="Locating1">
-          <name>Data Organization</name>
-          <artwork align="left" name="" type="ascii-art" alt=""><![CDATA[
-Objects:
-manifest(name=/a/b/c, ptr=h1, ptr=hN)  - has hash h0
-nameless(data1)                        - has hash h1
-...
-nameless(dataN)                        - has hash hN
-
-Query for the manifest:
-interest(name=/a/b/c, implicitDigest=h0)
-                ]]></artwork>
-        </figure>
-
-        <t>After obtaining the manifest, the client fetches the contents. In this first instance,
-          the manifest does not provide any Locators data structure, so the client must continue
-          using the name it used for the manifest.</t>
-
-        <figure anchor="Locating2">
-          <name>Data Interests</name>
-          <artwork align="left" name="" type="ascii-art" alt=""><![CDATA[
-interest(name=/a/b/c, implicitDigest=h1)
-...
-interest(name=/a/b/c, implicitDigest=hN)
-                ]]></artwork>
-        </figure>
-
-        <t>Using the locator metadata entry, this behavior can be changed:</t>
-        <figure anchor="Locating3">
-          <name>Using Locators</name>
-          <artwork align="left" name="" type="ascii-art" alt=""><![CDATA[
-Objects:
-manifest(name=/a/b/c,
-hashgroup(loc=/x/y/z, ptr=h1)
-hashgroup(ptr=h2)             - has hash h0
-nameless(data1)               - has hash h1
-nameless(data2)               - has hash h2
-
-Queries:
-interest(name=/a/b/c, implicitDigest=h0)
-interest(name=/x/y/z, implicitDigest=h1)
-interest(name=/a/b/c, implicitDigest=h2)
-                ]]></artwork>
-        </figure>
-      </section>
-
-      <section anchor="Seeking">
-        <name>Seeking</name>
-        <t>Fast seeking (without having to sequentially fetch all content) works by skipping over
-          entries for which we know their size. The following expression shows how to compute the
-          byte offset of the data pointed at by pointer <tt>P_i</tt>, call it <tt>offset_i</tt>. In
-          this formula, let <tt>P_i.size</tt> represent the Size value of the <em>i</em>-th pointer.</t>
-
-        <sourcecode type="pseudocode"><![CDATA[offset_i = \sum_{k=1}^{i-1} &gt; P_k.size]]></sourcecode>
-
-        <t>With this offset, seeking is done as follows:</t>
-        <figure anchor="Seeking1">
-          <name>Seeking Algorithm</name>
-          <sourcecode type='pseudocode'><![CDATA[
-Input: seek_pos P, a FLIC manifest with a hash group having N entries
-Output: pointer index i and byte offset o, or out-of-range error
-Algorithm:
-offset = 0
-for i in 1..N do
-   if (P &gt; offset + P_i.size)
-      return (i, P - offset)
-   offset += P_i.size
-return out-of-range
-]]>
-          </sourcecode>
-        </figure>
-
-        <t>Seeking in a BlockHashGroup is different since offsets can be quickly computed. This is
-          because the size of each pointer P_i except the last is equal to the SizePerPtr value. For
-          a BlockHashGroup with N pointers, OverallByteCount D, and SizePerPointer L, the size of
-          P_N is equal to the following:</t>
-        <artwork align="left" name="" type="" alt="">
-<![CDATA[D - ((N - 1) * L)]]>
-        </artwork>
-
-        <t>In a BlockHashGroup with k pointers, the size of P_k is equal to:</t>
-        <artwork align="left" name="" type="" alt="">
-<![CDATA[D - L * (k - 1)]]>
-        </artwork>
-
-        <t>Using these, the seeking algorithm can be thus simplified to the following:</t>
-        <figure anchor="Seeking2">
-          <name>Seeking Algorithm</name>
-          <sourcecode type='pseudocode'><![CDATA[
-Input: seek_pos P, a FLIC manifest with a hash group having
-                   OverallByteCount S and SizePerPointer L.
-Output: pointer index i and byte offset o, or out-of-range error
-Algorithm:
-if (P > S)
-   return out-of-range
-i = floor(P / L)
-if (i > N)
-   return out-of-range # bad FLIC encoding
-o = P mod L
-return (i, o)]]>
-          </sourcecode>
-        </figure>
-
-        <aside>
-          <t><strong>Note</strong>: In both cases, if the pointer at position i is a manifest
-            pointer, this algorithm has to be called once more, seeking to seek_pos o inside that
-            manifest.</t>
-        </aside>
-
-      </section>
-      <section anchor="dedup">
-        <name>Block-level de-duplication</name>
-        <t>Consider a huge file, e.g. an ISO image of a DVD or program in binary be patched. In this
-          case, all existing encoded ICN chunks can remain in the repository while only the chunks
-          for the patch itself is added to a new manifest data structure, as is shown in the diagram
-          below. For example, the <xref target="venti">venti archival file system of Plan9</xref>
-          uses this technique.</t>
-
-        <figure anchor="dedup1">
-          <name>De-duplications</name>
-          <artset>
-            <artwork type="svg" name="dedup.svg">
-              <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="80%" viewBox="0 0 456 96"
-                class="diagram" text-anchor="middle" font-family="monospace" font-size="13px"
-                stroke-linecap="round">
-                <path d="M 160,16 L 176,16" fill="none" stroke="black" />
-                <path d="M 272,16 L 288,16" fill="none" stroke="black" />
-                <path d="M 160,32 L 176,32" fill="none" stroke="black" />
-                <path d="M 272,32 L 288,32" fill="none" stroke="black" />
-                <path d="M 272,48 L 288,48" fill="none" stroke="black" />
-                <path d="M 160,64 L 176,64" fill="none" stroke="black" />
-                <path d="M 160,80 L 176,80" fill="none" stroke="black" />
-                <path d="M 272,80 L 288,80" fill="none" stroke="black" />
-                <path d="M 80,32 L 104,80" fill="none" stroke="black" />
-                <path d="M 360,80 L 384,32" fill="none" stroke="black" />
-                <polygon class="arrowhead" points="280,80 268,74.4 268,85.6" fill="black"
-                  transform="rotate(180,272,80)" />
-                <polygon class="arrowhead" points="280,48 268,42.4 268,53.6" fill="black"
-                  transform="rotate(180,272,48)" />
-                <polygon class="arrowhead" points="280,32 268,26.4 268,37.6" fill="black"
-                  transform="rotate(180,272,32)" />
-                <polygon class="arrowhead" points="280,16 268,10.4 268,21.6" fill="black"
-                  transform="rotate(180,272,16)" />
-                <polygon class="arrowhead" points="184,80 172,74.4 172,85.6" fill="black"
-                  transform="rotate(0,176,80)" />
-                <polygon class="arrowhead" points="184,64 172,58.4 172,69.6" fill="black"
-                  transform="rotate(0,176,64)" />
-                <polygon class="arrowhead" points="184,32 172,26.4 172,37.6" fill="black"
-                  transform="rotate(0,176,32)" />
-                <polygon class="arrowhead" points="184,16 172,10.4 172,21.6" fill="black"
-                  transform="rotate(0,176,16)" />
-                <g class="text">
-                  <text x="44" y="20">old_mfst -</text>
-                  <text x="124" y="20">- &gt; h1</text>
-                  <text x="220" y="20">oldData1</text>
-                  <text x="324" y="20">h1 &lt; -</text>
-                  <text x="368" y="20">-</text>
-                  <text x="420" y="20">new_mfst</text>
-                  <text x="124" y="36">- &gt; h2</text>
-                  <text x="220" y="36">oldData2</text>
-                  <text x="324" y="36">h2 &lt; -</text>
-                  <text x="368" y="36">-</text>
-                  <text x="220" y="52">replace3</text>
-                  <text x="324" y="52">h5 &lt; -</text>
-                  <text x="368" y="52">-</text>
-                  <text x="124" y="68">- &gt; h3</text>
-                  <text x="220" y="68">oldData3</text>
-                  <text x="132" y="84">&gt; h4</text>
-                  <text x="220" y="84">oldData4</text>
-                  <text x="324" y="84">h4 &lt; -</text>
-                </g>
-              </svg>
-            </artwork>
-            <artwork type="ascii-art" align="center" name="dedup.txt">
-                <![CDATA[
-old_mfst -  - > h1 --> oldData1  <-- h1 < -  -  new_mfst
-         \  - > h2 --> oldData2  <-- h2 < -  - /
-          \            replace3  <-- h5 < -  -/
-           \- > h3 --> oldData3              /
-            \ > h4 --> oldData4  <-- h4 < - /
-                ]]>
-              </artwork>
-          </artset>
-        </figure>
-      </section>
-
-      <section anchor="GrowingCollections">
-        <name>Growing ICN collections</name>
-        <t>A log file, for example, grows over time. Instead of having to re- FLIC the grown file it
-          suffices to construct a new manifest with a manifest pointer to the old root manifest plus
-          the sequence of data hash pointers for the new data (or additional sub-manifests if
-          necessary).</t>
-        <aside>
-          <t><strong>Note</strong> that this tree will not be skewed (anymore).</t>
-        </aside>
-
-        <figure anchor="Growing">
-          <name>Growing A Collection</name>
-          <artwork align="center" name="" type="" alt=""><![CDATA[
-old data < -  -  -  mfst_old <-- h_old -  - mfst_new
-                                            /
-new data1 <-- h_1 -  -  -  -  -  -  -  -  -/
-new data2                                 /
-...                                      /
-new dataN <-- h_N -  -  -  -  -  -  -  -/
-                    ]]></artwork>
-        </figure>
-      </section>
-
-      <section anchor="Republishing">
-        <name>Re-publishing a FLIC under a new name</name>
-        <t>There are several use cases for republishing a collection under a new namespace, or
-          having one collection exist under several namespaces:</t>
-        <ul spacing="normal">
-          <li>It can happen that a publisher's namespace is part of a service provider's prefix.
-            When switching provider, the publisher may want to republish the old data under a new
-            name.</li>
-
-          <li>A publishes wishes to distribute its content to several repositories and would like a
-            result to be delivered from the repository for consumers who have good connectivity to
-            that repository. For example, the publisher /alpha wishes to place content at /beta and
-            /gamma, but routing only to /alpha would not send a request to either /beta or /gamma.
-            The operators of of /beta and /gamma could create a named and signed version of the root
-            manifest with appropriate keys (or delegate that to /alpha) so the results are always
-            delivered by the corresponding repository without having to change the bulk of the
-            manifest tree.</li>
-        </ul>
-        <t>This can easily be achieved with a single nameless root manifest for the large FLIC plus
-          arbitrarily many per-name manifests (which are signed by whomever wants to publish this
-          data):</t>
-
-        <figure anchor="Relocating">
-          <name>Relocating A Collection</name>
-          <artwork align="left" name="" type="" alt=""><![CDATA[
-
-data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
-                                < - mfst(/com/example/west/old/the/flic)
-                                < - mfst(/internet/archive/flic234)
-                    ]]></artwork>
-        </figure>
-        <aside>
-          <t>Note that the hash computation (of h) only requires reading the nameless root manifest,
-            not the entire FLIC.</t>
-        </aside>
-
-        <t>This example points out the problem of HashGroups having their own locator metadata
-          elements: A retriever would be urged to follow these hints which are "hardcoded" deep
-          inside the FLIC but might have become outdated. We therefore recommend to name FLIC
-          manifests only at the highest level (where these names have no locator function). Child
-          nodes in a FLIC manifest should not be named as these names serve no purpose except
-          retrieving a sub-tree's manifest by name, if would be required. </t>
-      </section>
     </section>
 
     <section anchor="IANA">
@@ -3045,14 +2863,10 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
       <section>
         <name>Trust, Security, and Privacy Goals</name>
         <t>A FLIC manifest has it's own security and privacy apart from the underlying application
-          data
-          that the manifest describes. The trust and privacy of the application data is not
-          considered
-          by FLIC, only the trust, security, and privacy of the manifest itself. The trust of a
-          consumer
-          on a manifest is based on the root manifest name, it's publisher's key, the signature on
-          the
-          root manfiest, and the consumers belief that the given key is trusted to publish the name.</t>
+          data that the manifest describes. The trust and privacy of the application data is not
+          considered by FLIC, only the trust, security, and privacy of the manifest itself. The trust of a
+          consumer on a manifest is based on the root manifest name, it's publisher's key, the signature on
+          the root manfiest, and the consumers belief that the given key is trusted to publish the name.</t>
 
         <t>The security and privacy of a FLIC manifest is for the hash pointers and name
           constructors it contains. FLIC does not provide privacy for: the name of the root manifest
@@ -3191,9 +3005,8 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
           unique, one should store them based on their scopes, such as <tt>(Publisher KeyId, KeyNum)</tt>
           or <tt>(Publisher KeyId, Name Prefix, KeyNum)</tt>.</t>
 
-        <t>If a publisher will use a single AES key across multiple manifests, it must ensure that
-          it never re-uses the same nonce.</t>
-
+        <t>If a publisher will use a single AES key across multiple manifests, it <bcp14>MUST</bcp14> use
+        unique KDF derived keys or ensure that it never re-uses the same nonce.</t>
       </section>
 
       <section>
@@ -3236,7 +3049,7 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
         <xi:include
           href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.draft-wood-icnrg-ccnxkeyexchange-02.xml" />
 
-        <reference anchor="AESGCM" target="https://doi.org/10.6028/NIST.SP.800-38D">
+        <reference anchor="NIST-800-38D" target="https://doi.org/10.6028/NIST.SP.800-38D">
           <front>
             <title>Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and
               GMAC</title>
@@ -3343,6 +3156,310 @@ data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
 
       </references>
     </references>
+
+
+    <section anchor="Usage">
+      <name>Usage Examples</name>
+      <section anchor="Locating">
+        <name>Locating FLIC leaf and manifest nodes</name>
+        <t>The names of manifest and data objects are often missing or not unique, unless using
+          specific naming conventions. In this example, we show how using manifest locators is used
+          to generate Interests. Take for example the figure below where the root manifest is named
+          by hash h0. It has nameless children with hashes with hashes h1 ... hN. </t>
+
+        <figure anchor="Locating1">
+          <name>Data Organization</name>
+          <artwork align="left" name="" type="ascii-art" alt=""><![CDATA[
+Objects:
+manifest(name=/a/b/c, ptr=h1, ptr=hN)  - has hash h0
+nameless(data1)                        - has hash h1
+...
+nameless(dataN)                        - has hash hN
+
+Query for the manifest:
+interest(name=/a/b/c, implicitDigest=h0)
+                ]]></artwork>
+        </figure>
+
+        <t>After obtaining the manifest, the client fetches the contents. In this first instance,
+          the manifest does not provide any Locators data structure, so the client must continue
+          using the name it used for the manifest.</t>
+
+        <figure anchor="Locating2">
+          <name>Data Interests</name>
+          <artwork align="left" name="" type="ascii-art" alt=""><![CDATA[
+interest(name=/a/b/c, implicitDigest=h1)
+...
+interest(name=/a/b/c, implicitDigest=hN)
+                ]]></artwork>
+        </figure>
+
+        <t>Using the locator metadata entry, this behavior can be changed:</t>
+        <figure anchor="Locating3">
+          <name>Using Locators</name>
+          <artwork align="left" name="" type="ascii-art" alt=""><![CDATA[
+Objects:
+manifest(name=/a/b/c,
+hashgroup(loc=/x/y/z, ptr=h1)
+hashgroup(ptr=h2)             - has hash h0
+nameless(data1)               - has hash h1
+nameless(data2)               - has hash h2
+
+Queries:
+interest(name=/a/b/c, implicitDigest=h0)
+interest(name=/x/y/z, implicitDigest=h1)
+interest(name=/a/b/c, implicitDigest=h2)
+                ]]></artwork>
+        </figure>
+      </section>
+
+      <section anchor="Seeking">
+        <name>Seeking</name>
+        <t>Fast seeking (without having to sequentially fetch all content) works by skipping over
+          entries for which we know their size. The following expression shows how to compute the
+          byte offset of the data pointed at by pointer <tt>P_i</tt>, call it <tt>offset_i</tt>. In
+          this formula, let <tt>P_i.size</tt> represent the Size value of the <em>i</em>-th pointer.</t>
+
+        <sourcecode type="pseudocode"><![CDATA[offset_i = \sum_{k=1}^{i-1} &gt; P_k.size]]></sourcecode>
+
+        <t>With this offset, seeking is done as follows:</t>
+        <figure anchor="Seeking1">
+          <name>Seeking Algorithm</name>
+          <sourcecode type='pseudocode'><![CDATA[
+Input: seek_pos P, a FLIC manifest with a hash group having N entries
+Output: pointer index i and byte offset o, or out-of-range error
+Algorithm:
+offset = 0
+for i in 1..N do
+   if (P &gt; offset + P_i.size)
+      return (i, P - offset)
+   offset += P_i.size
+return out-of-range
+]]>
+          </sourcecode>
+        </figure>
+
+        <t>Seeking in a BlockHashGroup is different since offsets can be quickly computed. This is
+          because the size of each pointer P_i except the last is equal to the SizePerPtr value. For
+          a BlockHashGroup with N pointers, OverallByteCount D, and SizePerPointer L, the size of
+          P_N is equal to the following:</t>
+        <artwork align="left" name="" type="" alt="">
+<![CDATA[D - ((N - 1) * L)]]>
+        </artwork>
+
+        <t>In a BlockHashGroup with k pointers, the size of P_k is equal to:</t>
+        <artwork align="left" name="" type="" alt="">
+<![CDATA[D - L * (k - 1)]]>
+        </artwork>
+
+        <t>Using these, the seeking algorithm can be thus simplified to the following:</t>
+        <figure anchor="Seeking2">
+          <name>Seeking Algorithm</name>
+          <sourcecode type='pseudocode'><![CDATA[
+Input: seek_pos P, a FLIC manifest with a hash group having
+                   OverallByteCount S and SizePerPointer L.
+Output: pointer index i and byte offset o, or out-of-range error
+Algorithm:
+if (P > S)
+   return out-of-range
+i = floor(P / L)
+if (i > N)
+   return out-of-range # bad FLIC encoding
+o = P mod L
+return (i, o)]]>
+          </sourcecode>
+        </figure>
+
+        <aside>
+          <t><strong>Note</strong>: In both cases, if the pointer at position i is a manifest
+            pointer, this algorithm has to be called once more, seeking to seek_pos o inside that
+            manifest.</t>
+        </aside>
+
+      </section>
+      <section anchor="dedup">
+        <name>Block-level de-duplication</name>
+        <t>Consider a huge file, e.g. an ISO image of a DVD or program in binary be patched. In this
+          case, all existing encoded ICN chunks can remain in the repository while only the chunks
+          for the patch itself is added to a new manifest data structure, as is shown in the diagram
+          below. For example, the <xref target="venti">venti archival file system of Plan9</xref>
+          uses this technique.</t>
+
+        <figure anchor="dedup1">
+          <name>De-duplications</name>
+          <artset>
+            <artwork type="svg" name="dedup.svg" align="center">
+              <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="80%" viewBox="0 0 472 96" 
+                class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+                <path d="M 80,16 L 128,16" fill="none" stroke="black"/>
+                <path d="M 168,16 L 184,16" fill="none" stroke="black"/>
+                <path d="M 280,16 L 296,16" fill="none" stroke="black"/>
+                <path d="M 336,16 L 392,16" fill="none" stroke="black"/>
+                <path d="M 88,32 L 128,32" fill="none" stroke="black"/>
+                <path d="M 168,32 L 184,32" fill="none" stroke="black"/>
+                <path d="M 280,32 L 296,32" fill="none" stroke="black"/>
+                <path d="M 336,32 L 384,32" fill="none" stroke="black"/>
+                <path d="M 280,48 L 296,48" fill="none" stroke="black"/>
+                <path d="M 336,48 L 376,48" fill="none" stroke="black"/>
+                <path d="M 104,64 L 128,64" fill="none" stroke="black"/>
+                <path d="M 168,64 L 184,64" fill="none" stroke="black"/>
+                <path d="M 112,80 L 128,80" fill="none" stroke="black"/>
+                <path d="M 168,80 L 184,80" fill="none" stroke="black"/>
+                <path d="M 280,80 L 296,80" fill="none" stroke="black"/>
+                <path d="M 336,80 L 360,80" fill="none" stroke="black"/>
+                <path d="M 80,32 L 104,80" fill="none" stroke="black"/>
+                <path d="M 368,80 L 392,32" fill="none" stroke="black"/>
+                <polygon class="arrowhead" points="344,80 332,74.4 332,85.6" fill="black" transform="rotate(180,336,80)"/>
+                <polygon class="arrowhead" points="344,48 332,42.4 332,53.6" fill="black" transform="rotate(180,336,48)"/>
+                <polygon class="arrowhead" points="344,32 332,26.4 332,37.6" fill="black" transform="rotate(180,336,32)"/>
+                <polygon class="arrowhead" points="344,16 332,10.4 332,21.6" fill="black" transform="rotate(180,336,16)"/>
+                <polygon class="arrowhead" points="288,80 276,74.4 276,85.6" fill="black" transform="rotate(180,280,80)"/>
+                <polygon class="arrowhead" points="288,48 276,42.4 276,53.6" fill="black" transform="rotate(180,280,48)"/>
+                <polygon class="arrowhead" points="288,32 276,26.4 276,37.6" fill="black" transform="rotate(180,280,32)"/>
+                <polygon class="arrowhead" points="288,16 276,10.4 276,21.6" fill="black" transform="rotate(180,280,16)"/>
+                <polygon class="arrowhead" points="192,80 180,74.4 180,85.6" fill="black" transform="rotate(0,184,80)"/>
+                <polygon class="arrowhead" points="192,64 180,58.4 180,69.6" fill="black" transform="rotate(0,184,64)"/>
+                <polygon class="arrowhead" points="192,32 180,26.4 180,37.6" fill="black" transform="rotate(0,184,32)"/>
+                <polygon class="arrowhead" points="192,16 180,10.4 180,21.6" fill="black" transform="rotate(0,184,16)"/>
+                <polygon class="arrowhead" points="136,80 124,74.4 124,85.6" fill="black" transform="rotate(0,128,80)"/>
+                <polygon class="arrowhead" points="136,64 124,58.4 124,69.6" fill="black" transform="rotate(0,128,64)"/>
+                <polygon class="arrowhead" points="136,32 124,26.4 124,37.6" fill="black" transform="rotate(0,128,32)"/>
+                <polygon class="arrowhead" points="136,16 124,10.4 124,21.6" fill="black" transform="rotate(0,128,16)"/>
+                <g class="text">
+                  <text x="36" y="20">old_mfst</text>
+                  <text x="148" y="20">h1</text>
+                  <text x="228" y="20">oldData1</text>
+                  <text x="316" y="20">h1</text>
+                  <text x="436" y="20">new_mfst</text>
+                  <text x="148" y="36">h2</text>
+                  <text x="228" y="36">oldData2</text>
+                  <text x="316" y="36">h2</text>
+                  <text x="228" y="52">replace3</text>
+                  <text x="316" y="52">h5</text>
+                  <text x="148" y="68">h3</text>
+                  <text x="228" y="68">oldData3</text>
+                  <text x="148" y="84">h4</text>
+                  <text x="228" y="84">oldData4</text>
+                  <text x="316" y="84">h4</text>
+                </g>
+              </svg>
+            </artwork>
+            <artwork type="ascii-art" align="center" name="dedup.txt">
+                <![CDATA[
+old_mfst ------> h1 --> oldData1  <-- h1 <------- new_mfst
+         \-----> h2 --> oldData2  <-- h2 <------/
+          \             replace3  <-- h5 <-----/
+           \---> h3 --> oldData3              /
+            \--> h4 --> oldData4  <-- h4 <---/
+                ]]>
+              </artwork>
+          </artset>
+        </figure>
+      </section>
+
+      <section anchor="GrowingCollections">
+        <name>Growing ICN collections</name>
+        <t>A log file, for example, grows over time. Instead of having to re-FLIC the grown file it
+          suffices to construct a new manifest with a manifest pointer to the old root manifest plus
+          the sequence of data hash pointers for the new data (or additional sub-manifests if
+          necessary).</t>
+
+          <t>In the example shown in <xref target="Growing"/>, there is a first root
+          manifest, Root 1, that has a name <tt>/logfile/v1</tt> with an RsaOaepCtx
+          encryption context #1 and a CCNx content object RSA signature #2.  In this example,
+          there is only room for 4 pointers per manifest (for the sake of a simple drawing),
+          the manifest Top 1 has two direct pointers and one indirect pointer.  Manifest M2
+          has four direct pointers.  Thus, the original log file is the concatendation 
+          of D0 ... D5 payloads.</t>
+          <t>At a later time, the log files is extended with root manifest Root 2.
+          This has its own name, /logfile/v2, with a new encryption content RsaOaepCtx #2.
+          It has its own Content Object signature, Signature #2.  Root 2 has one pointer
+          to the previous root manifest, Root 1, and one pointer to the new FLIC tree,
+          Top 2.  The previous manifest stays encrypted with the RsaOaepCtx #1 key and the
+          new manifest is encrypted with the new key in RsaOaepCtx #2.</t>
+          <t>If the same encryption key were used, Root 2 could point to
+          Top 1 instead of Root 1.</t>
+
+        <figure anchor="Growing"><name>Growing A Collection</name>
+          <artset>
+            <artwork type="ascii-art" align="center" name="grow-collection.txt">
+                <![CDATA[
+  ┌───────────────┐              ┌───────────────┐
+  │    Root 1     │              │    Root 2     │
+  │  /logfile/v1  │              │  /logfile/v2  │
+  │ RsaOaepCtx #1 │◀──────────┐  │ RsaOaepCtx #2 │
+  │ Signature #1  │           │  │ Signature #2  │
+  └───────────────┘           │  └───────────────┘
+          │                   └──────────┤
+          ▼                              ▼
+   ┌────────────┐                 ┌────────────┐
+   │   Top 1    │                 │   Top 2    │
+   └────────────┘                 └────────────┘
+   ┌──────┼───────┐               ┌──────┼───────┐
+   ▼      ▼       ▼               ▼      ▼       ▼
+┌────┐ ┌────┐  ┌────┐          ┌────┐ ┌────┐  ┌────┐
+│ D0 │ │ D1 │  │ M2 │          │ D6 │ │ D7 │  │ D8 │
+└────┘ └────┘  └────┘          └────┘ └────┘  └────┘
+        ┌──────┬──┴───┬──────┐
+        ▼      ▼      ▼      ▼
+     ┌────┐ ┌────┐ ┌────┐ ┌────┐
+     │ D2 │ │ D3 │ │ D4 │ │ D5 │
+     └────┘ └────┘ └────┘ └────┘
+                ]]>
+              </artwork>
+          </artset>
+        </figure>
+
+        <t>Note that the grown manifest does not need to specifically continue the previous naming.  The old manifest
+        (Root 1) might use one set of name constructors for the old manifests and data, and the new manifest
+        (Root 2) might use different name constructors.  If the manifests used HashedSchema, then
+        naming is not an issue except for the root manfiests.</t>    
+      </section>
+
+      <section anchor="Republishing">
+        <name>Re-publishing a FLIC under a new name</name>
+        <t>There are several use cases for republishing a collection under a new namespace, or
+          having one collection exist under several namespaces:</t>
+        <ul spacing="normal">
+          <li>It can happen that a publisher's namespace is part of a service provider's prefix.
+            When switching provider, the publisher may want to republish the old data under a new
+            name.</li>
+
+          <li>A publishes wishes to distribute its content to several repositories and would like a
+            result to be delivered from the repository for consumers who have good connectivity to
+            that repository. For example, the publisher /alpha wishes to place content at /beta and
+            /gamma, but routing only to /alpha would not send a request to either /beta or /gamma.
+            The operators of of /beta and /gamma could create a named and signed version of the root
+            manifest with appropriate keys (or delegate that to /alpha) so the results are always
+            delivered by the corresponding repository without having to change the bulk of the
+            manifest tree.</li>
+        </ul>
+        <t>This can easily be achieved with a single nameless root manifest for the large FLIC plus
+          arbitrarily many per-name manifests (which are signed by whomever wants to publish this
+          data):</t>
+
+        <figure anchor="Relocating">
+          <name>Relocating A Collection</name>
+          <artwork align="left" name="" type="" alt=""><![CDATA[
+
+data < - nameless_mfst() <-- h  < - mfst(/com/example/east/the/flic)
+                                < - mfst(/com/example/west/old/the/flic)
+                                < - mfst(/internet/archive/flic234)
+                    ]]></artwork>
+        </figure>
+        <aside>
+          <t>Note that the hash computation (of h) only requires reading the nameless root manifest,
+            not the entire FLIC.</t>
+        </aside>
+
+        <t>This example points out the problem of HashGroups having their own locator metadata
+          elements: A retriever would be urged to follow these hints which are "hardcoded" deep
+          inside the FLIC but might have become outdated. We therefore recommend to name FLIC
+          manifests only at the highest level (where these names have no locator function). Child
+          nodes in a FLIC manifest should not be named as these names serve no purpose except
+          retrieving a sub-tree's manifest by name, if would be required. </t>
+      </section>
+    </section>
 
     <section anchor="building-graphs">
       <name>Building FLIC Graphs</name>
