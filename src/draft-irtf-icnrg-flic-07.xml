@@ -99,7 +99,7 @@
         </t>
       </aside>
 
-      <t>To enable requests with full names, consumers need a priori knowledge of content digests.
+      <t>To enable requests with full names, consumers need <em>a priori</em> knowledge of content digests.
         A Manifest, a form of catalog, is a data structures commonly employed to store and transport
         this information. Typically, ICN manifests are signed content objects (data) which carry a
         collection of hash digests. As content objects, a manifest itself may be
@@ -117,12 +117,15 @@
         de-duplication, extension, and variable-sized encoding. We also include FLIC encoding
         examples for CCNx and NDN.</t>
 
-      <t>The purpose of a manifest is to concisely name, and hence point to, the constiuent pieces
+      <t>The purpose of a manifest is to concisely name, and hence point to, the constituent pieces
         of a larger object. A FLIC manifest does this by using a <em>root</em> manifest to name and
         cryptographically sign the data structure and then use concise lists of hash-based names to
         indicate the constituent pieces. This maintains strong security from a single signature. A
         Manifest entry gives one enough information to create an <em>Interest</em> for that entry,
         so it must specify the name, the hash digest, and if needed, the locators.</t>
+
+      <t>FLIC is not an archive format, like <em>tar</em> or <em>LTFS</em> or <em>iso</em>.  FLIC represents a single object that may be reconstructed by concatenating all the data pieces.  Future extensions could
+      define a new type of structure that aggregates multiple FLIC manifests into an archive.</t>
 
       <t> FLIC is a distributed data structure illustrated by the following picture. The FLIC
         manifest is encoded in the Payload of a Content Object. A <em>root manifest</em> has a name
@@ -238,8 +241,8 @@
 
       <section>
         <name>FLIC as an ICN experimental tool</name>
-        <t>FLIC enables experimentation with how to structure and retrieve large data objects and
-          collections in ICN. By having a common data structure applications can rely on, with a
+        <t>FLIC enables experimentation with how to structure and retrieve large data objects
+         in ICN. By having a common data structure applications can rely on, with a
           common library of code that can be used to create and parse manifest data structures,
           applications using ICN protocols can both avoid unnecessary reinvention and also have
           enhanced interoperability. Since the design attempts to balance simplicity, universality,
@@ -276,7 +279,7 @@
         />
         ).</t>
 
-      <t>The FLIC datastructure is an acyclic digraph of Content Objects. In this document, our
+      <t>The FLIC data structure is an acyclic digraph of Content Objects. In this document, our
         examples are mostly trees, but that is not a requirement. For example, a de-duplication
         representation might have a common object or common sub-graph that is
         referenced from multiple parents in the tree. As another example, there could be
@@ -290,7 +293,8 @@
         there may be additional root manifests.  These could be used to update the root
         (e.g. replace an expired key or use a new certificate).  Or the root might be renamed,
         or new locators used because the location of the data changed.  An updated root
-        might even point to the original root.</t>
+        might even point to the prior roots to maintain a history or access to prior
+        cryptographic signatures or co-signatures.</t>
 
       <t>In FLIC terms, a direct pointer links to application-level data, which is a Content Object
         with application data in the Payload. An indirect pointer links to a Content Object with a
@@ -299,8 +303,8 @@
 
       <aside>
         <t>Note: A substantial advantage of using hash-based naming is that it permits block-level
-          de-duplication of application data because two blocks with the same payload will have the
-          same hash name. </t>
+          de-duplication of application data because two blocks with the same payload may have the
+          same hash name if encoded that way. </t>
       </aside>
 
       <t>A publisher creating a FLIC manifest may choose one of many permissible acyclic graph
@@ -324,19 +328,19 @@
       The optimizer will find a set of tree parameters that minimizes the tree height and
       minimizes the number of wasted pointers due to the size of the application data.</t>
 
-      <t>A <bcp14>RECOMMENDED</bcp14> FLIC structure is to use a distinguised root manifest with exactly one
+      <t>A <bcp14>RECOMMENDED</bcp14> FLIC structure is to use a distinguished root manifest with exactly one
       pointer to the top manifest of a regular n-ary graph.  The root manifest is signed by
       the publisher and contains links to certificates or public keys.  It also specifies
       the Name Constructors used in the manifest.  If using RSA-OAEP key wrapping, it
       contains the wrapped key.  These one-time data structures take significant space,
-      so off-loading them to the root manifest is needed to use a reguary n-ary graph for
+      so off-loading them to the root manifest is needed to use a regular n-ary graph for
       the rest of the manifest.  In CCNx, the root manifest is the only one in the graph
       that needs to have a name if using nameless objects.
       </t>
 
       <t>This method allows an intermediary service to
         respond to client requests with its own signed root Manifest that then points to the original root
-        manifest. The client trusts the intermediary's reponse because of the intermediary's
+        manifest. The client trusts the intermediary's response because of the intermediary's
         signature, and then trusts the content because of the Root manifest. In some cases, the
         intermediary could embed the original root manifest and avoid additional round
         trips before beginning download. This technique is used in a <xref target="ProjectOrigin">peer-to-peer
@@ -349,19 +353,24 @@
 
       <t>A limitation of this approach is that one cannot construct a hash-based name for a child
         until one knows the payload of that child. In practical terms, this means that one must have
-        the complete application payload available at the time of manifest creation.</t>
+        the complete application payload available at the time of manifest creation.  One workaround
+        is to batch publication of a block of data, then extend that manifest tree as the top-left-child
+        of a subsequent manifest tree.  This results in multiple, signed, root manifests with
+        two pointers (to the prior root manifest and the new manifest tree).</t>
 
-      <t>FLIC's design allows straightforward applications that just need to traverse a linear set
-        of related objects to do so simply, but FLIC has two extensibility mechanisms that allow for
+      <t>FLIC's design allows straightforward applications that just need to traverse a set
+        of related objects.  FLIC has two extensibility mechanisms that allow for
         more sophisticated uses: manifest metadata, and pointer annotations. These are described in <xref
           target="metadata" format="default" /> and <xref target="annotations" /> respectively.</t>
 
       <t anchor="libraries">FLIC goes to considerable lengths to allow creation and parsing by
         application-independent library code. Therefore, any options used by applications in the
         data structure or encryption capabilities <bcp14>MUST NOT</bcp14> require applications to
-        have application-specific Manifest traversal algorithms. This ensures that such application
+        have application-specific Manifest traversal algorithms to correctly re-construct
+        the original data. This ensures that such application
         agnostic libraries can always successfully parse and traverse any FLIC Manifest by ignoring
-        the optional capabilities.</t>
+        the optional capabilities.  An application MAY include optimization or other hints to
+        allow an application to use that data in different ways.</t>
 
       <t>The reader may find it useful to refer to Section <xref target="Usage">Example Usages</xref>
         from time to time to see worked out examples.</t>
@@ -381,7 +390,7 @@
             restriction and a locator name to point to a Data Object.</dd>
 
           <dt>Hash Group:</dt>
-          <dd>KA collection of pointers. A Manifest should have atleast one Hash Group.
+          <dd>KA collection of pointers. A Manifest should have at least one Hash Group.
             A Hash Group may have its own associated meta data and Name Constructor.</dd>
 
           <dt>Indirect Pointer:</dt>
@@ -421,7 +430,7 @@
 
           <dt>EncryptedNode</dt>
           <dd>A <tt>Node</tt> that is encrypted as specified in the Manifest's <tt>SecurityCtx</tt>.
-            It is opaque octetes.</dd>
+            It is opaque octets.</dd>
 
           <dt>Root Manifest:</dt>
           <dd>A signed, named, manifest that points to manifest nodes.  The root manifest typically also 
@@ -476,14 +485,16 @@
         until superceded by a new <tt>NcDef</tt> with the same <tt>NcId</tt>.  A subsequent <tt>NcDef</tt>
         applies from that point onward in the manifest branch.  It does not affect its ancestors.</t>
 
-        <t>In a non-tree FLIC graph, a node may have multiple parents, which different <tt>NcDef</tt> for
-        the same <tt>NcId</tt>.  This is allowed.  A consumer traversing the tree performs a specific
+        <t>In a non-tree FLIC graph, a node may have multiple parents, with different <tt>NcDef</tt> for
+        the same <tt>NcId</tt> (i.e. parent 1 has NcDef A for the NcID and
+        parent 2 has NcDef B for the same NcID).  This is allowed.  
+        A consumer traversing the tree performs a specific
         traversal order.  It must apply its current branch's name constructor to its visited children.
         Of course, if a consumer has already visited a sub-tree, it likely already has the hash named
         objects fetched and does not need to re-fetch them.</t>
 
         <t>A common practice is to have the manifest nodes in one namespace and the application data objects
-        in a differnt namespace.  For example, <tt>ccnx:/foo/photo.jpg/manifest/ManifestId=N</tt> for a manifest tree and 
+        in a different namespace.  For example, <tt>ccnx:/foo/photo.jpg/manifest/ManifestId=N</tt> for a manifest tree and 
         <tt>ccnx:/foo/photo.jpg/Chunk=M</tt> for the application data.  Or if using nameless objects, the manifest
         tree and data objects might have different locators.  In these cases, a FLIC manifest usually has
         two name constructor definitions (e.g. NCID 0 for the data and NCID 1 for the manifest tree).  This results
@@ -506,9 +517,8 @@
           with an <tt>NcId</tt> element, it is assumed to use NCID 0.</t>
 
           <t>NCID 0 has an implicit definition as a Hash Schema.  If NCID 0 has no <tt>NcDef</tt>, it is
-          assumed to be a HashSchema with no locators.  Every <tt>NodeData</tt> (which applies to all
-          Hash Groups) or <tt>GroupData</tt> must have a non-empty <tt>Locators</tt>.  A CCNx consumer
-          will then pick one of the Locators for the Interest name.</t>
+          assumed to be a HashSchema with no locators.  It is RECOMMENDED to define NCID with Locators
+          to avoid repeatedly defining locators elsewhere.</t>
 
           <t>It is more efficient, encoding-wise, to always have an <tt>NcDef</tt> for NCID 0 (if it is used) that enumerates
           its <tt>Locators</tt> once rather than having to put them in each <tt>NodeData</tt> or <tt>GroupData</tt>.</t>
@@ -533,13 +543,13 @@
 
             <dt>Prefix Schema:</dt>
             <dd>The <tt>NcDef</tt>> specifies a <tt>name</tt>, which will appear in every content object for that
-              name constructor. The comsumer uses it in an interest with the appropriate hash. The NCD
+              name constructor. The consumer uses it in an interest with the appropriate hash. The NCD
               may specify locators, which NDN uses as ForwardingHints. They are not used by CCNx, as
               these are not nameless objects.  In Prefix Schema, all object have an identical name and
-              are only differntiated by their hash.</dd>
+              are only differentiated by their hash.</dd>
 
             <dt>Segmented Schema:</dt>
-            <dd>Every content object has a differnt name, denoted by the last name component.
+            <dd>Every content object has a different name, denoted by the last name component.
             FLIC allows the publisher to specify the TLV type of that last name component
             (e.g. ManifestId or ChunkNumber in CCNx).  The publisher <bcp14>MUST</bcp14> include a
             mechanism to tell the consumer the ID of each content object.  FLIC provides two
@@ -594,7 +604,7 @@
 
           <t>As an example, the <xref target="ccnpy"/> implementation uses the regular k-ary tree
           IDs per tree height as the manifest IDs (where k is the number of allowed indirect
-          pointers per manirest).  These are globally unique and locally sequential
+          pointers per manifest).  These are globally unique and locally sequential
           for all the children of a manifest.</t>
 
           <t>There are two methods to guide a consumer in generating segment IDs for
@@ -605,7 +615,7 @@
             <li>If the GroupData has a <tt>StartSegmentId</tt> parameter, then the segment ID of each pointer
             is calculated the <tt>StaretSegmentId</tt> plus the offset of the pointer from the first
             pointer of the Hash Group.  Pointers with a <tt>SegmentIdAnnotation</tt> still count against
-            the offset even though the annotation takes precednece.
+            the offset even though the annotation takes precedence.
             </li>
           </ul>
 
@@ -652,10 +662,10 @@ Meanifest
             producer <bcp14>MUST NOT</bcp14> duplicate the segment ID in an object name for
             a different object. The object hash <bcp14>MUST</bcp14> be the same for the same segment
             ID of a name, within the longest of the <tt>ExpiryTime</tt> of the manifest or the named object.
-            In other words, there is a one-to-one correspondance between a segment ID and a hash
+            In other words, there is a one-to-one correspondence between a segment ID and a hash
             for the lifetime of the manifest and the constituent objects.
             Note that a <em>consumer</em> should not assume this is true, as a bad actor could
-            violate this rule.  A consumer shoud only assume the uniqueness of cryptographic hashes.</t>
+            violate this rule.  A consumer should only assume the uniqueness of cryptographic hashes.</t>
 
           <t>It is allowed to have multiple manifest entries with the same segment ID (see
             below).</t>
@@ -674,7 +684,7 @@ Meanifest
             order it chooses. It may skip around or omit segments.</t>
 
           <t>A manifest <bcp14>MAY</bcp14> have multiple pointers to the same segment ID (and thus same hash). This
-            can be used for data de-duplication, e.g. multiple occurances of the same binary string
+            can be used for data de-duplication, e.g. multiple occurrences of the same binary string
             within
             the reconstructed data object. If the producer uses this method, then the original data
             cannot be reconstructed by simply fetching the segment IDs in order.</t>
@@ -706,12 +716,12 @@ Meanifest
         <section anchor="digests">
           <name>SubtreeDigest and LeafDigest</name>
           <t>It is <bcp14>RECOMMENDED</bcp14> that the root manifest have a <tt>SubtreeDigest</tt>
-          field in the <tt>NodeData</tt> with the crytographic hash of the entire application data.  This allows the
+          field in the <tt>NodeData</tt> with the cryptographic hash of the entire application data.  This allows the
           manifest consumer to validate that the final reconstructed data is correct.</t>
 
           <t>A consumer <bcp14>SHOULD</bcp14> validate the outer-most <tt>SubtreeDigest</tt>, if any.  If this digest
           does not validate, a consumer <bcp14>SHOULD</bcp14> validate nested <tt>SubtreeDigest</tt> or <tt>LeafDigest</tt>
-          to help pinpoint where there is a discrepency.
+          to help pinpoint where there is a discrepancy.
           </t>
 
           <t>As an example, a publisher might include a <tt>SubtreeDigest</tt> in the root manifest <tt>NodeData</tt>
@@ -721,7 +731,7 @@ Meanifest
 
           <t>A consumer <bcp14>SHOULD</bcp14> inform the user when a digest does not validate.</t>
 
-          <t>A discrepency in a digest should be considered an error condition.</t>
+          <t>A discrepancy in a digest should be considered an error condition.</t>
         </section>
 
         <section anchor="sizes">
@@ -731,7 +741,7 @@ Meanifest
           data.</t>
 
           <t>A consumer <bcp14>MAY</bcp14> compare the sizes in <tt>SubtreeSize</tt> and <tt>LeafSize</tt> to
-          the true application payload sizes retrieved from the manifest nodes and report any discrepencies to
+          the true application payload sizes retrieved from the manifest nodes and report any discrepancies to
           the user.</t>
         </section>
       </section>
@@ -748,12 +758,12 @@ Meanifest
           the pointer.</t>
 
         <t>The <tt>SegmentIdAnnotation</tt> is a unique suffix for the pointer for use with the
-          Seegmented Schema name constructor. Using annotations allows non-sequential segment IDs,
+          Segmented Schema name constructor. Using annotations allows non-sequential segment IDs,
           which could happen if manifest trees are named in the traversal order.  See 
           <xref target="explain_segmented"/> details on using the annotation.</t>
 
         <t>The <tt>LinkAnnotation</tt> is a link to be used to name the pointer (less the pointer
-          itself). For NDN, the poitner would be appended to the name for a complete name. In CCNx,
+          itself). For NDN, the pointer would be appended to the name for a complete name. In CCNx,
           the name would be used in the Interest along with the pointer in the
           ContentObjectHashRestriction field. The link may include a KeyId restriction.</t>
 
@@ -1081,7 +1091,7 @@ D0 D1
           describes how a consumer locates the appropriate keys in the ICN namespace. It does not
           specify aspects of a key manager which may be used as part of key distribution
           and management, nor does it specify the protocol between a key manager and a publisher. In
-          its simpliest form, the publisher could be the key manager, in which case there is no
+          its simplest form, the publisher could be the key manager, in which case there is no
           extra protocol needed between the publisher and key manager.</t>
 
         <t>The manifest is always encrypted with an AEAD algorithm. The difference between the
@@ -1130,9 +1140,9 @@ D0 D1
             string as in the KDF's <tt>info</tt> parameter. If the <tt>KDFInfo</tt> is not present,
             then the consumer must use the <tt>Name</tt> TLV of the enclosing Content Object. This
             option is only possible for <tt>Segmented Schema</tt> name constructors, where each
-            maniest has a unique name. If the publisher and consumer have agreed on a salt to be
+            manifest has a unique name. If the publisher and consumer have agreed on a salt to be
             associated with the key for use in the AEAD algorithm, this salt should not be used in
-            the KDF. The publisher and consumer may agree on a seaparte random salt as part of their
+            the KDF. The publisher and consumer may agree on a separate random salt as part of their
             key agreement on the <tt>KeyNum</tt> for use in the KDF.</t>
 
           <t>Within a single manifest tree, a publisher <bcp14>MAY</bcp14> use the same <tt>KDFData</tt>
@@ -1165,7 +1175,7 @@ D0 D1
               and length fields) is used as the <tt>Label</tt>. If the content object does not have
               a name, it is an error.</li>
             <li><tt>FixedInfo = "FLIC" || KeyNum || AEADMode || Label</tt>, where <tt>KeyNum</tt>
-              and <tt>AEADMode</tt> are the respecitve TLVs (including type and length).</li>
+              and <tt>AEADMode</tt> are the respective TLVs (including type and length).</li>
             <li>If the publisher and consumer have agreed on a KDF-specific salt, it is used as the <tt>
               Salt</tt>. Otherwise, the KDF's default salt is used. </li>
             <li>The derived key will use the left <tt>bits</tt> of the KDF output to satisfy the <tt>
@@ -1178,7 +1188,7 @@ D0 D1
             <li>Removes any <tt>SecurityCtx</tt> or <tt>AuthTag</tt> from the Manifest.</li>
             <li>Creates a <tt>SecurityCtx</tt> and adds it to the Manifest.</li>
             <li>If <tt>KDFData</tt> is present, derives a key as above.</li>
-            <li>If the publisher and consumer shared a salt, it is used in the encyrption.</li>
+            <li>If the publisher and consumer shared a salt, it is used in the encryption.</li>
             <li>Treats the Manifest TLV through the end of the Node TLV Length as unencrypted
               authenticated Header. That includes anything from the start of the Manifest up to but
               not including the start of the Node's body.</li>
@@ -1212,15 +1222,15 @@ D0 D1
           <t>The <tt>RsaOaepCtx</tt>> mode uses RSA-OAEP (see <xref target="RFC8017" section="7.1"
               format="default" /> and <xref target="NIST-800-56Br2" />) to encrypt a symmetric key
             that is used to encrypt the Manifest. We call this RSA public key the Key Encryption Key (KEK)
-            and the consumer has the private key. A separate key distribuiton system is
+            and the consumer has the private key. A separate key distribution system is
             responsible for distributing the KEK.  The publisher <bcp14>MAY</bcp14> include a
             <tt>KeyLink</tt> to help a consumer find the corresponding private key, such as from a
             key distribution service.  An ICN system may use the RSA-OAEP mode as part of a group keying
             protocol.  Key distribution and group keying are both beyond the scope of FLIC.</t>
 
-          <t>This usage of RSA-OAEP is intented to be compliant with KTS-OAEP <xref target="NIST-800-56Br2"/>. 
+          <t>This usage of RSA-OAEP is intended to be compliant with KTS-OAEP <xref target="NIST-800-56Br2"/>. 
             See <xref target="OAEP_Security" /> for a discussion of compliance with
-            NIST recommndations.</t>
+            NIST recommendations.</t>
 
           <t><tt>T_RSA_WRAP_CTX</tt> uses <xref target="RFC8017">RSA-OAEP</xref> with mask
             generation function <xref target="RFC8017">MGF1</xref> and the specified hash algorithm.
@@ -1228,7 +1238,7 @@ D0 D1
             which are all NIST approved hash functions.</t>
 
           <t>The <tt>RsaOaepData</tt> includes an <tt>AEADData</tt> that indicates how to use the
-            warpped key to decrypt the manifest. It optionally includes the wrapped key itself. A
+            wrapped key to decrypt the manifest. It optionally includes the wrapped key itself. A
             publisher using <tt>RsaWrapCtx</tt> <bcp14>MUST</bcp14> include the optional wrapped key
             information in the first manifest node that uses it. The publisher <bcp14>MAY</bcp14>
             include the wrapped key in other manifest nodes. It <bcp14>MUST</bcp14> use distinct 
@@ -1253,8 +1263,8 @@ D0 D1
             i.e. a 128-bit or 256-bit random number. Further, the symmetric key <bcp14>MUST</bcp14>
             fit in the OAEP envelope. Note that for a 128-bit key (16 bytes) plus a 4-byte salt
             requires a minimum 688-bit RSA key and a 256-bit key requires a minimum 816-bit RSA key.
-            So in practical terms, a 1024-bit RSA key is the miniminum for the RSA-OAEP encryption
-            with a SHA-256 hash algoirithm (it is recommended to use at least 2048-bit RSA keys <xref
+            So in practical terms, a 1024-bit RSA key is the minimum for the RSA-OAEP encryption
+            with a SHA-256 hash algorithm (it is recommended to use at least 2048-bit RSA keys <xref
               target="NIST-800-131Ar2" />).</t>
 
           <t>Any group key protocol and system needed are outside the scope of this document. We
@@ -1273,32 +1283,28 @@ D0 D1
             part of the IV, and <bcp14>MUST</bcp14> remain the same for the given <tt>KeyNum</tt>. </t>
 
           <t>In one example, a publisher could request a key for a group and the Key Manager could
-            securely communicate (<tt>CEK, Wapped_CEK, KeyId, Locator</tt>) back to the publisher.
-            The Key Manager is responsible for publishing the Locator. In another example, the
+            securely communicate (<tt>CEK, Wapped_CEK, KeyId, KeyLink</tt>) back to the publisher.
+            The Key Manager is responsible for publishing the link. In another example, the
             publisher could be a group member and have a group private key in which case the
             publisher can create their own key encryption key, publish it under the Locator and
-            proceed. The publisher generates <tt>CEK, Wrapped_CEK, KeyId</tt>, and a Locator on its
+            proceed. The publisher generates <tt>CEK, Wrapped_CEK, KeyId</tt>, and a KeyLink on its
             own.</t>
 
           <t>The RSA-OAEP "label" ("additional information" in <xref target="NIST-800-131Ar2" />) is
-            constructed as follows. The Name TLV is the name of the Content Object carrying the <tt>
-            RsaOaepWrapper</tt> with the <tt>WrappedKey</tt> or the original root manifest name if
-            the current content object does not have a name. The RSA signing key is the signing key
-            of the current Content Object (if signed) or the original root manfiest signing key. The <tt>KeyId,
+            constructed as shown in <xref target="AdditionalInfo"/>. It is the concatenation of
+            several TLVs from the <tt>RsaOaepCtx</tt>.  The <tt>AEADData, KeyId,
             KeyLink, HashAlg</tt> TLVs are from the <tt>RsaOaepWrapper</tt> field. The label is
             hashed via the <tt>HashAlg</tt>, so the length of the label does not affect the size of
-            the encryption. </t>
+            the encryption.  To tightly bind the encryption to the manifest, the publisher
+            <bcp14>SHOULD</bcp14> choose a unique <tt>KeyNum</tt> and <tt>KDFInfo</tt> pair.</t>
 
           <figure anchor="AdditionalInfo">
             <name>OAEP Label</name>
             <sourcecode type='pseudocode'><![CDATA[
 AdditionalInfo = "FLIC RSA-OAEP" ||
-                 RSA Signing Public Key TLV ||
-                 Name TLV of immediate or root manifest ||
-                 Wrapping KeyID TLV ||
-                 Wrapping KeyLink TLV (if present in RsaOaepWrapper) ||
-                 Wrapping HashAlg TLV
-]]>
+                 KeyNum || AeadMode || [KDFData] ||
+                 KeyID || HashAlg ||
+                 KeyLink (if present in RsaOaepWrapper)]]>
             </sourcecode>
           </figure>
 
@@ -1325,7 +1331,7 @@ AdditionalInfo = "FLIC RSA-OAEP" ||
               generate these values itself, or acquire them from a key manager.</li>
             <li>Creates a <tt>SecurityCtx</tt> and adds it to the Manifest. The <tt>SecurityCtx</tt>
               includes an <tt>AEADNonce</tt> and <tt>AEADMode</tt>, as per AEAD mode.</li>
-            <li>It is <bcp14>RECOMMENDED</bcp14> to also inclue the use of a KDF in the <tt>AEADData</tt>
+            <li>It is <bcp14>RECOMMENDED</bcp14> to also include the use of a KDF in the <tt>AEADData</tt>
               .</li>
             <li>Encrypts the Manifest as per AEAD Mode using the RSA-OAEP SecurityCtx and CEK.</li>
           </ol>
@@ -1343,59 +1349,6 @@ AdditionalInfo = "FLIC RSA-OAEP" ||
             <li>Using the <tt>CEK</tt> and <tt>AEADData</tt>, decrypt the Manifest as per AEAD Mode.</li>
           </ol>
         </section>
-
-        <!--
-                <section anchor="group" title="ECC Group Keys">
-                    <t>NOTE: THIS IS INFORMALLY SPECIFIED AT THIS STAGE</t>
-                    <t>
-                        We use an EC group key that is encrypted for each user under their public key (also assumed EC)
-        using
-                        a standard NIST wrapping C(1e, 2s, ECC CDH)-ECDSA plus AES-KWP.  When a publisher wants to publish,
-                        it creates an EC wrapping keypair and publishes the private key wrapped under the group key
-                        (use C(1e, 1s, ECC CDH)-ECDSA plus AES-KWP).  Finally, the publisher starts creating master
-                        secrets by creating ECDHE-ECDSA offers under the wapping key and using a KDF (e.g. HMAC-SHA256)
-                        for the data key.
-                    </t>
-                    <t>
-                        Note that the offer, in this case, is just an ephemeral EC public key plus the curve specification.
-                        In compressed form that EC public key is only 48 bytes (SECP384R1), so the whole offer is maybe 60
-        bytes
-                        including TLV encoding.  Compare that to an RSA 4096-bit encryption of a 32-byte AES key at 512
-        bytes.
-                        That's over an 8x improvement.
-                    </t>
-                    <t>
-                        The complete security context would be larger, as you still need the keyid of the wrapping key
-                        (32 bytes) plus a link to the wrapping key content object.  Once someone has the wrapping key, they
-                        can verify the key id and avoid fetching anything, then calculate the shared secret from the ECDHE
-                        offer, then derive the data key using a KDF.   For IoT use cases, it would be useful to be able to
-                        link to the whole offer.
-                    </t>
-                    <t>
-                        The KDF is tied to input from the manifest, so the publisher can create many data keys so each
-                        FLIC manifest tree has a different key all from the same master key derived from the wrapping key.
-                        The offers could be embedded in the root manifest or published externally.  The preferred method
-                        is to embed the offer in the root manifest.
-                        When the group key changes, a publisher only needs to re-encrypt the wrapping keys.
-                        It can save a lot of work depending on how many items it used the wrapping key under that group
-        key.
-                        For example, if the publisher uses only one wrapping key per group key, then they only need to
-        re-encrypt one
-                        thing for the new group to have access to the old data.
-                    </t>
-                    <t>
-                        This works with RSA keys too, though the specific algorithms change some.  We would use RSA-OAEP
-        instead of
-                        the ECDHE method.
-                    </t>
-                    <t>
-                        TODO: There are a variety of issues about how you name the keys and publish them.  We would also
-        need to
-                        decide if we want key fetching to be on-line or available from repos, and if so how to do current
-        key fetching.
-                    </t>
-                </section>
- -->
       </section>
 
       <section anchor="encodings">
@@ -1445,7 +1398,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
                 HashSchema.</li>
 
               <li>The Top Manifest is a nameless CCNx content object. It may have cache control
-                directies.</li>
+                directives.</li>
 
               <li>Internal and Leaf manifests are nameless CCNx content objects, possibly with cache
                 control directives.</li>
@@ -1471,7 +1424,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
             <ul>
               <li>The Root Manifest content object has a name used to fetch the manifest. It is
                 signed by the publisher. It has a single Locator used to fetch the remainder of the
-                manifest using the commong Single Prefix name. It has a single HashPointer that
+                manifest using the common Single Prefix name. It has a single HashPointer that
                 points to the Top Manifest. It may also
                 have cache control directives, such as ExpiryTime.</li>
 
@@ -1480,7 +1433,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
                 single prefix.</li>
 
               <li>The Top Manifest has the name SinglePrefixName. It may have cache control
-                directies. Its GroupData elements must have an NsId that references the NsDef.</li>
+                directives. Its GroupData elements must have an NsId that references the NsDef.</li>
 
               <li>An Internal or Leaf manifest has the name SinglePrefixName, possibly with cache
                 control directives. Its GroupData elements must have an NsId that references the
@@ -1511,7 +1464,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
                 be constructed from the SegmentedPrefixName plus a Chunk name component.</li>
 
               <li>The Top Manifest has the name SegmentedPrefixName plus chunk number. It may have
-                cache control directies. It's GroupData elements must have an NsId that references
+                cache control directives. It's GroupData elements must have an NsId that references
                 the NsDef.</li>
 
               <li>An Internal or Leaf manifest has the name SegmentedPrefixName plus chunk number,
@@ -1570,7 +1523,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
               TLV contexts. A parser may skip over any experimental TLV it does not implement.
               We do not show experimental TLVs in the artwork below.</t>
 
-            <t>There is no required order of TLV blocks withhin a TLV context. We show the <bcp14>
+            <t>There is no required order of TLV blocks within a TLV context. We show the <bcp14>
               RECOMMENDED</bcp14> ordering of TLV blocks. TLV blocks <bcp14>MUST NOT</bcp14> repeat
               unless specifically allowed in the <xref target="grammar">grammar</xref>.</t>
 
@@ -1604,7 +1557,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
 
             <section anchor="tlv_security_ctx" title="SecurityCtx TLV">
               <t>The <tt>SecurityCtx</tt> TLV wraps an <tt>AlgroithmCtx</tt>, which may be either a
-                symmetric key encryption context <tt>AEADCtx</tt> or an assymetric key wrapping of
+                symmetric key encryption context <tt>AEADCtx</tt> or an asymmetric key wrapping of
                 the decryption key, <tt>RsaWrapCtx</tt>.</t>
               <figure>
                 <name>FLIC Security Context TLV container</name>
@@ -1624,10 +1577,10 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
             <section anchor="tlv_aead_ctx" title="AEAD Context TLV">
               <t>The <tt>AEADCtx</tt> identifies a symmetric key shared by the publisher and
                 consumer. It is identified by a <tt>KeyNum</tt>, which may be an small integer (e.g.
-                within a TLS-like session) or a longer integer. CCNx uses upto a 64-bit integer.</t>
-              <t>The <tt>AEADNonce</tt> is used to generate the encryption IV, as descbribed in <xref
+                within a TLS-like session) or a longer integer. CCNx uses up to a 64-bit integer.</t>
+              <t>The <tt>AEADNonce</tt> is used to generate the encryption IV, as described in <xref
                   target="aead" />. It is an octet string.</t>
-              <t>The <tt>AEADMode</tt> is an integer that identifes the encryption algorithm. All
+              <t>The <tt>AEADMode</tt> is an integer that identifies the encryption algorithm. All
                 defined values fit within 1 octet. The IANA registry "AEAD Algorithms" allows for up
                 to 2 octets.</t>
               <figure>
@@ -1664,7 +1617,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
               <t>The HashAlg value is an unsigned 16-bit integer in
                 network byte order.</t>
 
-              <t>The wrapped key value is the RSA-OAEP cyphertext of the <tt>WrappedKey</tt> record.</t>
+              <t>The wrapped key value is the RSA-OAEP ciphertext of the <tt>WrappedKey</tt> record.</t>
 
 
               <figure>
@@ -2024,7 +1977,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
                 MAY</bcp14> omit the NsDef and NsId elements and rely on the default being
                 HashSchema.</li>
 
-              <li>The Top Manifest has a 0-length Name. It may have cache control directies.</li>
+              <li>The Top Manifest has a 0-length Name. It may have cache control directives.</li>
 
               <li>Internal and Leaf manifests has a 0-length Name, possibly with cache control
                 directives.</li>
@@ -2056,7 +2009,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
                 SinglePrefixSchema element specifies the SinglePrefixName.</li>
 
               <li>The Top Manifest has the name SinglePrefixName. It may have cache control
-                directies. Its GroupData elements must have an NsId that references the NsDef.</li>
+                directives. Its GroupData elements must have an NsId that references the NsDef.</li>
 
               <li>An Internal or Leaf manifest has the name SinglePrefixName, possibly with cache
                 control directives. Its GroupData elements must have an NsId that references the
@@ -2100,7 +2053,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
                 name is constructed from the SegmentedPrefixName plus a Segment name component.</li>
 
               <li>The Top Manifest has the name SegmentedPrefixName plus segment number. It may have
-                cache control directies. Its GroupData elements must have an NsId that references
+                cache control directives. Its GroupData elements must have an NsId that references
                 the NsDef.</li>
 
               <li>An Internal or Leaf manifest has the name SegmentedPrefixName plus segment number,
@@ -2127,7 +2080,7 @@ Payload : TYPE LENGTH *OCTET ; the serialized Manifest object]]>
               schema and a second NsDef with a second NsId (say 2) as the SegmentedPrefix schema
               along with the SegmentedPrefixName.</t>
 
-            <t>Each manifest (Top, Internal, Leaf) uses two or more HashGroups, where eash HashGroup
+            <t>Each manifest (Top, Internal, Leaf) uses two or more HashGroups, where each HashGroup
               has only Direct (with the second NsId) or Indirect (with the first NsId). The number
               of hash groups will depend on how the publisher wishes to interleave direct and
               indirect pointers.</t>
@@ -2189,7 +2142,7 @@ D0 D1 D2 D3 D4 D5 D6 D7 D8
           <name>Linear (chain)</name>
           <t>Of special interest are "skewed trees" where a pointer to a manifest may only appear as
             last pointer of (sub-) manifests. Such a tree becomes a sequential list of manifests
-            with a maximum of datapointers per manifest packet. Beside the tree shape we also show
+            with a maximum of data pointers per manifest packet. Beside the tree shape we also show
             this data structure in form of packet content where D stands for a data pointer and M is
             the hash of a manifest packet.</t>
           <artwork align="left" name="" type="ascii-art" alt=""><![CDATA[
@@ -2202,7 +2155,7 @@ Root -> M0 ----> M1 ----> ...
 
     <section anchor="experiments" numbered="true" toc="default">
       <name>Experimenting with FLIC</name>
-      <t>FLIC is expected to enable a number of salient experiments in the use of ICN protools by
+      <t>FLIC is expected to enable a number of salient experiments in the use of ICN protocols by
         applications. These experiments will help not only to inform the desirable structure of ICN
         applications but reflect back to the features included in FLIC to evaluate their usefulness
         to those applications. While many interesting design aspects of FLIC remain to be discovered
@@ -2844,29 +2797,13 @@ Root -> M0 ----> M1 ----> ...
     <section anchor="Security">
       <name>Security Considerations</name>
 
-
-      <t>TODO Need a discussion on:</t>
-      <ul spacing="normal">
-        <li>signing and hash chaining security. (<strong>Note: Did I cover this adequately
-            below?</strong>)</li>
-        <li>republishing under a new namespace. (<strong>Note: need help here - is this to reinforce
-          that you can re-publish application data by creating a new root Manifest and signing
-            that, requiring only one signature to change?</strong>)</li>
-        <li>encryption mechanisms. (<strong>Note: did I cover this adequately below?</strong>)</li>
-        <li>encryption key distribution mechanisms.(<strong>Note: not sure what needs to be said
-            here</strong>)</li>
-        <li>discussion of privacy, leaking of linkability information - <strong>could really use
-            some help here</strong>.</li>
-      </ul>
-      <t><strong>Anything else?????</strong>.</t>
-
       <section>
         <name>Trust, Security, and Privacy Goals</name>
         <t>A FLIC manifest has it's own security and privacy apart from the underlying application
           data that the manifest describes. The trust and privacy of the application data is not
           considered by FLIC, only the trust, security, and privacy of the manifest itself. The trust of a
           consumer on a manifest is based on the root manifest name, it's publisher's key, the signature on
-          the root manfiest, and the consumers belief that the given key is trusted to publish the name.</t>
+          the root manifest, and the consumers belief that the given key is trusted to publish the name.</t>
 
         <t>The security and privacy of a FLIC manifest is for the hash pointers and name
           constructors it contains. FLIC does not provide privacy for: the name of the root manifest
@@ -2883,7 +2820,7 @@ Root -> M0 ----> M1 ----> ...
           and the wrapped key number are public information and could be used to correlate manifest
           objects. One could use a unique wrapped key (and thus key number) for each manifest. If
           using a KDF, the <tt>KDFInfo</tt> field is public and could be used to correlate manifests
-          if kept constand for a single manifest tree or a sequential counter is used. </t>
+          if kept constant for a single manifest tree or a sequential counter is used. </t>
       </section>
 
       <section>
@@ -2892,7 +2829,7 @@ Root -> M0 ----> M1 ----> ...
           application data. The Manifest is itself either an individual content object, or a tree of
           content objects linked together via the corresponding content hashes. The NDN and CCnx
           protocol architectures directly provide both individual object integrity (using
-          cryptographically strong hashes) and data origin authentication (using signatures). The
+          cryptographic strong hashes) and data origin authentication (using signatures). The
           protocol specifications, <xref target="NDN" /> and <xref target="RFC8609">CCNx</xref>
           respectively, provide the protocol machinery and keying to support strong integrity and
           authentication. Therefore, FLIC utilizes the existing protocol specifications for these
@@ -2964,7 +2901,7 @@ Root -> M0 ----> M1 ----> ...
           that is outside the control of FLIC.</t>
 
         <t>The belief of the sender that it is using the correct wrapping public key for the
-          receiver, and the sender's belief that the receiver has possesion of the private key
+          receiver, and the sender's belief that the receiver has possession of the private key
           are functions of the key distribution system beyond the scope of FLIC. One possible
           mechanism to bring these beliefs closer to FLIC is to require that the manifest requester
           sign the Interest, such as using the CCNx mechanisms for signing an Interest, and the
@@ -2981,12 +2918,12 @@ Root -> M0 ----> M1 ----> ...
         <t>The lifespan and scope of symmetric keys, as identified by a <tt>KeyNum</tt>, is
           different between an <tt>AeadCtx</tt> and a <tt>RsaOaepCtx</tt>. In the <tt>AeadCtx</tt>
           case, the lifespan and scope is agreed to by the publisher and consumer out of band. In
-          the <tt>RsaOaepCtx</tt> the lifespan and scope is implicitly the curent manifest. We will
+          the <tt>RsaOaepCtx</tt> the lifespan and scope is implicitly the current manifest. We will
           discuss the <tt>RsaOaepCtx</tt> case first, as it is the simpler of the two.</t>
 
         <t>For <tt>RsaOaepCtx</tt>, the first manifest in the tree to use RSA-OAEP must include the
           wrapped key. The <tt>KeyNum</tt> is purely local within the manifest. The only requirement
-          is that the <tt>KeyNum</tt> have a one-to-one assiciation with a specific wrapped key
+          is that the <tt>KeyNum</tt> have a one-to-one association with a specific wrapped key
           within the manifest. That is, a publisher <bcp14>MUST NOT</bcp14> reuse a <tt>KeyNum</tt>
           within a single manifest tree for two different AES key and salt combinations. The key
           lifespan is strictly the <tt>ExpiryTime</tt> of the manifest and the scope is that single
